@@ -1,0 +1,25 @@
+{
+  "id": "prim-view",
+  "name": "Reshape / view / flatten",
+  "whatIsIt": {
+    "eli5": "Rearranges the notes without changing them.",
+    "simple": "Changes how the numbers are arranged (e.g. flatten H×W into one long row, or split channels into heads). Values do not change.",
+    "engineer": "view/reshape/permute/flatten: memory layout only."
+  },
+  "whyExists": {
+    "eli5": "Some steps need the notes in a different order.",
+    "simple": "Attention and the head need sequences or per-head layouts.",
+    "engineer": "Layout transforms for matmul/attention/head concat."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Same notes, new order."
+    ],
+    "simple": [
+      "Reorder dimensions."
+    ],
+    "engineer": [
+      "Zero FLOPs."
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "prim-Identity",
+  "name": "Identity (no activation)",
+  "whatIsIt": {
+    "eli5": "Passes the notes on unchanged.",
+    "simple": "Does nothing: used where a Conv block has its activation turned off (act=False).",
+    "engineer": "nn.Identity(); keeps the output linear (e.g. before a residual add)."
+  },
+  "whyExists": {
+    "eli5": "Sometimes the notes should not be switched.",
+    "simple": "Leaving a step linear keeps values that will be added to a shortcut unchanged.",
+    "engineer": "Linear bottleneck outputs before residual addition."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Pass on."
+    ],
+    "simple": [
+      "Output equals input."
+    ],
+    "engineer": [
+      "y = x."
+    ]
+  }
+}

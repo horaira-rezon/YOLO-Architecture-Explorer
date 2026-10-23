@@ -1,0 +1,28 @@
+{
+  "id": "prim-add",
+  "name": "Add (residual)",
+  "whatIsIt": {
+    "eli5": "Adds the original notes back to the new ones.",
+    "simple": "Elementwise addition, usually a residual shortcut: output = input + change.",
+    "engineer": "x + F(x)."
+  },
+  "whyExists": {
+    "eli5": "So the block only has to learn a change.",
+    "simple": "Residuals make deep stacks trainable.",
+    "engineer": "Residual learning."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Add spot by spot."
+    ],
+    "simple": [
+      "Shapes must match exactly."
+    ],
+    "engineer": [
+      "Not counted as FLOPs by thop."
+    ]
+  },
+  "math": [
+    "y = x + F(x)"
+  ]
+}

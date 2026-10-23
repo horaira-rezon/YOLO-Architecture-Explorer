@@ -12,3 +12,4 @@ export * from "./catalog";
 export * from "./describe";
 export * from "./content/schema";
 export * from "./explain/position";
+export * from "./blocks/flatten";

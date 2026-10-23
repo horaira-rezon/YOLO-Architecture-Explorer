@@ -1,0 +1,25 @@
+{
+  "id": "prim-Upsample",
+  "name": "Upsample",
+  "whatIsIt": {
+    "eli5": "Makes the picture twice as big by copying dots.",
+    "simple": "Nearest-neighbour ×2 resize.",
+    "engineer": "nn.Upsample(scale_factor=2, mode='nearest')."
+  },
+  "whyExists": {
+    "eli5": "To match a bigger picture.",
+    "simple": "To align sizes before joining.",
+    "engineer": "Resolution alignment."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Copy each dot into 2×2."
+    ],
+    "simple": [
+      "Repeat each value twice in each direction."
+    ],
+    "engineer": [
+      "y[c,i,j] = x[c,⌊i/2⌋,⌊j/2⌋]."
+    ]
+  }
+}

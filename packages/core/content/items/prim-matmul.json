@@ -1,0 +1,30 @@
+{
+  "id": "prim-matmul",
+  "name": "Matrix multiply (attention)",
+  "whatIsIt": {
+    "eli5": "Compares every spot with every other spot.",
+    "simple": "Multiplies two matrices. In attention, queries × keys gives a score for every pair of positions; the scores × values mixes information.",
+    "engineer": "a @ b; thop counts numel(out) × inner dim (functional, global)."
+  },
+  "whyExists": {
+    "eli5": "So each spot can look at all others.",
+    "simple": "This is how attention measures and uses relevance between positions.",
+    "engineer": "Core of self-attention; cost O(N²·d)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Compare all pairs.",
+      "Mix by how similar they are."
+    ],
+    "simple": [
+      "Q·Kᵀ → scores (N × N).",
+      "softmax(scores) · V → mixed features."
+    ],
+    "engineer": [
+      "MACs: N²·d for QKᵀ and N²·d for AV."
+    ]
+  },
+  "math": [
+    "\\mathrm{Attn}(Q,K,V) = \\mathrm{softmax}\\!\\left(\\frac{QK^\\top}{\\sqrt{d}}\\right)V"
+  ]
+}

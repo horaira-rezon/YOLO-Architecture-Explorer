@@ -1,0 +1,25 @@
+{
+  "id": "prim-stack·sum",
+  "name": "Stack and sum",
+  "whatIsIt": {
+    "eli5": "Adds several pictures of the same size together.",
+    "simple": "Stacks same-size maps and sums them (YOLOv9 CBFuse).",
+    "engineer": "torch.sum(torch.stack(xs), 0)."
+  },
+  "whyExists": {
+    "eli5": "To merge information from several places.",
+    "simple": "Fusion by addition keeps channels fixed.",
+    "engineer": "Additive fusion."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Add all pictures spot by spot."
+    ],
+    "simple": [
+      "Sum elementwise."
+    ],
+    "engineer": [
+      "Zero params."
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "id": "prim-BatchNorm2d",
+  "name": "BatchNorm2d",
+  "whatIsIt": {
+    "eli5": "Keeps every layer of notes in a calm, steady range.",
+    "simple": "Batch normalization: for each channel, subtracts the average and divides by the spread seen in training, then applies a learned scale and shift.",
+    "engineer": "Per-channel affine standardisation with running mean/var; 2·C learnable params; folded into the conv at export."
+  },
+  "whyExists": {
+    "eli5": "Calm numbers make learning faster.",
+    "simple": "Keeps values well-scaled so training is faster and more stable.",
+    "engineer": "Reduces internal covariate shift; allows higher learning rates."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find the usual level.",
+      "Move the notes back to a calm level.",
+      "Stretch and shift a little."
+    ],
+    "simple": [
+      "Subtract the running mean of the channel.",
+      "Divide by the running standard deviation.",
+      "Multiply by γ and add β (both learned)."
+    ],
+    "engineer": [
+      "y = γ(x − μ)/√(σ² + ε) + β."
+    ]
+  },
+  "math": [
+    "y = \\gamma\\,\\frac{x-\\mu}{\\sqrt{\\sigma^2+\\epsilon}} + \\beta"
+  ],
+  "pytorch": "nn.BatchNorm2d(c)"
+}

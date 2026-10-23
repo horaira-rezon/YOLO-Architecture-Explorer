@@ -1,0 +1,25 @@
+{
+  "id": "prim-split",
+  "name": "Split / chunk",
+  "whatIsIt": {
+    "eli5": "Cuts one pile of notes into smaller piles.",
+    "simple": "Splits a tensor into parts along channels (C2f/C3k2 'chunk', attention q/k/v split).",
+    "engineer": "tensor.split(sizes, dim) / chunk(n, dim); views, no copy."
+  },
+  "whyExists": {
+    "eli5": "So different parts can take different paths.",
+    "simple": "Lets only part of the channels go through expensive layers.",
+    "engineer": "Partial processing (CSP) or head splitting."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Cut the pile."
+    ],
+    "simple": [
+      "Divide channels into groups."
+    ],
+    "engineer": [
+      "Zero cost."
+    ]
+  }
+}

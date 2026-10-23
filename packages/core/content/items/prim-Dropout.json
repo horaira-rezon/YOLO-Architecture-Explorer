@@ -1,0 +1,25 @@
+{
+  "id": "prim-Dropout",
+  "name": "Dropout",
+  "whatIsIt": {
+    "eli5": "While learning, randomly hides some notes so the model does not rely on just a few.",
+    "simple": "Randomly zeroes values during training (p = 0.0 in YOLO classify heads, so it does nothing by default).",
+    "engineer": "nn.Dropout(p); identity at inference."
+  },
+  "whyExists": {
+    "eli5": "To stop the model memorising.",
+    "simple": "Regularisation.",
+    "engineer": "Regularisation; p = 0 by default here."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Hide some notes while practising."
+    ],
+    "simple": [
+      "During training, zero each value with probability p."
+    ],
+    "engineer": [
+      "Identity in eval mode."
+    ]
+  }
+}

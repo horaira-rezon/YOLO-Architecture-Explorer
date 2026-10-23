@@ -1,0 +1,26 @@
+{
+  "id": "prim-AdaptiveAvgPool2d",
+  "name": "AdaptiveAvgPool2d",
+  "whatIsIt": {
+    "eli5": "Averages each layer of notes over the whole picture into one number.",
+    "simple": "Global average pooling: one value per channel.",
+    "engineer": "nn.AdaptiveAvgPool2d(1)."
+  },
+  "whyExists": {
+    "eli5": "To describe the whole picture at once.",
+    "simple": "Gives a fixed-size description no matter the image size.",
+    "engineer": "Translation-invariant global descriptor."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Add all spots.",
+      "Divide by how many."
+    ],
+    "simple": [
+      "Average all H×W values of each channel."
+    ],
+    "engineer": [
+      "y_c = mean_{i,j} x_{c,i,j}."
+    ]
+  }
+}

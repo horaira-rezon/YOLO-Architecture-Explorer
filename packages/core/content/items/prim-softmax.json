@@ -1,0 +1,26 @@
+{
+  "id": "prim-softmax",
+  "name": "Softmax",
+  "whatIsIt": {
+    "eli5": "Turns scores into shares that add up to one.",
+    "simple": "Normalises scores into weights that sum to 1 (attention weights, DFL bins).",
+    "engineer": "softmax along the last axis; functional, not counted by thop."
+  },
+  "whyExists": {
+    "eli5": "So the model can share its attention.",
+    "simple": "Makes a proper weighting.",
+    "engineer": "Normalisation of logits."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Make all positive.",
+      "Make them add to one."
+    ],
+    "simple": [
+      "exp, then divide by the sum."
+    ],
+    "engineer": [
+      "p_i = e^{z_i}/Σ e^{z_j}."
+    ]
+  }
+}

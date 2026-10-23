@@ -1,0 +1,25 @@
+{
+  "id": "prim-cat",
+  "name": "Concatenate",
+  "whatIsIt": {
+    "eli5": "Stacks piles of notes together.",
+    "simple": "Joins tensors along the channel dimension; sizes must match.",
+    "engineer": "torch.cat(xs, 1)."
+  },
+  "whyExists": {
+    "eli5": "To use several views together.",
+    "simple": "Keeps every source intact for the next layer to mix.",
+    "engineer": "Feature aggregation."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Stack the piles."
+    ],
+    "simple": [
+      "Put channels one after another."
+    ],
+    "engineer": [
+      "No params, no MACs."
+    ]
+  }
+}

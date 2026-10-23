@@ -49,3 +49,14 @@ export function resolveItem(arch: Architecture, id: string): ItemRef | null {
   const def = getBlock(node.module);
   return { kind: "layer", contentId: def?.id ?? null, title: def?.displayName ?? node.module, nodeId: node.id };
 }
+
+/** Content id for an operation or sub-block seen inside a block (L2/L3). */
+export function innerContentId(type: string): string | null {
+  const prim: Record<string, string> = {
+    "flatten": "view", "reshape·permute": "view", "flatten·reshape": "view", "view·transpose·softmax": "view", "view": "view",
+  };
+  const p = prim[type] ?? type;
+  if (CONTENT.has(`prim-${p}`)) return `prim-${p}`;
+  if (CONTENT.has(type)) return type;
+  return null;
+}

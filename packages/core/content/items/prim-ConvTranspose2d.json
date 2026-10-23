@@ -1,0 +1,25 @@
+{
+  "id": "prim-ConvTranspose2d",
+  "name": "ConvTranspose2d",
+  "whatIsIt": {
+    "eli5": "A learned way of making the picture twice as big.",
+    "simple": "A transposed convolution with kernel 2 and stride 2: each input value paints a learned 2×2 patch, doubling the size.",
+    "engineer": "nn.ConvTranspose2d(c, c, 2, 2, bias=True); MACs = H_in·W_in·c2·k²·c1/… (thop counts input volume × c_out × k²)."
+  },
+  "whyExists": {
+    "eli5": "Masks need a big, sharp picture.",
+    "simple": "Learned upsampling gives sharper prototype masks than copying.",
+    "engineer": "Learnable ×2 upsampling in Proto."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Each dot paints a small square."
+    ],
+    "simple": [
+      "Each input value is multiplied by a learned 2×2 kernel per output channel and placed in the output."
+    ],
+    "engineer": [
+      "Output = (H−1)·s + k."
+    ]
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "prim-MaxPool2d",
+  "name": "MaxPool2d",
+  "whatIsIt": {
+    "eli5": "Keeps only the strongest value in each small square.",
+    "simple": "Takes the maximum in each k×k window. With stride 1 and padding k//2 the size stays the same.",
+    "engineer": "nn.MaxPool2d(k, s, p); no params, zero MACs."
+  },
+  "whyExists": {
+    "eli5": "To notice a pattern anywhere in a small area.",
+    "simple": "Spreads strong responses over a neighbourhood, growing the field of view for free.",
+    "engineer": "Cheap receptive-field growth / downsampling."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at a small square.",
+      "Keep the biggest number."
+    ],
+    "simple": [
+      "Slide a k×k window.",
+      "Write the maximum."
+    ],
+    "engineer": [
+      "y[c,i,j] = max over window."
+    ]
+  },
+  "pytorch": "nn.MaxPool2d(kernel_size=5, stride=1, padding=2)"
+}

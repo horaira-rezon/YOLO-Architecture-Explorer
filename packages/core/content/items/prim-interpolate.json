@@ -1,0 +1,25 @@
+{
+  "id": "prim-interpolate",
+  "name": "interpolate (functional resize)",
+  "whatIsIt": {
+    "eli5": "Resizes a picture to match another one.",
+    "simple": "Resizes a map to a target size with nearest neighbour (YOLOv9 CBFuse, YOLO26 Proto26).",
+    "engineer": "F.interpolate(x, size=…, mode='nearest')."
+  },
+  "whyExists": {
+    "eli5": "To add pictures, they must be the same size.",
+    "simple": "Aligns resolutions before adding.",
+    "engineer": "Resolution alignment."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Stretch the picture."
+    ],
+    "simple": [
+      "Copy values to fill the new size."
+    ],
+    "engineer": [
+      "Zero params."
+    ]
+  }
+}

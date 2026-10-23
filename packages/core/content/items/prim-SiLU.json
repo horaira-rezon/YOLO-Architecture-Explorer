@@ -1,0 +1,31 @@
+{
+  "id": "prim-SiLU",
+  "name": "SiLU",
+  "whatIsIt": {
+    "eli5": "A smooth switch: strong signals pass, weak or negative ones are turned down.",
+    "simple": "SiLU multiplies each value by its own sigmoid: positives pass almost unchanged, negatives shrink smoothly toward zero.",
+    "engineer": "SiLU(x) = x·σ(x); smooth, non-monotonic near 0; zero FLOPs in thop."
+  },
+  "whyExists": {
+    "eli5": "Without switches, many steps would act like one step.",
+    "simple": "A nonlinearity lets stacked layers learn complex shapes; SiLU is smooth, which helps training.",
+    "engineer": "Smooth gating improves optimisation over ReLU in YOLO-style CNNs."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at each number.",
+      "Keep big ones, quiet small and negative ones."
+    ],
+    "simple": [
+      "Compute sigmoid(x).",
+      "Multiply x by it."
+    ],
+    "engineer": [
+      "Elementwise; fused with conv at export on most runtimes."
+    ]
+  },
+  "math": [
+    "\\mathrm{SiLU}(x) = \\frac{x}{1+e^{-x}}"
+  ],
+  "pytorch": "nn.SiLU()"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "prim-mul",
+  "name": "Multiply (gate / scale)",
+  "whatIsIt": {
+    "eli5": "Turns some notes up or down.",
+    "simple": "Elementwise multiplication, e.g. a learned per-channel scale (A2C2f gamma) or an attention gate.",
+    "engineer": "x · g."
+  },
+  "whyExists": {
+    "eli5": "To scale or gate information.",
+    "simple": "Lets the model weight channels or positions.",
+    "engineer": "Gating / layer scaling."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Multiply spot by spot."
+    ],
+    "simple": [
+      "Shapes broadcast (e.g. one number per channel)."
+    ],
+    "engineer": [
+      "Not counted by thop."
+    ]
+  }
+}

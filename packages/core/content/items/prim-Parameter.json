@@ -1,0 +1,25 @@
+{
+  "id": "prim-Parameter",
+  "name": "Learned scale (parameter)",
+  "whatIsIt": {
+    "eli5": "A few learned numbers that turn each layer of notes up or down.",
+    "simple": "A free learned vector, e.g. A2C2f's gamma (one value per channel, starting at 0.01) that scales the block output before the residual add.",
+    "engineer": "nn.Parameter(0.01·ones(c2)); layer-scale."
+  },
+  "whyExists": {
+    "eli5": "To let the block start gently.",
+    "simple": "Starting near zero makes the residual block nearly an identity at first, which stabilises training.",
+    "engineer": "Layer scale (CaiT-style) for deep attention stacks."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Multiply each layer by its own number."
+    ],
+    "simple": [
+      "out = x + γ·y."
+    ],
+    "engineer": [
+      "c2 params."
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "prim-max_pool2d",
+  "name": "max_pool2d (functional)",
+  "whatIsIt": {
+    "eli5": "Keeps the strongest value in each small square.",
+    "simple": "Max pooling called as a function (no module). In ADown it halves the size: 3×3 window, stride 2.",
+    "engineer": "F.max_pool2d(x, 3, 2, 1)."
+  },
+  "whyExists": {
+    "eli5": "To shrink the picture while keeping strong signals.",
+    "simple": "A cheap, weight-free way to downsample one branch.",
+    "engineer": "Parameter-free downsampling branch."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Keep the biggest in each square."
+    ],
+    "simple": [
+      "Window 3×3, jump 2."
+    ],
+    "engineer": [
+      "Zero MACs."
+    ]
+  }
+}

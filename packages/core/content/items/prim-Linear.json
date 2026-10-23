@@ -1,0 +1,28 @@
+{
+  "id": "prim-Linear",
+  "name": "Linear",
+  "whatIsIt": {
+    "eli5": "Mixes all the notes into a score for each class.",
+    "simple": "A fully connected layer: every input number is connected to every output with its own weight.",
+    "engineer": "nn.Linear(c1, c2): c1·c2 + c2 params."
+  },
+  "whyExists": {
+    "eli5": "To turn a description into class scores.",
+    "simple": "Maps the pooled features to one score per class.",
+    "engineer": "Final projection to logits."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Multiply and add everything."
+    ],
+    "simple": [
+      "y = W·x + b."
+    ],
+    "engineer": [
+      "MACs = c1·c2."
+    ]
+  },
+  "math": [
+    "y = Wx + b"
+  ]
+}

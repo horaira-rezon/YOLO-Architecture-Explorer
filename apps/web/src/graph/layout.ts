@@ -105,3 +105,33 @@ function computeBands(g: DisplayGraph, boxes: Record<string, Box>, direction: "D
   }
   return bands;
 }
+
+/** Plain ELK layered layout for small graphs (block internals). */
+export async function layoutPlain(
+  items: { id: string; w: number; h: number }[],
+  edges: { id: string; source: string; target: string }[],
+  direction: "DOWN" | "RIGHT",
+): Promise<{ boxes: Record<string, Box>; edges: Record<string, Point[]> }> {
+  const root = await getElk().layout({
+    id: "root",
+    layoutOptions: {
+      "elk.algorithm": "layered",
+      "elk.direction": direction,
+      "elk.edgeRouting": "ORTHOGONAL",
+      "elk.layered.spacing.nodeNodeBetweenLayers": "40",
+      "elk.spacing.nodeNode": "28",
+      "elk.layered.nodePlacement.strategy": "BRANDES_KOEPF",
+      "elk.padding": "[top=32,left=32,bottom=32,right=32]",
+    },
+    children: items.map((i) => ({ id: i.id, width: i.w, height: i.h })),
+    edges: edges.map((e) => ({ id: e.id, sources: [e.source], targets: [e.target] })),
+  });
+  const boxes: Record<string, Box> = {};
+  for (const c of root.children ?? []) boxes[c.id] = { x: c.x ?? 0, y: c.y ?? 0, w: c.width ?? 0, h: c.height ?? 0 };
+  const out: Record<string, Point[]> = {};
+  for (const e of (root.edges ?? []) as ElkExtendedEdge[]) {
+    const sec = e.sections?.[0];
+    if (sec) out[e.id] = [sec.startPoint, ...(sec.bendPoints ?? []), sec.endPoint];
+  }
+  return { boxes, edges: out };
+}

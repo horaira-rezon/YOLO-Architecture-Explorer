@@ -1,0 +1,25 @@
+{
+  "id": "prim-Sigmoid",
+  "name": "Sigmoid",
+  "whatIsIt": {
+    "eli5": "Squashes a number between 0 and 1, like a dimmer switch.",
+    "simple": "Maps values to 0–1; used as a gate.",
+    "engineer": "σ(x) = 1/(1+e^{−x})."
+  },
+  "whyExists": {
+    "eli5": "To make a gate.",
+    "simple": "Gates multiply features by a learned 0–1 weight.",
+    "engineer": "Gating nonlinearity."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Squash to 0–1."
+    ],
+    "simple": [
+      "Apply σ to each value."
+    ],
+    "engineer": [
+      "Elementwise."
+    ]
+  }
+}

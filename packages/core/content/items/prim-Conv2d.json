@@ -1,0 +1,33 @@
+{
+  "id": "prim-Conv2d",
+  "name": "Conv2d",
+  "whatIsIt": {
+    "eli5": "A tiny window of learned numbers slides over the notes and adds up what it sees at each spot.",
+    "simple": "The raw convolution: slides k×k learned kernels over all input channels and sums the products into each output channel.",
+    "engineer": "nn.Conv2d(c1, c2, k, s, p, groups=g, dilation=d, bias=False). MACs = H_out·W_out·c2·(c1/g)·k²."
+  },
+  "whyExists": {
+    "eli5": "It is how the model finds patterns.",
+    "simple": "It finds local patterns with few weights, because the same kernel is used everywhere.",
+    "engineer": "Weight sharing + locality."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Lay the window on the notes.",
+      "Multiply and add.",
+      "Move and repeat."
+    ],
+    "simple": [
+      "Multiply kernel and patch element by element.",
+      "Sum into one number.",
+      "Slide by the stride and repeat for every output channel."
+    ],
+    "engineer": [
+      "y[o,i,j] = Σ_c Σ_{u,v} W[o,c,u,v]·x[c, s·i+u−p, s·j+v−p]."
+    ]
+  },
+  "math": [
+    "y_{o,i,j} = \\sum_{c}\\sum_{u,v} W_{o,c,u,v}\\, x_{c,\\, s i+u-p,\\, s j+v-p}"
+  ],
+  "pytorch": "nn.Conv2d(c1, c2, kernel_size=k, stride=s, padding=k // 2, groups=g, bias=False)"
+}

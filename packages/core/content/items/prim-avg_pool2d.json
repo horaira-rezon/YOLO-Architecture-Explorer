@@ -1,0 +1,25 @@
+{
+  "id": "prim-avg_pool2d",
+  "name": "avg_pool2d (functional)",
+  "whatIsIt": {
+    "eli5": "Blurs the notes a tiny bit by averaging neighbours.",
+    "simple": "Averages each 2×2 window with stride 1 (YOLOv9 ADown/AConv), which smooths the map before downsampling.",
+    "engineer": "F.avg_pool2d(x, 2, 1, 0, False, True): H → H−1; not counted by thop (functional)."
+  },
+  "whyExists": {
+    "eli5": "Smoothing first makes the next shrink step lose less.",
+    "simple": "A light blur before striding reduces aliasing.",
+    "engineer": "Anti-aliasing before stride-2 ops."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Average each little square."
+    ],
+    "simple": [
+      "Average 2×2 neighbours."
+    ],
+    "engineer": [
+      "Output side shrinks by 1."
+    ]
+  }
+}
