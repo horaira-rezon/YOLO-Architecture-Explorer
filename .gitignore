@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+.cache-tools/
+*.log
+.env
+.env.*
+!.env.example
+playwright-report/
+test-results/
+.vite/
+__pycache__/
+*.pt
+.DS_Store

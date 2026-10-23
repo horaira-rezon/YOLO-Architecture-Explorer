@@ -1,0 +1,74 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-danger: var(--danger);
+  --color-warn: var(--warn);
+  --color-ok: var(--ok);
+  /* Okabe–Ito colour-blind-safe stage palette */
+  --color-stage-input: var(--stage-input);
+  --color-stage-backbone: var(--stage-backbone);
+  --color-stage-neck: var(--stage-neck);
+  --color-stage-head: var(--stage-head);
+  --color-stage-loss: var(--stage-loss);
+  --color-stage-postprocess: var(--stage-postprocess);
+}
+
+:root {
+  --bg: #f7f7f5;
+  --surface: #ffffff;
+  --surface-2: #f0f0ed;
+  --border: #dcdcd6;
+  --fg: #1d1d1b;
+  --muted: #5d5d58;
+  --accent: #0b63a8;
+  --accent-fg: #ffffff;
+  --danger: #b3261e;
+  --warn: #8a5a00;
+  --ok: #1b7a4b;
+  --stage-input: #7a7a74;
+  --stage-backbone: #0072b2;
+  --stage-neck: #009e73;
+  --stage-head: #c47f00;
+  --stage-loss: #b05c8f;
+  --stage-postprocess: #d55e00;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #121312;
+  --surface: #1b1c1b;
+  --surface-2: #242523;
+  --border: #363834;
+  --fg: #ecece8;
+  --muted: #a6a69f;
+  --accent: #5fb0ef;
+  --accent-fg: #0b1620;
+  --danger: #f2877e;
+  --warn: #f0c060;
+  --ok: #6bd29f;
+  --stage-input: #a6a69f;
+  --stage-backbone: #56b4e9;
+  --stage-neck: #2fc597;
+  --stage-head: #e69f00;
+  --stage-loss: #cc79a7;
+  --stage-postprocess: #f07a3a;
+  color-scheme: dark;
+}
+
+html, body, #root { height: 100%; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+}

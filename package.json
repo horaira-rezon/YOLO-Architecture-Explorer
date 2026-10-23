@@ -1,0 +1,26 @@
+{
+  "name": "yolo-atlas",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.15.0",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "pnpm --filter @yolo-atlas/web dev",
+    "build": "pnpm --filter @yolo-atlas/web build",
+    "preview": "pnpm --filter @yolo-atlas/web preview",
+    "test": "pnpm -r --if-present test",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "lint": "eslint .",
+    "content:qa": "pnpm --filter @yolo-atlas/core content:qa",
+    "e2e": "pnpm --filter @yolo-atlas/web e2e",
+    "check": "pnpm typecheck && pnpm lint && pnpm test && pnpm content:qa"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "eslint": "10.13.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "17.13.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0"
+  }
+}
