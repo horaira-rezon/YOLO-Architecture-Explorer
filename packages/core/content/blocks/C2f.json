@@ -1,0 +1,65 @@
+{
+  "id": "C2f",
+  "name": "C2f (CSP bottleneck with two convolutions, faster)",
+  "whatIsIt": {
+    "eli5": "A team of helpers. Half of the notes skip ahead untouched, the other half go through several helpers in a row, and at the end everyone's notes are put together.",
+    "simple": "YOLOv8's main feature block. It splits the map into two halves, sends one half through a chain of small Bottleneck blocks, keeps the output of every step, and joins everything back together with a final 1×1 Conv.",
+    "engineer": "Cross-Stage-Partial variant: cv1 (1×1) to 2c channels → chunk into two c-channel parts → n Bottlenecks applied sequentially to the second part → concat [part1, part2, b1…bn] ((2+n)·c channels) → cv2 (1×1) to c2."
+  },
+  "whyExists": {
+    "eli5": "Keeping some notes untouched and saving every helper's work means nothing important gets lost, and it is cheaper than making everyone redo the whole job.",
+    "simple": "Only half of the channels go through the expensive bottlenecks, which saves compute. Keeping every intermediate output gives the next layer a mix of shallow and deeper views and gives training many short paths for the learning signal.",
+    "engineer": "Partial processing reduces FLOPs; dense aggregation of intermediate outputs (ELAN-like) enriches gradient flow and receptive-field diversity compared with C3, where only the last bottleneck output is concatenated."
+  },
+  "howItWorks": {
+    "eli5": [
+      "A first helper rewrites the notes.",
+      "The notes are cut into two piles.",
+      "One pile goes through a line of helpers; each helper's copy is kept.",
+      "All the piles are stacked together.",
+      "A last helper summarizes the stack."
+    ],
+    "simple": [
+      "cv1: a 1×1 Conv makes 2c channels (c is half of the block's output width).",
+      "The result is split into two parts of c channels each.",
+      "The second part goes through n Bottleneck blocks one after another; each Bottleneck's output is saved.",
+      "All parts are joined: 2 + n pieces of c channels each.",
+      "cv2: a 1×1 Conv mixes them back down to the output width."
+    ],
+    "engineer": [
+      "c = int(c2·e), e = 0.5.",
+      "y = cv2(cat[y0, y1, m1(y1), m2(m1(y1)), …]).",
+      "Each Bottleneck: 3×3 → 3×3 Conv with e = 1.0 and an optional residual add (shortcut=True in the backbone, False in the neck).",
+      "Repeats n are scaled by depth_multiple: n = max(round(n·d), 1)."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLOv8n layer 4, 64 layers of notes come in; 32 go through 2 helpers, and at the end 4 piles of 32 are joined and squeezed back to 64.",
+    "simple": "YOLOv8n layer 4: input and output 64 channels, n = 2 (the YAML says 6, times depth 0.33 → 2). c = 32. cv1 makes 64 channels, split into 32 + 32; two Bottlenecks run on the second half; the join has (2 + 2) × 32 = 128 channels; cv2 brings it back to 64. Total 49,664 parameters.",
+    "engineer": "v8n #4: C2f(64, 64, n=2, shortcut=True): cv1 64→64 (4,096 + 128), 2 × Bottleneck(32) (2 × 18,560), cv2 128→64 (8,192 + 128) = 49,664 params."
+  },
+  "typicalPositions": {
+    "eli5": "After each step where the picture gets smaller, and in the mixing part.",
+    "simple": "In YOLOv8 after every stride-2 Conv in the backbone (with shortcut) and after every Concat in the neck (without shortcut).",
+    "engineer": "Backbone stages (shortcut=True) and every PAN-FPN fusion node (shortcut=False) in YOLOv8."
+  },
+  "tradeoffs": {
+    "eli5": "More helpers in the line see more, but are slower.",
+    "simple": "More repeats (n) increase what the block can learn and its field of view but add cost linearly. The join grows with n, so cv2 gets bigger too.",
+    "engineer": "Params/FLOPs grow ~linearly in n; the concat width (2+n)·c increases cv2 cost; memory traffic from keeping all intermediates is higher than C3."
+  },
+  "math": [
+    "y = \\mathrm{cv2}\\big([\\,y_0,\\; y_1,\\; B_1(y_1),\\; B_2(B_1(y_1)),\\; \\dots\\,]\\big),\\quad (y_0, y_1) = \\mathrm{split}(\\mathrm{cv1}(x))"
+  ],
+  "pytorch": "class C2f(nn.Module):\n    def __init__(self, c1, c2, n=1, shortcut=False, g=1, e=0.5):\n        super().__init__()\n        self.c = int(c2 * e)\n        self.cv1 = Conv(c1, 2 * self.c, 1, 1)\n        self.cv2 = Conv((2 + n) * self.c, c2, 1)\n        self.m = nn.ModuleList(Bottleneck(self.c, self.c, shortcut, g, k=((3, 3), (3, 3)), e=1.0) for _ in range(n))\n\n    def forward(self, x):\n        y = list(self.cv1(x).chunk(2, 1))\n        y.extend(m(y[-1]) for m in self.m)\n        return self.cv2(torch.cat(y, 1))",
+  "references": [
+    {
+      "label": "Ultralytics block.py (C2f)",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/nn/modules/block.py"
+    },
+    {
+      "label": "CSPNet paper",
+      "url": "https://arxiv.org/abs/1911.11929"
+    }
+  ]
+}

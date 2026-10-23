@@ -1,0 +1,25 @@
+{
+  "id": "loss-KeypointVisibilityBCE",
+  "name": "Keypoint visibility loss",
+  "whatIsIt": {
+    "eli5": "Grades whether the model knew which points could be seen.",
+    "simple": "BCE on the visibility score of each keypoint.",
+    "engineer": "BCE on keypoint confidence; gain kobj = 1.0."
+  },
+  "whyExists": {
+    "eli5": "A hidden knee should not be drawn.",
+    "simple": "Lets the model say a point is hidden.",
+    "engineer": "Visibility supervision."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Compare predicted visibility with the label."
+    ],
+    "simple": [
+      "Compare predicted visibility with the label."
+    ],
+    "engineer": [
+      "Compare predicted visibility with the label."
+    ]
+  }
+}

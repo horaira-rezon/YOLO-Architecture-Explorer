@@ -1,0 +1,54 @@
+{
+  "id": "SPPF",
+  "name": "SPPF (Spatial Pyramid Pooling – Fast)",
+  "whatIsIt": {
+    "eli5": "Looks at the picture through bigger and bigger windows and keeps the strongest thing in each window, so the model sees more of the scene at once.",
+    "simple": "A block at the end of the backbone that applies the same 5×5 max-pooling three times in a row and joins the results. This mixes information from small, medium and large neighbourhoods.",
+    "engineer": "cv1 (1×1, c1→c1/2) → three chained MaxPool2d(k=5, s=1, p=2) → concat 4 maps → cv2 (1×1). Equivalent to parallel SPP with kernels 5, 9, 13 but cheaper."
+  },
+  "whyExists": {
+    "eli5": "Small windows can miss the big picture. Pooling lets each spot get a summary of a much bigger area for almost no cost.",
+    "simple": "The deepest map is small (20×20 for a 640 image), and each cell needs context from far away. Pooling grows the field of view with zero learned weights; doing it in a chain reuses work.",
+    "engineer": "Enlarges the effective receptive field and adds multi-scale context at negligible FLOPs (max-pool has no MACs); serial 5×5 pools give 5/9/13 windows."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Squeeze the notes to half.",
+      "Keep the strongest value in each 5×5 square.",
+      "Do it again on the result, and again.",
+      "Stack all four versions and summarize."
+    ],
+    "simple": [
+      "cv1 halves the channels with a 1×1 Conv.",
+      "A 5×5 max-pool (stride 1, so the size stays the same) keeps the biggest value in each window.",
+      "It is applied three times in a row; each time the window effectively grows (5, 9, 13).",
+      "The original and the three pooled maps are joined (4 × half the channels).",
+      "cv2 (1×1 Conv) mixes them to the output width."
+    ],
+    "engineer": [
+      "MaxPool(5) ∘ MaxPool(5) ≡ MaxPool(9) for stride 1, so the outputs equal SPP(5, 9, 13).",
+      "Params only in cv1 and cv2: c1·c1/2 + 2c1/2·c2 (+BN).",
+      "YOLO26 removes the activation on cv1 and adds an optional residual (n, shortcut args)."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLOv8n, 256 layers of notes go in at size 20×20 and 256 come out, same size.",
+    "simple": "YOLOv8n layer 9: 256→128 channels (cv1), three pools, join → 512 channels, cv2 → 256. Size stays 20×20. 164,608 parameters, all in the two 1×1 convs.",
+    "engineer": "v8n #9 SPPF(256, 256, k=5): cv1 32,768 + 256, cv2 131,072 + 512 = 164,608 params."
+  },
+  "typicalPositions": {
+    "eli5": "At the end of the backbone.",
+    "simple": "Last layer of the backbone, on the smallest, deepest map (stride 32).",
+    "engineer": "Backbone tail on P5/32 in YOLOv8/11/26 (followed by C2PSA in 11 and 26)."
+  },
+  "math": [
+    "y = \\mathrm{cv2}\\big([\\,x',\\; P(x'),\\; P^2(x'),\\; P^3(x')\\,]\\big),\\quad x' = \\mathrm{cv1}(x),\\; P = \\mathrm{MaxPool}_{5\\times5}"
+  ],
+  "pytorch": "class SPPF(nn.Module):\n    def __init__(self, c1, c2, k=5):\n        super().__init__()\n        c_ = c1 // 2\n        self.cv1 = Conv(c1, c_, 1, 1)\n        self.cv2 = Conv(c_ * 4, c2, 1, 1)\n        self.m = nn.MaxPool2d(kernel_size=k, stride=1, padding=k // 2)\n\n    def forward(self, x):\n        y = [self.cv1(x)]\n        y.extend(self.m(y[-1]) for _ in range(3))\n        return self.cv2(torch.cat(y, 1))",
+  "references": [
+    {
+      "label": "SPP-Net paper",
+      "url": "https://arxiv.org/abs/1406.4729"
+    }
+  ]
+}

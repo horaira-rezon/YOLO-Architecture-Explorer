@@ -1,0 +1,65 @@
+{
+  "id": "Detect",
+  "name": "Detect head",
+  "whatIsIt": {
+    "eli5": "The part that makes the final guesses. For every small square of the picture it guesses: is there a thing here, what is it, and how big is its box?",
+    "simple": "The detection head. For each of the three feature maps (small, medium and large objects) it has two branches: one predicts the four sides of a box, the other predicts a score for every class. Every cell of every map makes one prediction.",
+    "engineer": "Decoupled anchor-free head. Per level i: cv2[i] = Conv3×3 → Conv3×3 → Conv2d(4·reg_max) for box distributions, cv3[i] = class branch → Conv2d(nc). Predictions from all levels are flattened and concatenated (A = Σ H_i·W_i anchor points); boxes are decoded with DFL (reg_max = 16) and stride."
+  },
+  "whyExists": {
+    "eli5": "All the earlier parts only describe the picture. This part turns the description into answers you can use.",
+    "simple": "Separate branches for 'where' and 'what' learn better than one shared branch. Predicting from three map sizes lets small maps (fine detail) find small objects and coarse maps find big ones. Being anchor-free means there are no hand-made box shapes to tune.",
+    "engineer": "Decoupled classification/regression avoids task conflict; anchor-free point prediction with distance-to-sides regression removes anchor hyper-parameters; multi-level prediction covers scale variation."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Each map is cut into small squares.",
+      "Each square asks two questions: where are the box sides, and what is it?",
+      "All the squares' answers from all maps are put in one long list.",
+      "Later, weak and duplicate answers are thrown away."
+    ],
+    "simple": [
+      "Each input map (P3, P4, P5) goes into its own small box branch and class branch.",
+      "The box branch outputs 4 × 16 numbers per cell: for each side (left, top, right, bottom) a 16-step probability of how far away that side is.",
+      "The class branch outputs one score per class per cell.",
+      "All cells from all levels are joined: 80×80 + 40×40 + 20×20 = 8,400 predictions for a 640 image.",
+      "DFL turns each 16-step distribution into one distance; distances × stride give the box in pixels."
+    ],
+    "engineer": [
+      "c2 = max(16, ch0/4, 4·reg_max), c3 = max(ch0, min(nc, 100)).",
+      "v8 (legacy): class branch = Conv3×3 → Conv3×3 → 1×1; 11/12/26: DWConv-based class branch (cheaper).",
+      "Box decode: dist2bbox(DFL(box), anchor_points) × stride.",
+      "End-to-end variants (v10, 26) add a one-to-one copy of the branches for NMS-free inference."
+    ]
+  },
+  "example": {
+    "eli5": "For a 640-pixel photo the head makes 8,400 guesses. Most are about empty soil and get thrown away.",
+    "simple": "YOLOv8n: boxes 64 × 8,400 (4 sides × 16 steps), scores 80 × 8,400 (80 COCO classes). For 4 weed classes the score part would be 4 × 8,400.",
+    "engineer": "v8n Detect: 897,664 params (28% of the model); outputs boxes [64, 8400] and scores [80, 8400]; A = 6400 + 1600 + 400."
+  },
+  "typicalPositions": {
+    "eli5": "At the very end.",
+    "simple": "The last layer, reading the three neck outputs (P3/8, P4/16, P5/32).",
+    "engineer": "Final layer, fed by the PAN outputs at strides 8, 16, 32 (plus 4 for P2 variants)."
+  },
+  "tradeoffs": {
+    "eli5": "More classes means more scores to guess, but the box part stays the same.",
+    "simple": "The class branch grows with the number of classes; the box branch does not. Adding a P2 level (stride 4) quadruples the number of cells to check, which helps tiny objects but costs a lot.",
+    "engineer": "Head cost scales with nc and with Σ H_i·W_i; a P2 level adds (H/4)² anchors (25,600 at 640) and the largest-resolution branch compute."
+  },
+  "math": [
+    "\\hat{d}_s = \\sum_{i=0}^{15} i \\cdot \\mathrm{softmax}(z_s)_i,\\quad s \\in \\{l, t, r, b\\}",
+    "\\text{box} = \\big(c_x - \\hat d_l,\\; c_y - \\hat d_t,\\; c_x + \\hat d_r,\\; c_y + \\hat d_b\\big)\\cdot \\text{stride}"
+  ],
+  "pytorch": "# per level i\nself.cv2[i] = nn.Sequential(Conv(x, c2, 3), Conv(c2, c2, 3), nn.Conv2d(c2, 4 * reg_max, 1))\nself.cv3[i] = nn.Sequential(Conv(x, c3, 3), Conv(c3, c3, 3), nn.Conv2d(c3, nc, 1))\n# forward\nboxes = torch.cat([cv2[i](x[i]).view(bs, 4 * reg_max, -1) for i in range(nl)], -1)\nscores = torch.cat([cv3[i](x[i]).view(bs, nc, -1) for i in range(nl)], -1)",
+  "references": [
+    {
+      "label": "Ultralytics head.py",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/nn/modules/head.py"
+    },
+    {
+      "label": "Generalized Focal Loss (DFL)",
+      "url": "https://arxiv.org/abs/2006.04388"
+    }
+  ]
+}

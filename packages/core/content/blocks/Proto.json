@@ -1,0 +1,30 @@
+{
+  "id": "Proto",
+  "name": "Proto (mask prototype network)",
+  "whatIsIt": {
+    "eli5": "Makes a set of shape pictures that all objects share.",
+    "simple": "A small network on the most detailed neck map that outputs 32 prototype masks at twice that map's resolution.",
+    "engineer": "Conv3×3 → ConvTranspose2d(2, 2) → Conv3×3 → Conv1×1(nm)."
+  },
+  "whyExists": {
+    "eli5": "Shared shapes are cheaper than drawing each object's shape from zero.",
+    "simple": "Masks need fine detail, so prototypes are made from the P3 map and upsampled once more (stride 4).",
+    "engineer": "Shared basis for linear mask assembly; transposed conv learns the ×2 upsampling."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at the detailed map.",
+      "Make it twice as big.",
+      "Turn it into 32 shape pictures."
+    ],
+    "simple": [
+      "3×3 Conv.",
+      "Transposed conv doubles height and width.",
+      "3×3 Conv, then 1×1 Conv to 32 channels."
+    ],
+    "engineer": [
+      "Output [nm, H/4, W/4]."
+    ]
+  },
+  "pytorch": "class Proto(nn.Module):\n    def __init__(self, c1, c_=256, c2=32):\n        super().__init__()\n        self.cv1 = Conv(c1, c_, k=3)\n        self.upsample = nn.ConvTranspose2d(c_, c_, 2, 2, 0, bias=True)\n        self.cv2 = Conv(c_, c_, k=3)\n        self.cv3 = Conv(c_, c2)\n\n    def forward(self, x):\n        return self.cv3(self.cv2(self.upsample(self.cv1(x))))"
+}

@@ -1,0 +1,40 @@
+{
+  "id": "DFL",
+  "name": "DFL decoder (Distribution Focal Loss integral)",
+  "whatIsIt": {
+    "eli5": "Instead of one guess for how far a box side is, the model gives 16 little votes. This part adds up the votes into one answer.",
+    "simple": "Each box side is predicted as a probability over 16 distances (0–15 grid steps). DFL turns that into one distance by taking the weighted average. It is a fixed 1×1 convolution with weights 0, 1, …, 15 that are never trained.",
+    "engineer": "Softmax over reg_max bins followed by an expectation implemented as a frozen Conv2d(reg_max, 1, 1) with weights arange(reg_max)."
+  },
+  "whyExists": {
+    "eli5": "Sometimes the edge of a thing is blurry. Votes let the model say 'probably here, maybe a bit further'.",
+    "simple": "Blurry or hidden edges are uncertain. A distribution lets the model express that uncertainty, and the DFL loss trains it to put weight on the two distances around the true value.",
+    "engineer": "General distribution regression (GFL) models boundary ambiguity; the integral gives a continuous estimate while the loss supervises the two nearest bins."
+  },
+  "howItWorks": {
+    "eli5": [
+      "16 votes for each side.",
+      "Make the votes add to 1.",
+      "Multiply each vote by its distance and add up."
+    ],
+    "simple": [
+      "Softmax turns 16 raw numbers into probabilities.",
+      "Each probability is multiplied by its distance (0, 1, …, 15).",
+      "The sum is the predicted distance in grid steps."
+    ],
+    "engineer": [
+      "d = Σ_i i·softmax(z)_i, implemented as conv with fixed weights.",
+      "Removed in YOLO26 (reg_max = 1): the box branch predicts the 4 distances directly."
+    ]
+  },
+  "math": [
+    "\\hat d = \\sum_{i=0}^{n-1} i\\,p_i,\\quad p = \\mathrm{softmax}(z)"
+  ],
+  "pytorch": "class DFL(nn.Module):\n    def __init__(self, c1=16):\n        super().__init__()\n        self.conv = nn.Conv2d(c1, 1, 1, bias=False).requires_grad_(False)\n        self.conv.weight.data[:] = torch.arange(c1, dtype=torch.float).view(1, c1, 1, 1)\n        self.c1 = c1\n\n    def forward(self, x):\n        b, _, a = x.shape\n        return self.conv(x.view(b, 4, self.c1, a).transpose(2, 1).softmax(1)).view(b, 4, a)",
+  "references": [
+    {
+      "label": "Generalized Focal Loss",
+      "url": "https://arxiv.org/abs/2006.04388"
+    }
+  ]
+}

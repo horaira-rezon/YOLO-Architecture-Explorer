@@ -1,0 +1,33 @@
+{
+  "id": "post-conf",
+  "name": "Confidence filter",
+  "whatIsIt": {
+    "eli5": "Throws away guesses the model is not sure about.",
+    "simple": "Keeps only predictions whose class score is above a threshold (0.25 by default for prediction).",
+    "engineer": "Score threshold on max class probability (default conf = 0.25 for predict, 0.001 for validation)."
+  },
+  "whyExists": {
+    "eli5": "Most of the 8,400 guesses are about empty ground.",
+    "simple": "Nearly all cells contain background; filtering them early makes the next steps fast.",
+    "engineer": "Removes low-score anchors before NMS/top-k to bound post-processing cost."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at each guess's score.",
+      "Keep it only if the score is high enough."
+    ],
+    "simple": [
+      "Take the highest class score per prediction.",
+      "Drop it if below the threshold."
+    ],
+    "engineer": [
+      "Lower conf raises recall and false positives; mAP is computed with conf = 0.001."
+    ]
+  },
+  "references": [
+    {
+      "label": "Ultralytics predict settings",
+      "url": "https://docs.ultralytics.com/modes/predict/"
+    }
+  ]
+}

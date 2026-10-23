@@ -1,0 +1,36 @@
+{
+  "id": "Pose",
+  "name": "Pose head (boxes + keypoints)",
+  "whatIsIt": {
+    "eli5": "Finds each thing and also marks special points on it, like the joints of a person.",
+    "simple": "A Detect head plus a branch that predicts, for every cell, the position (x, y) and visibility of each keypoint (17 body points for people).",
+    "engineer": "Detect + cv4[i] → nk = K·D channels (17×3 for COCO: x, y, visibility), decoded relative to anchor points and stride."
+  },
+  "whyExists": {
+    "eli5": "Some jobs need points, not just boxes: where the stem meets the soil, or a person's knees.",
+    "simple": "Predicting keypoints in the same pass as boxes avoids running a second model for each object.",
+    "engineer": "Single-stage top-down-free pose: keypoints regressed per anchor with OKS-based loss."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find boxes as usual.",
+      "For each box, guess where each special point is.",
+      "Also guess if each point can be seen."
+    ],
+    "simple": [
+      "Box and class branches run as in Detect.",
+      "cv4 predicts K × 3 numbers per cell: x offset, y offset and visibility for each keypoint.",
+      "Offsets are scaled by the stride and added to the cell position."
+    ],
+    "engineer": [
+      "c4 = max(ch0/4, nk).",
+      "YOLO26 Pose26 adds a RealNVP flow and sigma outputs for RLE (residual log-likelihood) during training."
+    ]
+  },
+  "example": {
+    "eli5": "For people, 17 points with 3 numbers each = 51 numbers per guess.",
+    "simple": "YOLOv8n-pose: keypoints 51 × 8,400 (17 points × 3).",
+    "engineer": "v8n-pose outputs: boxes [64,8400], scores [1,8400], kpts [51,8400]."
+  },
+  "pytorch": "self.cv4 = nn.ModuleList(nn.Sequential(Conv(x, c4, 3), Conv(c4, c4, 3), nn.Conv2d(c4, nk, 1)) for x in ch)"
+}

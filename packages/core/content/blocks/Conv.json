@@ -1,0 +1,62 @@
+{
+  "id": "Conv",
+  "name": "Conv (convolution + batch norm + SiLU)",
+  "whatIsIt": {
+    "eli5": "A tiny window slides over the picture and looks for one simple pattern at every spot, like an edge or a patch of green. It writes down how strongly it saw it.",
+    "simple": "The basic building brick. A small learned filter slides over the map (convolution), the result is kept in a steady range (batch normalization), and a smooth on/off switch (SiLU) decides what passes on.",
+    "engineer": "Conv2d(c1, c2, k, s, p=k//2, groups=g, dilation=d, bias=False) → BatchNorm2d(c2) → SiLU. The BN is folded into the conv weights when the model is fused for export."
+  },
+  "whyExists": {
+    "eli5": "Before the model can see a whole weed, it needs lots of little helpers that each spot one small pattern.",
+    "simple": "Convolutions learn local patterns and reuse the same weights at every position, so the model stays small. With stride 2 they also shrink the map, which is how the backbone moves from fine details to big shapes.",
+    "engineer": "Locality and weight sharing give translation-equivariant features at low parameter cost; stride-2 3×3 convs provide learnable downsampling instead of pooling, and 1×1 convs mix or resize channels cheaply."
+  },
+  "howItWorks": {
+    "eli5": [
+      "A small window looks at a few pixels at a time.",
+      "It slides across the whole picture.",
+      "At each spot it writes one number: how much it liked what it saw.",
+      "Many windows do this at once, each looking for something different."
+    ],
+    "simple": [
+      "A k×k grid of learned numbers (the kernel) is laid on a k×k patch of every input channel; the products are added up into one number.",
+      "The window moves by the stride (1 or 2 pixels) and repeats, building one output map.",
+      "Each output channel has its own kernel, so c2 kernels give c2 output maps.",
+      "Batch normalization shifts and scales each channel so values stay well behaved during training.",
+      "SiLU passes positive values almost unchanged and pushes negative values smoothly toward zero."
+    ],
+    "engineer": [
+      "Output size per axis: ⌊(H + 2p − d(k−1) − 1)/s⌋ + 1 with p = k//2 (autopad), so stride 1 keeps size and stride 2 halves it.",
+      "Parameters: c2·(c1/g)·k² weights (no bias) + 2·c2 BN affine terms.",
+      "MACs: H_out·W_out·c2·(c1/g)·k²; BN and SiLU are elementwise.",
+      "At inference BN is fused: W' = γW/√(σ²+ε), b' = β − γμ/√(σ²+ε)."
+    ]
+  },
+  "example": {
+    "eli5": "The very first Conv in YOLOv8n uses 16 little windows, each 3 pixels wide, on a 640-pixel photo and makes 16 new pictures that are 320 pixels wide.",
+    "simple": "Layer 0 of YOLOv8n: 3 input channels, 16 output channels, 3×3 kernel, stride 2. Each kernel has 3×3×3 = 27 weights, so 27 × 16 = 432 weights, plus 32 batch-norm numbers = 464 parameters. The 640×640 image becomes a 16×320×320 map.",
+    "engineer": "YOLOv8n layer 0: Conv(3, 16, 3, 2) → 432 + 32 = 464 params; output 16×320×320; ≈ 320²·16·27 ≈ 44.2 M MACs for the conv."
+  },
+  "analogy": "Like sliding a small stencil over a photo and marking how well each spot matches the stencil.",
+  "typicalPositions": {
+    "eli5": "At the very start, and between bigger blocks whenever the picture should get smaller.",
+    "simple": "The stem (layers 0–1), every downsampling step in the backbone (stride 2), the bottom-up path of the neck (stride 2), and many small 1×1 or 3×3 steps inside other blocks.",
+    "engineer": "Stem, stride-2 transitions between CSP stages, PAN bottom-up downsampling, and as cv1/cv2 projections inside C2f/C3k2/SPPF/heads."
+  },
+  "tradeoffs": {
+    "eli5": "Bigger windows see more but cost more.",
+    "simple": "A 3×3 kernel costs 9× more than a 1×1 kernel. Doubling the channels roughly quadruples the cost, because both the input and output channels grow.",
+    "engineer": "Cost is quadratic in width (c1·c2) and in kernel size; depthwise (g = c1) variants cut cost by ≈c2 at the price of no cross-channel mixing."
+  },
+  "math": [
+    "H_{out} = \\left\\lfloor \\frac{H + 2p - d(k-1) - 1}{s} \\right\\rfloor + 1",
+    "y = \\mathrm{SiLU}\\left(\\gamma\\,\\frac{(W \\ast x) - \\mu}{\\sqrt{\\sigma^2 + \\epsilon}} + \\beta\\right),\\quad \\mathrm{SiLU}(z) = z\\,\\sigma(z)"
+  ],
+  "pytorch": "class Conv(nn.Module):\n    def __init__(self, c1, c2, k=1, s=1, p=None, g=1, d=1, act=True):\n        super().__init__()\n        self.conv = nn.Conv2d(c1, c2, k, s, autopad(k, p, d), groups=g, dilation=d, bias=False)\n        self.bn = nn.BatchNorm2d(c2)\n        self.act = nn.SiLU() if act is True else nn.Identity()\n\n    def forward(self, x):\n        return self.act(self.bn(self.conv(x)))",
+  "references": [
+    {
+      "label": "Ultralytics conv.py",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/nn/modules/conv.py"
+    }
+  ]
+}

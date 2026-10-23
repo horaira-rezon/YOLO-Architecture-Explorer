@@ -1,0 +1,797 @@
+[
+ {
+  "term": "channel",
+  "aliases": [
+   "channels"
+  ],
+  "eli5": "One layer of notes about the picture, like one colour layer.",
+  "simple": "One 2-D grid of numbers in a feature map. A map with 64 channels is 64 stacked grids, each describing a different pattern.",
+  "engineer": "Size of dimension 1 of an N×C×H×W tensor."
+ },
+ {
+  "term": "feature map",
+  "aliases": [
+   "feature maps"
+  ],
+  "eli5": "A picture of notes the model made about the photo.",
+  "simple": "The output of a layer: a stack of channels, each a grid that says how strongly some pattern appears at each place.",
+  "engineer": "Intermediate activation tensor C×H×W."
+ },
+ {
+  "term": "stride",
+  "aliases": [
+   "strides"
+  ],
+  "eli5": "How many steps the window jumps each time. A jump of 2 makes the picture half as big.",
+  "simple": "How far a filter moves between positions. Stride 2 halves width and height. A map's stride (8, 16, 32) also says how many input pixels one cell covers.",
+  "engineer": "Sampling step of a conv/pool; also the cumulative downsampling factor of a pyramid level (P_k has stride 2^k)."
+ },
+ {
+  "term": "kernel",
+  "aliases": [
+   "kernels",
+   "filter",
+   "filters"
+  ],
+  "eli5": "A tiny window of learned numbers that looks for one pattern.",
+  "simple": "The small grid of learned weights (for example 3×3) that a convolution slides over the map.",
+  "engineer": "Learned weight tensor c2×(c1/g)×k×k."
+ },
+ {
+  "term": "convolution",
+  "aliases": [
+   "conv",
+   "convolutions"
+  ],
+  "eli5": "Sliding a small window over the picture and writing down what it sees.",
+  "simple": "An operation that slides a learned kernel over the input and computes a weighted sum at each position.",
+  "engineer": "Discrete cross-correlation y = W ∗ x (+ b)."
+ },
+ {
+  "term": "1×1 convolution",
+  "aliases": [
+   "1x1 conv",
+   "pointwise convolution",
+   "1×1 conv"
+  ],
+  "eli5": "A helper that mixes the notes at each spot without looking at neighbours.",
+  "simple": "A convolution with a 1×1 kernel: it only mixes channels at each position. Used to change the number of channels cheaply.",
+  "engineer": "Pointwise conv; per-pixel linear projection over channels."
+ },
+ {
+  "term": "depthwise convolution",
+  "aliases": [
+   "depthwise",
+   "DWConv",
+   "depthwise separable",
+   "DSConv"
+  ],
+  "eli5": "Each layer of notes gets its own small window, which is much cheaper.",
+  "simple": "A convolution where each channel is filtered separately (groups = channels). Often followed by a 1×1 conv; together called depthwise-separable. Much cheaper than a normal conv.",
+  "engineer": "Grouped conv with g = c1; depthwise-separable = DW k×k + PW 1×1, cost ≈ 1/c2 + 1/k² of a dense conv."
+ },
+ {
+  "term": "batch normalization",
+  "aliases": [
+   "BatchNorm",
+   "BN",
+   "batch norm"
+  ],
+  "eli5": "Keeps the numbers from getting too big or too small.",
+  "simple": "Rescales each channel so its values have a steady average and spread during training, which makes learning faster and more stable.",
+  "engineer": "Per-channel standardisation with learned γ, β and running statistics; fused into conv at inference."
+ },
+ {
+  "term": "activation",
+  "aliases": [
+   "activation function",
+   "nonlinearity"
+  ],
+  "eli5": "A rule that decides how much of each note passes on.",
+  "simple": "A simple function applied to every value after a layer (like SiLU). Without it, stacking layers would add nothing new.",
+  "engineer": "Elementwise nonlinearity enabling non-linear function approximation."
+ },
+ {
+  "term": "SiLU",
+  "aliases": [
+   "Swish"
+  ],
+  "eli5": "A smooth switch: lets good signals through and quiets the rest.",
+  "simple": "The activation used in YOLO: x × sigmoid(x). Positive values pass almost unchanged, negative ones shrink smoothly toward zero.",
+  "engineer": "SiLU(x) = x·σ(x)."
+ },
+ {
+  "term": "sigmoid",
+  "aliases": [],
+  "eli5": "Squashes any number into a value between 0 and 1.",
+  "simple": "A function that maps any number to the range 0–1, used for probabilities and gates.",
+  "engineer": "σ(x) = 1/(1 + e^{−x})."
+ },
+ {
+  "term": "softmax",
+  "aliases": [],
+  "eli5": "Turns a list of scores into percentages that add up to 100%.",
+  "simple": "Turns a list of numbers into probabilities that sum to 1; bigger numbers get most of the weight.",
+  "engineer": "softmax(z)_i = e^{z_i}/Σ_j e^{z_j}."
+ },
+ {
+  "term": "parameters",
+  "aliases": [
+   "parameter",
+   "weights",
+   "params"
+  ],
+  "eli5": "The numbers the model learns. More numbers means a bigger model.",
+  "simple": "The learned numbers inside the model (kernel weights, batch-norm values). They are what training changes and what the saved file stores.",
+  "engineer": "Trainable tensors; count = Σ numel."
+ },
+ {
+  "term": "FLOPs",
+  "aliases": [
+   "GFLOPs",
+   "FLOP"
+  ],
+  "eli5": "How much counting work the model does for one picture.",
+  "simple": "Floating-point operations: a measure of how much computation one image needs. GFLOPs = billions. Ultralytics counts 2 per multiply-add.",
+  "engineer": "2 × MACs (thop convention), at the stated input size."
+ },
+ {
+  "term": "receptive field",
+  "aliases": [],
+  "eli5": "How big a part of the photo one spot can 'see'.",
+  "simple": "The area of the input image that can influence one output cell. Deeper layers and pooling make it bigger.",
+  "engineer": "Input region contributing to an output activation; grows with depth, kernel size and stride."
+ },
+ {
+  "term": "backbone",
+  "aliases": [],
+  "eli5": "The part that looks at the photo and makes notes.",
+  "simple": "The first part of the network that turns the image into feature maps at several sizes.",
+  "engineer": "Hierarchical feature extractor producing multi-scale features."
+ },
+ {
+  "term": "neck",
+  "aliases": [],
+  "eli5": "The part that mixes notes from different sizes.",
+  "simple": "The middle part that combines feature maps of different sizes so each has both detail and context.",
+  "engineer": "Multi-scale fusion module (FPN/PAN)."
+ },
+ {
+  "term": "head",
+  "aliases": [
+   "heads"
+  ],
+  "eli5": "The part that makes the final answers.",
+  "simple": "The last part that turns feature maps into predictions (boxes, classes, masks, keypoints).",
+  "engineer": "Task-specific prediction layers."
+ },
+ {
+  "term": "FPN",
+  "aliases": [
+   "feature pyramid network",
+   "top-down"
+  ],
+  "eli5": "Passes big-picture understanding down to the detailed maps.",
+  "simple": "Feature Pyramid Network: a top-down path that upsamples deep maps and joins them with shallower ones.",
+  "engineer": "Top-down pathway with lateral connections (Lin et al., 2017)."
+ },
+ {
+  "term": "PAN",
+  "aliases": [
+   "path aggregation network",
+   "bottom-up"
+  ],
+  "eli5": "Passes detail back up to the big-picture maps.",
+  "simple": "Path Aggregation Network: a bottom-up path after FPN that brings fine detail back to the deeper maps.",
+  "engineer": "Bottom-up augmentation after FPN (Liu et al., 2018)."
+ },
+ {
+  "term": "P3",
+  "aliases": [
+   "P3/8"
+  ],
+  "eli5": "The most detailed map used for answers, best for small things.",
+  "simple": "The pyramid level with stride 8 (80×80 at 640). Used to find small objects.",
+  "engineer": "Level 3, stride 8."
+ },
+ {
+  "term": "P4",
+  "aliases": [
+   "P4/16"
+  ],
+  "eli5": "The middle map, for medium things.",
+  "simple": "The pyramid level with stride 16 (40×40 at 640). Used for medium objects.",
+  "engineer": "Level 4, stride 16."
+ },
+ {
+  "term": "P5",
+  "aliases": [
+   "P5/32"
+  ],
+  "eli5": "The smallest, most meaningful map, for big things.",
+  "simple": "The pyramid level with stride 32 (20×20 at 640). Used for large objects.",
+  "engineer": "Level 5, stride 32."
+ },
+ {
+  "term": "P2",
+  "aliases": [
+   "P2/4"
+  ],
+  "eli5": "An extra, very detailed map for tiny things.",
+  "simple": "An optional level with stride 4 (160×160 at 640). Added for tiny objects; it is much more expensive.",
+  "engineer": "Level 2, stride 4."
+ },
+ {
+  "term": "anchor-free",
+  "aliases": [
+   "anchor free"
+  ],
+  "eli5": "The model guesses boxes directly, without ready-made box shapes.",
+  "simple": "Predicts each box as distances from a cell centre to its four sides, instead of adjusting a set of preset box shapes (anchors).",
+  "engineer": "Point-based box regression without anchor priors."
+ },
+ {
+  "term": "anchor",
+  "aliases": [
+   "anchors",
+   "anchor point",
+   "anchor points"
+  ],
+  "eli5": "A fixed spot on the grid where the model makes a guess.",
+  "simple": "In YOLOv8+, the centre of each grid cell where a prediction is made (8,400 at 640). Older YOLOs used anchor boxes of preset shapes.",
+  "engineer": "Grid location (and, historically, prior box shape)."
+ },
+ {
+  "term": "NMS",
+  "aliases": [
+   "non-maximum suppression"
+  ],
+  "eli5": "A clean-up step that removes copies of the same box.",
+  "simple": "Non-maximum suppression: keeps the best box and removes boxes that overlap it too much.",
+  "engineer": "Greedy IoU-based suppression of redundant detections."
+ },
+ {
+  "term": "IoU",
+  "aliases": [
+   "intersection over union"
+  ],
+  "eli5": "How much two boxes overlap, from 0 (not at all) to 1 (exactly the same).",
+  "simple": "Intersection over union: overlap area divided by the combined area of two boxes.",
+  "engineer": "|A∩B| / |A∪B|."
+ },
+ {
+  "term": "mAP",
+  "aliases": [
+   "mean average precision",
+   "mAP50-95",
+   "mAP50"
+  ],
+  "eli5": "A score for how good a detector is, from 0 to 100.",
+  "simple": "Mean average precision: the standard detection score, averaged over classes (and IoU thresholds 0.5–0.95 for mAP50-95).",
+  "engineer": "Mean over classes of area under the precision–recall curve, averaged over IoU ∈ [0.5:0.95]."
+ },
+ {
+  "term": "precision",
+  "aliases": [],
+  "eli5": "Of the boxes the model drew, how many were right.",
+  "simple": "Correct detections divided by all detections.",
+  "engineer": "TP/(TP+FP)."
+ },
+ {
+  "term": "recall",
+  "aliases": [],
+  "eli5": "Of the real things, how many the model found.",
+  "simple": "Found objects divided by all real objects.",
+  "engineer": "TP/(TP+FN)."
+ },
+ {
+  "term": "DFL",
+  "aliases": [
+   "distribution focal loss"
+  ],
+  "eli5": "16 little votes for where each box side is.",
+  "simple": "Distribution Focal Loss: each box side is predicted as a probability over 16 distances, then averaged into one value. Removed in YOLO26.",
+  "engineer": "GFL-style discretised regression with reg_max bins."
+ },
+ {
+  "term": "TAL",
+  "aliases": [
+   "task-aligned assigner",
+   "task aligned assignment"
+  ],
+  "eli5": "The teacher that picks which guesses should learn each object.",
+  "simple": "Task-Aligned Learning assigner: during training, picks the predictions that are good both at the class and at the box for each labelled object.",
+  "engineer": "TOOD assigner with metric s^α·IoU^β."
+ },
+ {
+  "term": "STAL",
+  "aliases": [
+   "small-target-aware label assignment"
+  ],
+  "eli5": "A teacher rule that makes sure tiny things also get helpers.",
+  "simple": "Small-Target-Aware Label Assignment (YOLO26): improves which predictions learn small objects; in Ultralytics' code, tiny boxes are enlarged to the stride size when choosing candidates.",
+  "engineer": "GT boxes with sides < stride are enlarged for candidate selection in TAL."
+ },
+ {
+  "term": "ProgLoss",
+  "aliases": [
+   "Progressive Loss"
+  ],
+  "eli5": "A training plan that slowly shifts attention to the final answers.",
+  "simple": "Progressive Loss (YOLO26): the weight moves from the one-to-many head toward the one-to-one head as training goes on.",
+  "engineer": "Linear decay of o2m loss weight (0.8 → 0.1), o2o = 1 − w."
+ },
+ {
+  "term": "MuSGD",
+  "aliases": [],
+  "eli5": "A way of updating the model's numbers while it learns.",
+  "simple": "An optimizer used by YOLO26 that combines SGD with Muon, an idea from large language model training.",
+  "engineer": "Hybrid SGD + Muon optimizer."
+ },
+ {
+  "term": "one-to-one",
+  "aliases": [
+   "one-to-one head",
+   "o2o"
+  ],
+  "eli5": "Each real thing gets exactly one answer.",
+  "simple": "A head trained so each object matches exactly one prediction, which removes the need for NMS.",
+  "engineer": "Top-1 assignment branch enabling NMS-free inference."
+ },
+ {
+  "term": "one-to-many",
+  "aliases": [
+   "one-to-many head",
+   "o2m"
+  ],
+  "eli5": "Each real thing gets several helpers while learning.",
+  "simple": "A head trained so each object matches several predictions; gives strong training signal but needs NMS.",
+  "engineer": "Top-k assignment branch."
+ },
+ {
+  "term": "end-to-end",
+  "aliases": [
+   "end2end",
+   "NMS-free"
+  ],
+  "eli5": "The model gives final answers by itself, with no clean-up.",
+  "simple": "A model whose outputs need no NMS: one prediction per object comes straight out of the network.",
+  "engineer": "Detector without post-hoc suppression."
+ },
+ {
+  "term": "attention",
+  "aliases": [
+   "self-attention"
+  ],
+  "eli5": "Each spot looks at other spots to decide what matters.",
+  "simple": "A layer where every position computes how much to look at every other position and mixes their information accordingly.",
+  "engineer": "softmax(QKᵀ/√d)V."
+ },
+ {
+  "term": "area attention",
+  "aliases": [
+   "A2"
+  ],
+  "eli5": "Attention inside a few big strips of the picture, to save time.",
+  "simple": "YOLO12's attention that splits the map into a few equal regions (default 4) and runs attention inside each.",
+  "engineer": "Region-partitioned self-attention, cost ∝ N²/l."
+ },
+ {
+  "term": "multi-head attention",
+  "aliases": [
+   "heads (attention)",
+   "num_heads"
+  ],
+  "eli5": "Several attention helpers, each looking for something different.",
+  "simple": "Attention split into several heads that each attend separately; their results are joined.",
+  "engineer": "Parallel attention over channel groups."
+ },
+ {
+  "term": "query",
+  "aliases": [
+   "queries",
+   "Q"
+  ],
+  "eli5": "What a spot is looking for.",
+  "simple": "In attention, the vector a position uses to ask 'who is relevant to me?'.",
+  "engineer": "Q = W_q x."
+ },
+ {
+  "term": "key",
+  "aliases": [
+   "keys",
+   "K"
+  ],
+  "eli5": "How a spot describes itself to others.",
+  "simple": "In attention, the vector each position offers to be matched against queries.",
+  "engineer": "K = W_k x."
+ },
+ {
+  "term": "value",
+  "aliases": [
+   "values",
+   "V"
+  ],
+  "eli5": "The information a spot shares.",
+  "simple": "In attention, the content that is mixed according to the attention weights.",
+  "engineer": "V = W_v x."
+ },
+ {
+  "term": "residual connection",
+  "aliases": [
+   "shortcut",
+   "skip connection",
+   "residual"
+  ],
+  "eli5": "A shortcut that adds the input back to the output.",
+  "simple": "A connection that adds a block's input to its output, so the block only learns a correction. Makes deep networks trainable.",
+  "engineer": "y = x + F(x)."
+ },
+ {
+  "term": "concatenation",
+  "aliases": [
+   "concat",
+   "concatenate"
+  ],
+  "eli5": "Stacking piles of notes together.",
+  "simple": "Joining maps by stacking their channels; height and width must match.",
+  "engineer": "torch.cat along channels."
+ },
+ {
+  "term": "upsampling",
+  "aliases": [
+   "upsample",
+   "upsampled"
+  ],
+  "eli5": "Making a picture bigger.",
+  "simple": "Increasing height and width, here by repeating each value (nearest neighbour).",
+  "engineer": "Nearest-neighbour ×2 interpolation."
+ },
+ {
+  "term": "downsampling",
+  "aliases": [
+   "downsample"
+  ],
+  "eli5": "Making a picture smaller.",
+  "simple": "Reducing height and width, usually with a stride-2 conv or pooling.",
+  "engineer": "Spatial resolution reduction."
+ },
+ {
+  "term": "max pooling",
+  "aliases": [
+   "max-pool",
+   "maxpool",
+   "pooling"
+  ],
+  "eli5": "Keeps only the strongest value in each small square.",
+  "simple": "Takes the maximum value in each window; has no learned weights.",
+  "engineer": "Max over k×k windows."
+ },
+ {
+  "term": "CSP",
+  "aliases": [
+   "cross stage partial",
+   "CSPNet"
+  ],
+  "eli5": "Only half of the notes go through the hard work; the rest skip ahead.",
+  "simple": "Cross Stage Partial design: split channels, process only part of them, then merge. Saves compute and helps learning.",
+  "engineer": "Partial feature processing with merge (Wang et al., 2019)."
+ },
+ {
+  "term": "ELAN",
+  "aliases": [
+   "efficient layer aggregation network"
+  ],
+  "eli5": "A block that saves every helper's work and joins it all.",
+  "simple": "Efficient Layer Aggregation Network: stacks of convs where intermediate outputs are all concatenated.",
+  "engineer": "Gradient-path-aware aggregation design (YOLOv7)."
+ },
+ {
+  "term": "GELAN",
+  "aliases": [
+   "generalized ELAN"
+  ],
+  "eli5": "A flexible version of ELAN that can use any helper block inside.",
+  "simple": "Generalized ELAN (YOLOv9): ELAN-style aggregation that can wrap any computational block (e.g. RepNCSP).",
+  "engineer": "Generalised layer aggregation."
+ },
+ {
+  "term": "PGI",
+  "aliases": [
+   "programmable gradient information"
+  ],
+  "eli5": "Extra guidance while learning so deep layers do not forget.",
+  "simple": "Programmable Gradient Information (YOLOv9): auxiliary supervision during training to keep useful information through deep layers.",
+  "engineer": "Auxiliary reversible branch for gradient reliability."
+ },
+ {
+  "term": "reparameterization",
+  "aliases": [
+   "re-parameterization",
+   "RepConv",
+   "structural reparameterization"
+  ],
+  "eli5": "Use several branches while learning, then merge them into one for speed.",
+  "simple": "Training with parallel branches (e.g. 3×3 + 1×1) that are mathematically merged into one conv for inference.",
+  "engineer": "Linear branch fusion into a single kernel post-training."
+ },
+ {
+  "term": "depth multiple",
+  "aliases": [
+   "depth_multiple",
+   "depth multiplier"
+  ],
+  "eli5": "How many times blocks are repeated in a model size.",
+  "simple": "A scale factor for the number of repeats (n) of each block. Smaller models use fewer repeats.",
+  "engineer": "n' = max(round(n·d), 1)."
+ },
+ {
+  "term": "width multiple",
+  "aliases": [
+   "width_multiple",
+   "width multiplier"
+  ],
+  "eli5": "How many channels a model size uses.",
+  "simple": "A scale factor for the number of channels of each layer. Smaller models are narrower.",
+  "engineer": "c' = make_divisible(min(c, max_ch)·w, 8)."
+ },
+ {
+  "term": "max channels",
+  "aliases": [
+   "max_channels"
+  ],
+  "eli5": "The most channels any layer may have in this size.",
+  "simple": "A cap on channels before the width multiple is applied (e.g. 1024 or 512).",
+  "engineer": "Upper bound on c before width scaling."
+ },
+ {
+  "term": "scale",
+  "aliases": [
+   "model size",
+   "n/s/m/l/x"
+  ],
+  "eli5": "The model size: nano, small, medium, large, extra-large.",
+  "simple": "The size variant (n, s, m, l, x) chosen through the depth and width multiples.",
+  "engineer": "Compound scaling preset."
+ },
+ {
+  "term": "YAML",
+  "aliases": [
+   "yaml config",
+   "config"
+  ],
+  "eli5": "A text recipe that lists the model's layers.",
+  "simple": "The text file Ultralytics uses to describe a model: one line per layer with [from, repeats, module, args].",
+  "engineer": "Model definition parsed by parse_model."
+ },
+ {
+  "term": "from",
+  "aliases": [
+   "from index"
+  ],
+  "eli5": "Which earlier layer a layer reads from.",
+  "simple": "In the YAML, the index of the input layer(s). −1 means 'the previous layer'.",
+  "engineer": "Input layer indices; negative values are relative."
+ },
+ {
+  "term": "inference",
+  "aliases": [
+   "predict",
+   "prediction time"
+  ],
+  "eli5": "Using the finished model on new photos.",
+  "simple": "Running the trained model to get predictions, as opposed to training it.",
+  "engineer": "Forward pass in eval mode."
+ },
+ {
+  "term": "training",
+  "aliases": [
+   "train"
+  ],
+  "eli5": "The time when the model learns from labelled photos.",
+  "simple": "The process of adjusting parameters to reduce the loss on labelled data.",
+  "engineer": "Optimisation of parameters on a dataset."
+ },
+ {
+  "term": "loss",
+  "aliases": [
+   "loss function",
+   "losses"
+  ],
+  "eli5": "A score for how wrong the model was. Learning tries to make it small.",
+  "simple": "A number that measures how wrong predictions are; training changes the parameters to make it smaller.",
+  "engineer": "Differentiable objective minimised by gradient descent."
+ },
+ {
+  "term": "gradient",
+  "aliases": [
+   "gradients"
+  ],
+  "eli5": "Which way to nudge each number to make the model better.",
+  "simple": "How much the loss changes when a parameter changes; used to update parameters.",
+  "engineer": "∂L/∂θ."
+ },
+ {
+  "term": "optimizer",
+  "aliases": [
+   "optimiser"
+  ],
+  "eli5": "The rule that nudges the numbers while learning.",
+  "simple": "The algorithm that updates parameters from gradients (SGD, AdamW, MuSGD).",
+  "engineer": "Parameter update rule."
+ },
+ {
+  "term": "class",
+  "aliases": [
+   "classes",
+   "nc"
+  ],
+  "eli5": "A kind of thing to find, like 'weed' or 'crop'.",
+  "simple": "A category the model can predict. nc is the number of classes.",
+  "engineer": "Label category; nc = number of classes."
+ },
+ {
+  "term": "bounding box",
+  "aliases": [
+   "box",
+   "boxes"
+  ],
+  "eli5": "A rectangle drawn around a thing.",
+  "simple": "A rectangle given by its centre, width and height (or corners) around an object.",
+  "engineer": "(x, y, w, h) or (x1, y1, x2, y2)."
+ },
+ {
+  "term": "oriented bounding box",
+  "aliases": [
+   "OBB",
+   "rotated box"
+  ],
+  "eli5": "A box that can turn.",
+  "simple": "A bounding box with an extra angle, so it can fit tilted objects.",
+  "engineer": "(x, y, w, h, θ)."
+ },
+ {
+  "term": "keypoint",
+  "aliases": [
+   "keypoints"
+  ],
+  "eli5": "A special point on a thing, like a knee or a leaf tip.",
+  "simple": "A labelled point location on an object, with x, y and a visibility value.",
+  "engineer": "(x, y, v) per landmark."
+ },
+ {
+  "term": "instance segmentation",
+  "aliases": [
+   "segmentation",
+   "mask",
+   "masks"
+  ],
+  "eli5": "Colouring the exact pixels of each separate thing.",
+  "simple": "Predicting a pixel mask for each detected object.",
+  "engineer": "Per-instance binary masks."
+ },
+ {
+  "term": "prototype",
+  "aliases": [
+   "prototypes",
+   "proto"
+  ],
+  "eli5": "A general shape picture that all objects can mix from.",
+  "simple": "One of the shared mask bases that are mixed with per-object coefficients to build masks.",
+  "engineer": "Basis masks for linear mask assembly."
+ },
+ {
+  "term": "hypergraph",
+  "aliases": [
+   "hyperedge",
+   "hyperedges"
+  ],
+  "eli5": "A way to connect many points together at once, not just in pairs.",
+  "simple": "A graph where one connection (hyperedge) can link many nodes at once; YOLOv13 uses it to relate many pixels together.",
+  "engineer": "Generalised graph with edges over vertex sets."
+ },
+ {
+  "term": "HyperACE",
+  "aliases": [],
+  "eli5": "YOLOv13's part that finds groups of related pixels across map sizes.",
+  "simple": "Hypergraph-based Adaptive Correlation Enhancement: links pixels from several maps through learned hyperedges and mixes their information.",
+  "engineer": "Learnable hyperedge construction + linear-complexity hypergraph message passing over multi-scale features."
+ },
+ {
+  "term": "FullPAD",
+  "aliases": [
+   "FullPAD_Tunnel"
+  ],
+  "eli5": "YOLOv13's way of handing the shared knowledge to every part of the model.",
+  "simple": "Full-Pipeline Aggregation-and-Distribution: sends HyperACE features through 'tunnels' into the backbone-neck link, inside the neck, and to the head.",
+  "engineer": "Gated feature distribution tunnels."
+ },
+ {
+  "term": "quantization",
+  "aliases": [
+   "INT8",
+   "FP16",
+   "half precision"
+  ],
+  "eli5": "Storing numbers with fewer digits so the model is smaller and faster.",
+  "simple": "Using lower-precision numbers (FP16, INT8) for weights and activations to save memory and time, with a small accuracy risk.",
+  "engineer": "Reduced-precision inference."
+ },
+ {
+  "term": "edge device",
+  "aliases": [
+   "Jetson",
+   "edge"
+  ],
+  "eli5": "A small computer near the camera, like on a robot or drone.",
+  "simple": "A low-power device that runs the model on site (for example an NVIDIA Jetson) instead of a big server.",
+  "engineer": "Resource-constrained deployment target."
+ },
+ {
+  "term": "pretrained weights",
+  "aliases": [
+   "pretrained",
+   "transfer learning",
+   "fine-tuning"
+  ],
+  "eli5": "Starting from a model that already learned from many photos.",
+  "simple": "Parameters learned on a large dataset (like COCO) used as the start for your own training. Changing the architecture means some weights no longer fit.",
+  "engineer": "Initialisation from a source-task checkpoint."
+ },
+ {
+  "term": "ablation",
+  "aliases": [
+   "ablation study"
+  ],
+  "eli5": "Testing one change at a time to see what really helped.",
+  "simple": "An experiment that adds or removes one change at a time to measure its effect.",
+  "engineer": "Controlled component-wise evaluation."
+ },
+ {
+  "term": "COCO",
+  "aliases": [],
+  "eli5": "A big public set of labelled photos with 80 kinds of things.",
+  "simple": "A standard dataset with 80 classes used to train and compare detectors.",
+  "engineer": "Microsoft COCO 2017 benchmark."
+ },
+ {
+  "term": "data augmentation",
+  "aliases": [
+   "augmentation",
+   "mosaic"
+  ],
+  "eli5": "Making extra practice photos by flipping, cropping and mixing.",
+  "simple": "Random changes to training images (flips, colour, mosaic) so the model generalises better.",
+  "engineer": "Stochastic input transforms."
+ },
+ {
+  "term": "class imbalance",
+  "aliases": [
+   "imbalance"
+  ],
+  "eli5": "When some kinds of things appear much more often than others.",
+  "simple": "When some classes have far more examples than others, so the model may ignore rare ones.",
+  "engineer": "Skewed label distribution."
+ },
+ {
+  "term": "tiling",
+  "aliases": [
+   "tiles",
+   "SAHI",
+   "slicing"
+  ],
+  "eli5": "Cutting a big photo into smaller pieces so tiny things look bigger.",
+  "simple": "Splitting a large image into overlapping tiles for training/inference so small objects cover more pixels.",
+  "engineer": "Sliced inference / training."
+ },
+ {
+  "term": "latency",
+  "aliases": [
+   "speed",
+   "FPS"
+  ],
+  "eli5": "How long the model takes for one photo.",
+  "simple": "Time per image. Depends on the device, precision, input size and post-processing, so it must be measured on the real hardware.",
+  "engineer": "Per-image inference time."
+ }
+]

@@ -72,3 +72,7 @@ body { background: var(--bg); color: var(--fg); font-family: var(--font-sans); -
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Shiki dual themes */
+.shiki-wrap .shiki, .shiki-wrap .shiki span { color: var(--shiki-light); }
+.dark .shiki-wrap .shiki, .dark .shiki-wrap .shiki span { color: var(--shiki-dark); }

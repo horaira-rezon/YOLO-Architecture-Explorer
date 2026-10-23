@@ -1,0 +1,35 @@
+{
+  "id": "post-nms",
+  "name": "NMS (non-maximum suppression)",
+  "whatIsIt": {
+    "eli5": "When many boxes point at the same thing, keep the best one and remove the copies.",
+    "simple": "Sorts the remaining boxes by score and removes any box that overlaps a better box of the same class by more than the IoU threshold (0.7 by default).",
+    "engineer": "Greedy per-class NMS on IoU; default iou = 0.7, max_det = 300. Runs outside the network graph."
+  },
+  "whyExists": {
+    "eli5": "Neighbouring squares often find the same weed, so there would be many boxes for one weed.",
+    "simple": "With one-to-many training, several nearby cells learn to fire for the same object. NMS removes the duplicates.",
+    "engineer": "One-to-many label assignment yields redundant positives; NMS is the inference-time de-duplication step (latency depends on the number of boxes)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Pick the best box.",
+      "Remove boxes that mostly cover the same area.",
+      "Repeat with the next best box."
+    ],
+    "simple": [
+      "Sort boxes by score.",
+      "Take the top box and keep it.",
+      "Delete others of the same class with IoU above the threshold.",
+      "Repeat until none are left or 300 are kept."
+    ],
+    "engineer": [
+      "Complexity O(n²) in candidates; dense scenes (many weeds) make it slower and can suppress true neighbours."
+    ]
+  },
+  "tradeoffs": {
+    "eli5": "If weeds touch each other, this clean-up may remove a real one.",
+    "simple": "A higher IoU threshold keeps more touching objects but also more duplicates. NMS time grows with the number of boxes, which matters on small devices.",
+    "engineer": "Threshold trades duplicate suppression vs. crowded-object recall; NMS-free (end-to-end) heads avoid this step."
+  }
+}

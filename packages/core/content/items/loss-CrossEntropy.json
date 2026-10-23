@@ -1,0 +1,28 @@
+{
+  "id": "loss-CrossEntropy",
+  "name": "Classification loss (cross-entropy)",
+  "whatIsIt": {
+    "eli5": "Grades whether the picture got the right name.",
+    "simple": "Standard cross-entropy between the softmax probabilities and the true class.",
+    "engineer": "CE over nc logits."
+  },
+  "whyExists": {
+    "eli5": "So the model learns the right word.",
+    "simple": "The usual loss for picking one class out of many.",
+    "engineer": "Maximum-likelihood objective for single-label classification."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at the probability of the true class.",
+      "Penalty is large when it is small."
+    ],
+    "simple": [
+      "Look at the probability of the true class.",
+      "Penalty is large when it is small."
+    ],
+    "engineer": [
+      "Look at the probability of the true class.",
+      "Penalty is large when it is small."
+    ]
+  }
+}

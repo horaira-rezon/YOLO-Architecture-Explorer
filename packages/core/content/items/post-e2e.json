@@ -1,0 +1,37 @@
+{
+  "id": "post-e2e",
+  "name": "No NMS (end-to-end, one-to-one head)",
+  "whatIsIt": {
+    "eli5": "The model already gives one answer per thing, so no clean-up is needed. It just keeps the top answers.",
+    "simple": "End-to-end models (YOLOv10, YOLO26) use a one-to-one head trained to give one prediction per object. Inference keeps the top-scoring predictions (up to 300) without NMS.",
+    "engineer": "One-to-one branch + top-k selection (max_det = 300); no IoU-based suppression."
+  },
+  "whyExists": {
+    "eli5": "Skipping clean-up makes the time more steady, which helps small devices.",
+    "simple": "Without NMS, speed does not depend on how many objects are in the picture, and the whole model can be exported as one graph.",
+    "engineer": "Deterministic latency and simpler deployment (no NMS plugin); trained with consistent dual assignment."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Take all answers.",
+      "Keep the best ones, up to 300."
+    ],
+    "simple": [
+      "The one-to-one head gives each object one strong prediction.",
+      "Keep the top-scoring ones above the confidence threshold."
+    ],
+    "engineer": [
+      "During training the one-to-many head still supervises shared features; at inference only the one-to-one branch is read."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    },
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

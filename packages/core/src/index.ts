@@ -10,3 +10,5 @@ export * from "./compiler/export";
 export * from "./data";
 export * from "./catalog";
 export * from "./describe";
+export * from "./content/schema";
+export * from "./explain/position";

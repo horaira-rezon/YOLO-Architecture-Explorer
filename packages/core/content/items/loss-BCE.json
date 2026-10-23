@@ -1,0 +1,28 @@
+{
+  "id": "loss-BCE",
+  "name": "Classification loss (BCE)",
+  "whatIsIt": {
+    "eli5": "Grades how right the model was about what each thing is.",
+    "simple": "Binary cross-entropy compares each predicted class score with the target (the TAL quality score for positives, 0 for background). Weight 0.5 by default.",
+    "engineer": "BCEWithLogits over all anchors × classes, soft targets from normalised alignment metric; gain cls = 0.5."
+  },
+  "whyExists": {
+    "eli5": "The model needs to know when it named something wrong.",
+    "simple": "Treating each class as its own yes/no question lets one box score several classes independently and handles background naturally.",
+    "engineer": "Sigmoid-BCE (vs softmax CE) supports multi-label scores and quality-aware targets."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Compare each score with its target.",
+      "Big penalty for confident mistakes, small penalty for near misses."
+    ],
+    "simple": [
+      "Compare each score with its target.",
+      "Big penalty for confident mistakes, small penalty for near misses."
+    ],
+    "engineer": [
+      "Compare each score with its target.",
+      "Big penalty for confident mistakes, small penalty for near misses."
+    ]
+  }
+}

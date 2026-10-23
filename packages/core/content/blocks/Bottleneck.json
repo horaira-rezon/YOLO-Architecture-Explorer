@@ -1,0 +1,40 @@
+{
+  "id": "Bottleneck",
+  "name": "Bottleneck",
+  "whatIsIt": {
+    "eli5": "Two pattern-finders in a row, plus a shortcut that adds back what came in, so the original is never forgotten.",
+    "simple": "Two Conv blocks in a row with an optional shortcut: the input is added to the result. It is the small unit repeated inside C2f, C3 and C3k2.",
+    "engineer": "cv1 (k0×k0, c→c·e) → cv2 (k1×k1, →c2), residual add when shortcut=True and c1 == c2."
+  },
+  "whyExists": {
+    "eli5": "The shortcut lets the block only learn what to change, which is easier than learning everything again.",
+    "simple": "The residual shortcut means the block only has to learn a correction, which makes deep networks much easier to train.",
+    "engineer": "Residual learning (He et al.) eases optimisation of deep stacks; stacking two 3×3 convs grows the receptive field by 4 pixels per bottleneck."
+  },
+  "howItWorks": {
+    "eli5": [
+      "The first helper looks at the notes.",
+      "The second helper looks again.",
+      "If the shortcut is on, the original notes are added back."
+    ],
+    "simple": [
+      "cv1: a Conv (3×3 in C2f, 1×1 in C3).",
+      "cv2: a 3×3 Conv.",
+      "If shortcut is on and the channel count did not change, the input is added to the output."
+    ],
+    "engineer": [
+      "y = x + cv2(cv1(x)) if add else cv2(cv1(x)).",
+      "In C2f both kernels are 3×3 and e = 1.0, so hidden width = c."
+    ]
+  },
+  "math": [
+    "y = x + F(x)"
+  ],
+  "pytorch": "class Bottleneck(nn.Module):\n    def __init__(self, c1, c2, shortcut=True, g=1, k=(3, 3), e=0.5):\n        super().__init__()\n        c_ = int(c2 * e)\n        self.cv1 = Conv(c1, c_, k[0], 1)\n        self.cv2 = Conv(c_, c2, k[1], 1, g=g)\n        self.add = shortcut and c1 == c2\n\n    def forward(self, x):\n        return x + self.cv2(self.cv1(x)) if self.add else self.cv2(self.cv1(x))",
+  "references": [
+    {
+      "label": "ResNet paper",
+      "url": "https://arxiv.org/abs/1512.03385"
+    }
+  ]
+}

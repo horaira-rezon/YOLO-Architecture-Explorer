@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { Moon, Settings, Sun } from "lucide-react";
+import * as Tooltip from "@radix-ui/react-tooltip";
+import { ReadingLevelSwitch } from "./ReadingLevelSwitch";
 import { currentTheme, setTheme, type Theme } from "../lib/theme";
 
 export function AppShell() {
@@ -11,6 +13,7 @@ export function AppShell() {
     setThemeState(next);
   };
   return (
+    <Tooltip.Provider delayDuration={250}>
     <div className="flex h-full flex-col">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-50 focus:rounded focus:bg-surface focus:px-3 focus:py-2">
         Skip to content
@@ -20,7 +23,8 @@ export function AppShell() {
           <img src="/favicon.svg" alt="" className="h-6 w-6" />
           YOLO Atlas
         </Link>
-        <nav className="ml-auto flex items-center gap-1 text-sm" aria-label="Main">
+        <div className="ml-auto hidden sm:block"><ReadingLevelSwitch compact /></div>
+        <nav className="flex items-center gap-1 text-sm" aria-label="Main">
           <NavLink to="/" end className={({ isActive }) => `rounded px-2 py-1 ${isActive ? "bg-surface-2" : "hover:bg-surface-2"}`}>
             Tasks
           </NavLink>
@@ -36,5 +40,6 @@ export function AppShell() {
         <Outlet />
       </main>
     </div>
+    </Tooltip.Provider>
   );
 }

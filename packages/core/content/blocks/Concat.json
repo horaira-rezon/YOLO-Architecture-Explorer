@@ -1,0 +1,41 @@
+{
+  "id": "Concat",
+  "name": "Concat (join along channels)",
+  "whatIsIt": {
+    "eli5": "Stacks two piles of notes about the same spots into one taller pile.",
+    "simple": "Joins maps of the same height and width by stacking their channels. A 256-channel map and a 128-channel map become one 384-channel map.",
+    "engineer": "torch.cat(xs, dim=1); requires equal H×W; output channels = Σ inputs; no params or MACs."
+  },
+  "whyExists": {
+    "eli5": "It lets the model use both detailed notes and big-picture notes together.",
+    "simple": "This is how the neck combines features from different depths: detailed but simple features from the backbone with deeper, more meaningful ones. The next block learns how to mix them.",
+    "engineer": "Lateral fusion in PAN-FPN; concatenation (vs. addition) keeps both sources intact and lets the following C2f/C3k2 learn the mixing."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Check both maps are the same size.",
+      "Put one pile on top of the other.",
+      "Pass the taller pile on."
+    ],
+    "simple": [
+      "All inputs must have the same height and width.",
+      "Channels are placed one after another.",
+      "Nothing is learned here; the next block does the mixing."
+    ],
+    "engineer": [
+      "out = cat([x_1, …, x_k], 1).",
+      "Concat with mismatched spatial size is the most common error after editing; fix with Upsample or a stride-2 Conv."
+    ]
+  },
+  "example": {
+    "eli5": "A pile of 256 notes plus a pile of 128 notes makes a pile of 384.",
+    "simple": "YOLOv8n layer 11 joins the upsampled 256×40×40 map with backbone layer 6 (128×40×40) → 384×40×40.",
+    "engineer": "v8n #11: cat([256,40,40], [128,40,40]) → [384,40,40]."
+  },
+  "typicalPositions": {
+    "eli5": "Wherever two paths meet in the mixing part.",
+    "simple": "Every fusion point of the neck, both top-down and bottom-up.",
+    "engineer": "PAN-FPN lateral connections."
+  },
+  "pytorch": "torch.cat(x, dim=1)"
+}

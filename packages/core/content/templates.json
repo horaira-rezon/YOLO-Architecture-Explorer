@@ -1,0 +1,91 @@
+{
+  "stageFirst": {
+    "eli5": "It is the first step of the {stage}.",
+    "simple": "It is the first block of the {stage}.",
+    "engineer": "First layer of the {stage}."
+  },
+  "stageLast": {
+    "eli5": "It is the last step of the {stage}.",
+    "simple": "It is the last block of the {stage}; what it makes goes on to {next}.",
+    "engineer": "Last layer of the {stage} (feeds {next})."
+  },
+  "firstAtLevel": {
+    "eli5": "It is the first step that works on the {size}×{size} picture, which is good for {objects} things.",
+    "simple": "It is the first block that sees {level} features: a {size}×{size} map with {channels} channels. Each cell here covers about {stride}×{stride} pixels of the image.",
+    "engineer": "First layer at stride {stride} ({level}), {channels} channels, {size}×{size} grid."
+  },
+  "halves": {
+    "eli5": "It makes the picture half as wide and half as tall ({inSize} → {outSize}).",
+    "simple": "It halves the width and height ({inSize} → {outSize}), so each cell now summarises a bigger area of the image.",
+    "engineer": "Spatial downsampling ×2: {inSize} → {outSize} (stride {stride} after this layer)."
+  },
+  "doubles": {
+    "eli5": "It makes the picture twice as big ({inSize} → {outSize}).",
+    "simple": "It doubles the width and height ({inSize} → {outSize}) so the map can be joined with a larger one.",
+    "engineer": "Spatial upsampling ×2: {inSize} → {outSize}."
+  },
+  "keepsSize": {
+    "eli5": "The picture stays the same size.",
+    "simple": "The map keeps its size ({outSize}); this block only changes what the channels describe.",
+    "engineer": "Spatial size preserved ({outSize})."
+  },
+  "channelsUp": {
+    "eli5": "It writes more kinds of notes: {inC} → {outC}.",
+    "simple": "It increases the channels from {inC} to {outC}, giving room for more kinds of patterns.",
+    "engineer": "Channels {inC} → {outC}."
+  },
+  "channelsDown": {
+    "eli5": "It squeezes the notes: {inC} → {outC}.",
+    "simple": "It reduces the channels from {inC} to {outC}, keeping the most useful information and saving compute later.",
+    "engineer": "Channels {inC} → {outC} (projection)."
+  },
+  "joins": {
+    "eli5": "It stacks together the notes from {sources}.",
+    "simple": "It joins {sources} into one {outC}-channel map.",
+    "engineer": "Concatenates {sources} → {outC} channels."
+  },
+  "feedsHead": {
+    "eli5": "The head uses this picture to find {objects} things.",
+    "simple": "This {level} map goes straight to the head, which uses it to find {objects} objects.",
+    "engineer": "Head input at {level} (targets ≈ {objects} objects)."
+  },
+  "reused": {
+    "eli5": "Its notes are kept and used again later by {targets}.",
+    "simple": "Its output is also saved and reused later by {targets} (a skip link), so later layers can get back its detail.",
+    "engineer": "Output re-used downstream by {targets} (lateral/skip connection)."
+  },
+  "headLevels": {
+    "eli5": "It looks at {count} picture sizes: {levels}.",
+    "simple": "It makes predictions from {count} maps: {levels}.",
+    "engineer": "{count} levels: {levels}."
+  },
+  "repeats": {
+    "eli5": "Inside, a small helper is repeated {n} times in this model size.",
+    "simple": "In this model size the inner unit is repeated {n} times (the YAML says {yamlN}, times the depth multiple {depth}).",
+    "engineer": "n = max(round({yamlN}·{depth}), 1) = {n}."
+  },
+  "share": {
+    "eli5": "It holds {pct} of all the model's learned numbers.",
+    "simple": "It holds {params} parameters ({pct} of the model) and needs {flops} GFLOPs.",
+    "engineer": "{params} params ({pct}), {flops} GFLOPs."
+  },
+  "objects": { "4": "tiny", "8": "small", "16": "medium", "32": "large", "64": "very large" },
+  "consumerVerbs": {
+    "Concat": "joins it with another map",
+    "Upsample": "makes it twice as big",
+    "Conv": "filters it again",
+    "Detect": "turns it into box and class predictions",
+    "v10Detect": "turns it into box and class predictions",
+    "Segment": "turns it into boxes, classes and masks",
+    "Pose": "turns it into boxes and keypoints",
+    "OBB": "turns it into rotated boxes",
+    "Classify": "turns it into one class for the whole image",
+    "default": "processes it further"
+  },
+  "sourceKinds": {
+    "upsampled": "the enlarged deeper map (layer {index})",
+    "backbone": "backbone layer {index} ({level})",
+    "neck": "neck layer {index} ({level})",
+    "other": "layer {index}"
+  }
+}

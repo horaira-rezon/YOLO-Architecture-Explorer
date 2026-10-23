@@ -1,0 +1,44 @@
+{
+  "id": "assigner-TAL",
+  "name": "Task-aligned assigner (TAL)",
+  "whatIsIt": {
+    "eli5": "While learning, the teacher decides which squares should answer for each real object.",
+    "simple": "During training, for each real (labelled) box, TAL picks the predictions that are both inside the box and already good at the class and the box shape. Those become the 'positives' the losses learn from.",
+    "engineer": "TaskAlignedAssigner: alignment metric t = s^α · u^β (s = class score, u = IoU), α = 0.5, β = 6.0; top-k = 10 candidates inside each GT; conflicts resolved by highest IoU."
+  },
+  "whyExists": {
+    "eli5": "Without it, the model would not know which of its 8,400 guesses should match each weed.",
+    "simple": "Choosing positives by how good they already are keeps 'where' and 'what' learning in step and avoids hand-made rules such as anchor sizes.",
+    "engineer": "Dynamic, prediction-aware assignment aligns classification and localisation quality (TOOD); replaces static IoU/anchor matching."
+  },
+  "howItWorks": {
+    "eli5": [
+      "For each real weed, look at the guesses inside its box.",
+      "Give each guess a grade for class and box shape.",
+      "The best 10 become the ones that must learn this weed."
+    ],
+    "simple": [
+      "Only cells whose centre lies inside the real box are candidates.",
+      "Each gets a score combining class confidence and box overlap.",
+      "The top 10 per object are positives; the rest learn 'background'.",
+      "In the current Ultralytics code, very small boxes are enlarged to the stride size before choosing candidates, so tiny objects still get positives (this is the small-target-aware part used by YOLO26)."
+    ],
+    "engineer": [
+      "t = s^{0.5}·IoU^{6}; positives = top-10 t within GT; normalised t is the soft target for BCE.",
+      "Ultralytics ≥ 8.4: GT sides smaller than stride_val (stride of level 2) are enlarged about the centre for candidate selection (STAL)."
+    ]
+  },
+  "math": [
+    "t = s^{\\alpha}\\, u^{\\beta},\\quad \\alpha=0.5,\\; \\beta=6"
+  ],
+  "references": [
+    {
+      "label": "TOOD paper",
+      "url": "https://arxiv.org/abs/2108.07755"
+    },
+    {
+      "label": "Ultralytics tal.py",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/utils/tal.py"
+    }
+  ]
+}

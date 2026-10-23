@@ -1,0 +1,37 @@
+{
+  "id": "Classify",
+  "name": "Classify head",
+  "whatIsIt": {
+    "eli5": "Looks at the whole picture's notes and says which one word describes the picture best.",
+    "simple": "Turns the last backbone map into one score per class for the whole image: a 1×1 Conv to 1,280 channels, average over all positions, then a linear layer.",
+    "engineer": "Conv(c1, 1280) → AdaptiveAvgPool2d(1) → Flatten → Dropout → Linear(1280, nc); softmax at inference."
+  },
+  "whyExists": {
+    "eli5": "Sometimes you only need to know what the picture shows, not where.",
+    "simple": "Classification does not need a neck or boxes; averaging over the map gives one description of the whole image.",
+    "engineer": "Global average pooling gives translation-invariant image descriptors with few parameters."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Make the notes richer.",
+      "Average them over the whole picture.",
+      "Give one score per class."
+    ],
+    "simple": [
+      "1×1 Conv widens to 1,280 channels.",
+      "Average pooling makes one number per channel.",
+      "A linear layer gives one score per class.",
+      "Softmax turns scores into probabilities."
+    ],
+    "engineer": [
+      "Input 224×224 by default: the backbone map is 7×7.",
+      "No neck: the head reads the last backbone layer directly."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv8n-cls picks one of 1,000 words.",
+    "simple": "YOLOv8n-cls (224×224 input): 256×7×7 map → 1,280 → 1,000 class scores.",
+    "engineer": "v8n-cls Classify: 1,611,240 params of 2.7 M total; output [1000]."
+  },
+  "pytorch": "class Classify(nn.Module):\n    def __init__(self, c1, c2, k=1, s=1, p=None, g=1):\n        super().__init__()\n        c_ = 1280\n        self.conv = Conv(c1, c_, k, s, p, g)\n        self.pool = nn.AdaptiveAvgPool2d(1)\n        self.drop = nn.Dropout(p=0.0, inplace=True)\n        self.linear = nn.Linear(c_, c2)\n\n    def forward(self, x):\n        return self.linear(self.drop(self.pool(self.conv(x)).flatten(1)))"
+}

@@ -1,0 +1,39 @@
+{
+  "id": "assigner-dual",
+  "name": "Dual assignment (one-to-many + one-to-one)",
+  "whatIsIt": {
+    "eli5": "Two teachers. One lets many squares answer for each weed (good for learning); the other lets only one square answer (good for final use).",
+    "simple": "End-to-end models train two copies of the head. The one-to-many copy uses TAL with 10 positives per object; the one-to-one copy gets exactly one positive per object. Only the one-to-one copy is needed at inference, so no NMS.",
+    "engineer": "Consistent dual assignment (YOLOv10): shared features, o2m head with top-k = 10, o2o head with top-1 using the same alignment metric so both heads agree. In Ultralytics' E2ELoss the o2o assigner uses topk = 7 then topk2 = 1."
+  },
+  "whyExists": {
+    "eli5": "Learning with many helpers is easier, but at the end you want one answer per weed.",
+    "simple": "One-to-many gives rich training signal; one-to-one removes duplicates at the source. Training both gets both benefits.",
+    "engineer": "o2m provides dense supervision; o2o enables NMS-free inference; the consistent metric minimises the supervision gap."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Both teachers grade the same guesses.",
+      "The many-answers teacher helps the model learn.",
+      "The one-answer teacher makes the final answers clean."
+    ],
+    "simple": [
+      "Both heads read the same neck features.",
+      "Each has its own loss.",
+      "At inference only the one-to-one head runs its outputs into the final list."
+    ],
+    "engineer": [
+      "YOLO26 'Progressive Loss' in Ultralytics' E2ELoss: loss = w·L_o2m + (1−w)·L_o2o with w decaying linearly from 0.8 to 0.1 over training."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    },
+    {
+      "label": "Ultralytics loss.py (E2ELoss)",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/utils/loss.py"
+    }
+  ]
+}

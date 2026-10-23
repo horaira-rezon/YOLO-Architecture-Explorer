@@ -1,0 +1,28 @@
+{
+  "id": "loss-KeypointOKS",
+  "name": "Keypoint loss (OKS)",
+  "whatIsIt": {
+    "eli5": "Grades how close each guessed point is to the real point.",
+    "simple": "Based on Object Keypoint Similarity: the error of each point is scaled by the object size and by how hard that point is to place.",
+    "engineer": "1 − exp(−d²/(2s²k²)) per keypoint with per-keypoint sigmas; gain pose = 12.0. YOLO26 adds RLE."
+  },
+  "whyExists": {
+    "eli5": "Being a bit off on a big object matters less than on a tiny one.",
+    "simple": "Scale-aware errors make the loss fair for big and small objects.",
+    "engineer": "Matches the OKS evaluation metric."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Measure each point's distance.",
+      "Divide by object size and point difficulty."
+    ],
+    "simple": [
+      "Measure each point's distance.",
+      "Divide by object size and point difficulty."
+    ],
+    "engineer": [
+      "Measure each point's distance.",
+      "Divide by object size and point difficulty."
+    ]
+  }
+}

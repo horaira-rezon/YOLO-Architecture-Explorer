@@ -1,0 +1,41 @@
+{
+  "id": "Upsample",
+  "name": "Upsample (nearest neighbour ×2)",
+  "whatIsIt": {
+    "eli5": "Makes a small picture twice as big by copying each dot into a 2×2 block.",
+    "simple": "Doubles the height and width of a map by repeating each value in a 2×2 square (nearest neighbour). It has no learned weights.",
+    "engineer": "nn.Upsample(scale_factor=2, mode='nearest'); parameter-free, zero MACs."
+  },
+  "whyExists": {
+    "eli5": "To mix a small, smart map with a big, detailed map, they first have to be the same size.",
+    "simple": "In the neck's top-down path, the deep, meaningful map is enlarged so it can be joined (Concat) with a larger, more detailed map from the backbone.",
+    "engineer": "FPN top-down pathway: aligns coarse semantic features to the next finer level before lateral concatenation."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Take each dot.",
+      "Copy it into a little 2×2 square.",
+      "Now the picture is twice as wide and twice as tall."
+    ],
+    "simple": [
+      "Each value is repeated 2 times across and 2 times down.",
+      "Channels do not change.",
+      "Output height and width are double the input."
+    ],
+    "engineer": [
+      "y[c, i, j] = x[c, ⌊i/2⌋, ⌊j/2⌋].",
+      "Cheaper than a transposed conv, and free of checkerboard artefacts."
+    ]
+  },
+  "example": {
+    "eli5": "A 20×20 map becomes 40×40.",
+    "simple": "YOLOv8n layer 10: 256×20×20 → 256×40×40, ready to join with backbone layer 6 (128×40×40).",
+    "engineer": "v8n #10: [256,20,20] → [256,40,40]; 0 params, 0 MACs."
+  },
+  "typicalPositions": {
+    "eli5": "In the mixing part, going from small maps back to bigger ones.",
+    "simple": "Top-down path of the neck, right before each Concat with a backbone map.",
+    "engineer": "FPN top-down branch (P5→P4, P4→P3)."
+  },
+  "pytorch": "nn.Upsample(scale_factor=2, mode=\"nearest\")"
+}

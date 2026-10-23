@@ -1,0 +1,34 @@
+{
+  "id": "loss-CIoU",
+  "name": "Box loss (CIoU)",
+  "whatIsIt": {
+    "eli5": "Grades how well each guessed box covers the real box.",
+    "simple": "Complete-IoU loss: 1 − IoU, plus penalties for the distance between box centres and for different shapes (aspect ratio). Weight 7.5 by default.",
+    "engineer": "L = 1 − IoU + ρ²(b, b_gt)/c² + αv; weighted by the TAL target score; gain box = 7.5."
+  },
+  "whyExists": {
+    "eli5": "A box that is in the wrong place or the wrong shape should be fixed.",
+    "simple": "Plain IoU gives no signal when boxes do not overlap; the extra CIoU terms still pull the box toward the target.",
+    "engineer": "CIoU adds centre-distance and aspect-ratio consistency terms for faster, more stable regression."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Measure the overlap.",
+      "Add a penalty for centre distance and shape difference."
+    ],
+    "simple": [
+      "Measure the overlap.",
+      "Add a penalty for centre distance and shape difference."
+    ],
+    "engineer": [
+      "Measure the overlap.",
+      "Add a penalty for centre distance and shape difference."
+    ]
+  },
+  "references": [
+    {
+      "label": "CIoU paper",
+      "url": "https://arxiv.org/abs/1911.08287"
+    }
+  ]
+}

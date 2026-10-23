@@ -1,0 +1,36 @@
+{
+  "id": "OBB",
+  "name": "OBB head (oriented boxes)",
+  "whatIsIt": {
+    "eli5": "Draws boxes that can turn, so a tilted thing gets a tight box.",
+    "simple": "A Detect head plus one extra output per cell: the rotation angle of the box. Useful for images taken from above, like drone or satellite photos.",
+    "engineer": "Detect + cv4[i] → ne = 1 angle channel; rotated boxes (x, y, w, h, θ), trained with ProbIoU."
+  },
+  "whyExists": {
+    "eli5": "A straight box around a tilted row of plants would also cover lots of soil.",
+    "simple": "Axis-aligned boxes fit rotated objects poorly and overlap each other; an angle gives a tight fit.",
+    "engineer": "Rotated boxes reduce background inside boxes and overlap between dense, oriented objects (aerial imagery)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find boxes as usual.",
+      "Also guess how much each box is turned."
+    ],
+    "simple": [
+      "Box and class branches as in Detect.",
+      "cv4 predicts one angle value per cell.",
+      "In v8/11 the angle is (sigmoid(a) − 0.25)·π, a range of −π/4 to 3π/4."
+    ],
+    "engineer": [
+      "c4 = max(ch0/4, ne).",
+      "YOLO26 (OBB26) outputs the raw angle and adds a dedicated angle loss."
+    ]
+  },
+  "pytorch": "self.cv4 = nn.ModuleList(nn.Sequential(Conv(x, c4, 3), Conv(c4, c4, 3), nn.Conv2d(c4, ne, 1)) for x in ch)",
+  "references": [
+    {
+      "label": "Ultralytics OBB docs",
+      "url": "https://docs.ultralytics.com/tasks/obb/"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "loss-DFL",
+  "name": "Distribution focal loss (DFL)",
+  "whatIsIt": {
+    "eli5": "Grades the 16 little votes for each box side.",
+    "simple": "Trains the 16-step distribution of each box side to put its weight on the two steps on either side of the true distance. Weight 1.5. Not used in YOLO26 (it is replaced by an L1 loss).",
+    "engineer": "Cross-entropy on the two bins bracketing the target distance, linearly weighted; gain dfl = 1.5; YOLO26 (reg_max = 1) uses L1 instead."
+  },
+  "whyExists": {
+    "eli5": "So the votes become sharp and point at the right place.",
+    "simple": "Focuses the distribution near the true edge, which is helpful when edges are blurry.",
+    "engineer": "Sharpens the discretised distribution around the continuous target (GFL)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find the two distances around the true value.",
+      "Reward the votes on those two."
+    ],
+    "simple": [
+      "Find the two distances around the true value.",
+      "Reward the votes on those two."
+    ],
+    "engineer": [
+      "Find the two distances around the true value.",
+      "Reward the votes on those two."
+    ]
+  },
+  "references": [
+    {
+      "label": "Generalized Focal Loss",
+      "url": "https://arxiv.org/abs/2006.04388"
+    }
+  ]
+}

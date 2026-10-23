@@ -1,0 +1,28 @@
+{
+  "id": "loss-MaskBCE",
+  "name": "Mask loss",
+  "whatIsIt": {
+    "eli5": "Grades how well each coloured shape matches the real shape.",
+    "simple": "Pixel-wise binary cross-entropy between the predicted mask (prototypes × coefficients) and the true mask, inside each box.",
+    "engineer": "BCE on assembled masks cropped to GT boxes, normalised by box area."
+  },
+  "whyExists": {
+    "eli5": "So the outline gets more exact.",
+    "simple": "Teaches both the prototypes and the per-object coefficients.",
+    "engineer": "Supervises the linear mask assembly."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Build each predicted mask.",
+      "Compare pixel by pixel inside the box."
+    ],
+    "simple": [
+      "Build each predicted mask.",
+      "Compare pixel by pixel inside the box."
+    ],
+    "engineer": [
+      "Build each predicted mask.",
+      "Compare pixel by pixel inside the box."
+    ]
+  }
+}

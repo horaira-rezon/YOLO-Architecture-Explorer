@@ -1,0 +1,34 @@
+{
+  "id": "loss-ProbIoU",
+  "name": "Rotated box loss (ProbIoU)",
+  "whatIsIt": {
+    "eli5": "Grades how well a turned box matches the real turned box.",
+    "simple": "Treats each rotated box as a soft blob (a Gaussian) and measures how much two blobs overlap. Works smoothly for any angle.",
+    "engineer": "Probabilistic IoU via Bhattacharyya distance between Gaussian representations of oriented boxes."
+  },
+  "whyExists": {
+    "eli5": "Normal overlap is hard to measure for turned boxes.",
+    "simple": "Exact rotated IoU is not smooth; ProbIoU gives a clean learning signal.",
+    "engineer": "Differentiable, angle-continuous surrogate for rotated IoU."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Turn each box into a soft blob.",
+      "Measure how much the blobs overlap."
+    ],
+    "simple": [
+      "Turn each box into a soft blob.",
+      "Measure how much the blobs overlap."
+    ],
+    "engineer": [
+      "Turn each box into a soft blob.",
+      "Measure how much the blobs overlap."
+    ]
+  },
+  "references": [
+    {
+      "label": "ProbIoU paper",
+      "url": "https://arxiv.org/abs/2106.06072"
+    }
+  ]
+}

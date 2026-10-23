@@ -1,0 +1,45 @@
+{
+  "id": "Segment",
+  "name": "Segment head (boxes + mask coefficients + prototypes)",
+  "whatIsIt": {
+    "eli5": "Like the detect head, but it also colours in the exact shape of each thing, not just a box around it.",
+    "simple": "A Detect head plus two extras: a Proto branch that makes 32 general 'mask pictures' (prototypes) from the most detailed map, and a branch that predicts, for each object, 32 mixing numbers. Mixing the prototypes with those numbers gives each object's mask.",
+    "engineer": "YOLACT-style instance segmentation on top of Detect: cv4[i] predicts nm = 32 mask coefficients per anchor; Proto(P3) predicts nm prototype maps at stride 4; mask = σ(coef · protos) cropped to the box."
+  },
+  "whyExists": {
+    "eli5": "Some jobs need the exact outline, for example to measure how much of the ground a weed covers.",
+    "simple": "Sharing one set of prototypes across all objects is much cheaper than drawing a full mask for each of 8,400 predictions.",
+    "engineer": "Linear combination of shared prototypes decouples mask quality from the number of instances; cost is one prototype net plus nm extra channels per anchor."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find boxes as usual.",
+      "Make 32 blurry shape pictures for the whole image.",
+      "For each box, choose how much of each shape picture to use.",
+      "Mix them and cut out the box: that's the mask."
+    ],
+    "simple": [
+      "The usual box and class branches run.",
+      "cv4 predicts 32 coefficients for every cell.",
+      "Proto: Conv 3×3 → 2× transposed conv (upsample) → Conv 3×3 → Conv 1×1 to 32 channels at 1/4 of the image size.",
+      "For each kept detection, mask = sigmoid(coefficients × prototypes), cut to its box."
+    ],
+    "engineer": [
+      "c4 = max(ch0/4, nm).",
+      "Proto(c1=ch0, c_=npr=256·width, c2=nm).",
+      "YOLO26 uses Proto26: fuses all levels and adds a semantic-segmentation branch used only in training."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv8n makes 32 shape pictures of size 160×160.",
+    "simple": "YOLOv8n-seg: mask coefficients 32 × 8,400 and prototypes 32 × 160 × 160 for a 640 image.",
+    "engineer": "v8n-seg outputs: boxes [64,8400], scores [80,8400], mask_coefficient [32,8400], proto [32,160,160]."
+  },
+  "pytorch": "self.proto = Proto(ch[0], npr, nm)\nself.cv4 = nn.ModuleList(nn.Sequential(Conv(x, c4, 3), Conv(c4, c4, 3), nn.Conv2d(c4, nm, 1)) for x in ch)",
+  "references": [
+    {
+      "label": "YOLACT paper",
+      "url": "https://arxiv.org/abs/1904.02689"
+    }
+  ]
+}

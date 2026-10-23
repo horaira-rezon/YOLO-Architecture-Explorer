@@ -57,3 +57,22 @@ export function exportYaml(arch: Architecture, opts: { header?: string } = {}): 
   live.slice(split).forEach((n, k) => out.push(row(n, split + k)));
   return out.join("\n") + "\n";
 }
+
+/** The YAML row of one node, as it would appear in an export (`- [from, n, module, args] # i`). */
+export function yamlLine(arch: Architecture, nodeId: string): string {
+  const live = arch.nodes.filter((n) => n.origin !== "removed-ghost");
+  const idx: Record<string, number> = {};
+  live.forEach((n, i) => (idx[n.id] = i));
+  const i = idx[nodeId];
+  const n = live[i ?? -1];
+  if (!n || i === undefined) return "";
+  return `- [${formatFrom(n.from, i, idx)}, ${n.repeats}, ${n.module}, ${formatYamlValue(n.args)}] # ${i}`;
+}
+
+/** Python constructor call with parse_model's resolved args, e.g. `C2f(64, 64, 2, True)`. */
+export function pythonCall(module: string, ctorArgs: YamlValue[]): string {
+  const name = module.replace(/^nn\./, "nn.");
+  const fmt = (v: YamlValue): string =>
+    v === null ? "None" : typeof v === "boolean" ? (v ? "True" : "False") : Array.isArray(v) ? `[${v.map(fmt).join(", ")}]` : typeof v === "string" ? JSON.stringify(v) : String(v);
+  return `${name}(${ctorArgs.map(fmt).join(", ")})`;
+}
