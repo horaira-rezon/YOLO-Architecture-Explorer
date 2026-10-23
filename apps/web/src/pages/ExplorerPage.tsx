@@ -1,3 +1,164 @@
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { ArrowDownUp, ArrowLeftRight, LayoutGrid, List, Network, Workflow } from "lucide-react";
+import { TASKS, VERSIONS, formatCount, getVersion, type Task } from "@yolo-atlas/core";
+import { loadArchitecture } from "../lib/modelData";
+import { buildDisplayGraph } from "../graph/displayGraph";
+import { layoutGraph, type LayoutResult } from "../graph/layout";
+import { layoutClassic } from "../graph/classicLayout";
+import { useAtlas } from "../store/atlas";
+import { GraphCanvas } from "../components/canvas/GraphCanvas";
+import { StageLegend } from "../components/StageLegend";
+import { SizeRuler } from "../components/SizeRuler";
+import type { Architecture, ComputeResult } from "@yolo-atlas/core";
+import { ListView } from "../components/ListView";
+import { SidePanel } from "../components/panel/SidePanel";
+
 export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
-  return <div className="p-4"><h1 className="text-xl font-semibold">{mode === "lab" ? "Lab" : "Explorer"}</h1></div>;
+  const { version = "v8", task = "detect", scale } = useParams();
+  const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { arch, computed, scales, direction, listView, layoutMode, selectedId, setLoaded, setDirection, setListView, setLayoutMode, select } = useAtlas();
+  const [error, setError] = useState<string | null>(null);
+  const [layout, setLayout] = useState<LayoutResult | null>(null);
+  const info = getVersion(version);
+
+  // load the architecture for this URL
+  useEffect(() => {
+    let alive = true;
+    setError(null);
+    setLayout(null);
+    loadArchitecture(version, task as Task, scale)
+      .then(({ arch: a, scales: sc }) => {
+        if (!alive) return;
+        setLoaded(a, sc);
+        const node = params.get("node");
+        if (node) select(node);
+      })
+      .catch((e: unknown) => alive && setError(e instanceof Error ? e.message : String(e)));
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only reload when the model changes
+  }, [version, task, scale]);
+
+  // keep ?node= in the URL so links are shareable
+  useEffect(() => {
+    const cur = params.get("node");
+    if ((selectedId ?? null) !== cur) {
+      const next = new URLSearchParams(params);
+      if (selectedId) next.set("node", selectedId);
+      else next.delete("node");
+      setParams(next, { replace: true });
+    }
+  }, [selectedId, params, setParams]);
+
+  const graph = useMemo(() => (arch && computed ? buildDisplayGraph(arch, computed) : null), [arch, computed]);
+
+  useEffect(() => {
+    if (!graph) return;
+    if (layoutMode === "classic") {
+      setLayout(layoutClassic(graph, direction));
+      return;
+    }
+    let alive = true;
+    layoutGraph(graph, direction).then((l) => alive && setLayout(l)).catch((e: unknown) => alive && setError(`Layout failed: ${String(e)}`));
+    return () => {
+      alive = false;
+    };
+  }, [graph, direction, layoutMode]);
+
+  const go = (v: string, t: string, s?: string) => navigate(`/${mode}/${v}/${t}${s ? `/${s}` : ""}`);
+  const available = VERSIONS.filter((v) => v.status === "released" && v.tasks[task as Task]?.supported);
+
+  if (error) {
+    return (
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <h1 className="text-xl font-semibold">Could not open this model</h1>
+        <p className="mt-2 text-muted">{error}</p>
+        <Link to={`/versions/${task}`} className="mt-6 inline-block rounded bg-accent px-4 py-2 text-accent-fg">Pick another version</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-surface px-3 py-2 text-sm">
+        <label className="flex items-center gap-1">
+          <span className="sr-only">Version</span>
+          <select className="rounded border border-border bg-bg px-2 py-1" value={version} onChange={(e) => go(e.target.value, task)} aria-label="Version">
+            {available.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
+          </select>
+        </label>
+        <select className="rounded border border-border bg-bg px-2 py-1" value={task} aria-label="Task"
+          onChange={(e) => go(info?.tasks[e.target.value as Task]?.supported ? version : "v8", e.target.value)}>
+          {TASKS.map((t) => <option key={t.id} value={t.id} disabled={!info?.tasks[t.id].supported}>{t.label}</option>)}
+        </select>
+        <select className="rounded border border-border bg-bg px-2 py-1" value={arch?.id.split("-").pop() ?? ""} aria-label="Model size"
+          onChange={(e) => go(version, task, e.target.value)}>
+          {scales.map((s) => <option key={s} value={s}>size {s}</option>)}
+        </select>
+        {info?.confidence === "verified"
+          ? <span className="rounded-full bg-ok/15 px-2 py-0.5 text-xs font-medium text-ok">verified from official files</span>
+          : <span className="rounded-full bg-warn/15 px-2 py-0.5 text-xs font-medium text-warn">unverified</span>}
+        <div className="ml-auto flex items-center gap-1">
+          {computed && (
+            <span className="mr-2 hidden text-xs text-muted md:inline" data-testid="stats">
+              {formatCount(computed.totals.params)} parameters · {computed.totals.gflops.toFixed(1)} GFLOPs · {computed.totals.layers} layers
+            </span>
+          )}
+          <button type="button" className="rounded p-1.5 hover:bg-surface-2" onClick={() => setDirection(direction === "DOWN" ? "RIGHT" : "DOWN")}
+            aria-label={direction === "DOWN" ? "Lay out left to right" : "Lay out top to bottom"} title="Change direction">
+            {direction === "DOWN" ? <ArrowLeftRight size={16} /> : <ArrowDownUp size={16} />}
+          </button>
+          <button type="button" className="rounded p-1.5 hover:bg-surface-2" onClick={() => setLayoutMode(layoutMode === "classic" ? "flow" : "classic")}
+            aria-label={layoutMode === "classic" ? "Use automatic flow layout" : "Use classic layout (rows by map size)"} title={layoutMode === "classic" ? "Automatic flow layout" : "Classic layout"}>
+            {layoutMode === "classic" ? <Workflow size={16} /> : <LayoutGrid size={16} />}
+          </button>
+          <button type="button" className={`rounded p-1.5 hover:bg-surface-2 ${listView ? "bg-surface-2" : ""}`} onClick={() => setListView(!listView)}
+            aria-pressed={listView} aria-label={listView ? "Show diagram" : "Show as a list"} title="List view">
+            {listView ? <Network size={16} /> : <List size={16} />}
+          </button>
+        </div>
+      </div>
+      <div className="flex min-h-0 flex-1">
+        <div className="relative min-w-0 flex-1">
+          {!arch || !computed ? (
+            <div className="flex h-full items-center justify-center text-muted" role="status">Loading the model…</div>
+          ) : listView ? (
+            <div className="h-full overflow-auto"><ListView arch={arch} comp={computed} /></div>
+          ) : !layout || !graph ? (
+            <div className="flex h-full items-center justify-center text-muted" role="status">Arranging the diagram…</div>
+          ) : (
+            <GraphCanvas graph={graph} layout={layout} />
+          )}
+          {arch && computed && !listView && <CanvasLegend arch={arch} comp={computed} />}
+        </div>
+        {selectedId && arch && computed && <SidePanel />}
+      </div>
+    </div>
+  );
+}
+
+function CanvasLegend({ arch, comp }: { arch: Architecture; comp: ComputeResult }) {
+  const [open, setOpen] = useState(() => window.innerWidth > 900);
+  const [ruler, setRuler] = useState(false);
+  return (
+    <div className="absolute bottom-3 left-3 z-10 flex max-w-[calc(100%-24px)] flex-col items-start gap-2">
+      {open && ruler && <SizeRuler arch={arch} comp={comp} />}
+      {open && (
+        <div className="rounded-lg border border-border bg-surface/95 px-2 py-1.5 shadow-sm"><StageLegend /></div>
+      )}
+      <div className="flex gap-1">
+        <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} className="rounded border border-border bg-surface px-2 py-1 text-xs shadow-sm hover:bg-surface-2">
+          {open ? "Hide legend" : "Legend"}
+        </button>
+        {open && (
+          <button type="button" onClick={() => setRuler(!ruler)} aria-pressed={ruler} className="rounded border border-border bg-surface px-2 py-1 text-xs shadow-sm hover:bg-surface-2">
+            {ruler ? "Hide map sizes" : "Map sizes"}
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }

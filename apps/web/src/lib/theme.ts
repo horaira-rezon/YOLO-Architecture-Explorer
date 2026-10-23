@@ -1,3 +1,5 @@
+import { useSyncExternalStore } from "react";
+
 export type Theme = "light" | "dark";
 
 export function currentTheme(): Theme {
@@ -11,4 +13,16 @@ export function setTheme(theme: Theme): void {
   } catch {
     // storage can be blocked; the theme still applies for this visit
   }
+}
+
+
+function subscribe(cb: () => void): () => void {
+  const obs = new MutationObserver(cb);
+  obs.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+  return () => obs.disconnect();
+}
+
+/** Current theme, updating when the `dark` class changes. */
+export function useTheme(): Theme {
+  return useSyncExternalStore(subscribe, currentTheme, () => "light");
 }

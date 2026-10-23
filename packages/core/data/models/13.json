@@ -1,0 +1,85 @@
+{
+ "version": "13",
+ "tasks": {
+  "detect": {
+   "variants": {
+    "l": {
+     "modelName": "yolov13l.yaml",
+     "yamlText": "nc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov13n.yaml' will call yolov13.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024]   # Nano\n  s: [0.50, 0.50, 1024]   # Small\n  l: [1.00, 1.00, 512]    # Large\n  x: [1.00, 1.50, 512]    # Extra Large\n\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv,  [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv,  [128, 3, 2, 1, 2]] # 1-P2/4\n  - [-1, 2, DSC3k2,  [256, False, 0.25]]\n  - [-1, 1, Conv,  [256, 3, 2, 1, 4]] # 3-P3/8\n  - [-1, 2, DSC3k2,  [512, False, 0.25]]\n  - [-1, 1, DSConv,  [512, 3, 2]] # 5-P4/16\n  - [-1, 4, A2C2f, [512, True, 4]]\n  - [-1, 1, DSConv,  [1024, 3, 2]] # 7-P5/32\n  - [-1, 4, A2C2f, [1024, True, 1]] # 8\n\nhead:\n  - [[4, 6, 8], 2, HyperACE, [512, 8, True, True, 0.5, 1, \"both\"]]\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [ 9, 1, DownsampleConv, []]\n  - [[6, 9], 1, FullPAD_Tunnel, []]  #12     \n  - [[4, 10], 1, FullPAD_Tunnel, []]  #13    \n  - [[8, 11], 1, FullPAD_Tunnel, []] #14 \n  \n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 12], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, DSC3k2, [512, True]] # 17\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  #18\n\n  - [17, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 13], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, DSC3k2, [256, True]] # 21\n  - [10, 1, Conv, [256, 1, 1]]\n  - [[21, 22], 1, FullPAD_Tunnel, []]  #23\n  \n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 18], 1, Concat, [1]] # cat head P4\n  - [-1, 2, DSC3k2, [512, True]] # 26\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  \n\n  - [26, 1, Conv, [512, 3, 2]]\n  - [[-1, 14], 1, Concat, [1]] # cat head P5\n  - [-1, 2, DSC3k2, [1024,True]] # 30 (P5/32-large)\n  - [[-1, 11], 1, FullPAD_Tunnel, []]  \n  \n  - [[23, 27, 31], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "09654eb02148c31bf0ac1292ad6e8659a4a35a465ab5834eaff6773e3c3c7091",
+     "source": {
+      "repo": "https://github.com/iMoonLab/yolov13",
+      "file": "ultralytics/cfg/models/v13/yolov13.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.3.63",
+      "commit": "73289949533efac82bb5f72ec19b746618656bd2"
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 27627783,
+      "gflops": 89.3604,
+      "layers": 33
+     }
+    },
+    "n": {
+     "modelName": "yolov13n.yaml",
+     "yamlText": "nc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov13n.yaml' will call yolov13.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024]   # Nano\n  s: [0.50, 0.50, 1024]   # Small\n  l: [1.00, 1.00, 512]    # Large\n  x: [1.00, 1.50, 512]    # Extra Large\n\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv,  [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv,  [128, 3, 2, 1, 2]] # 1-P2/4\n  - [-1, 2, DSC3k2,  [256, False, 0.25]]\n  - [-1, 1, Conv,  [256, 3, 2, 1, 4]] # 3-P3/8\n  - [-1, 2, DSC3k2,  [512, False, 0.25]]\n  - [-1, 1, DSConv,  [512, 3, 2]] # 5-P4/16\n  - [-1, 4, A2C2f, [512, True, 4]]\n  - [-1, 1, DSConv,  [1024, 3, 2]] # 7-P5/32\n  - [-1, 4, A2C2f, [1024, True, 1]] # 8\n\nhead:\n  - [[4, 6, 8], 2, HyperACE, [512, 8, True, True, 0.5, 1, \"both\"]]\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [ 9, 1, DownsampleConv, []]\n  - [[6, 9], 1, FullPAD_Tunnel, []]  #12     \n  - [[4, 10], 1, FullPAD_Tunnel, []]  #13    \n  - [[8, 11], 1, FullPAD_Tunnel, []] #14 \n  \n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 12], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, DSC3k2, [512, True]] # 17\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  #18\n\n  - [17, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 13], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, DSC3k2, [256, True]] # 21\n  - [10, 1, Conv, [256, 1, 1]]\n  - [[21, 22], 1, FullPAD_Tunnel, []]  #23\n  \n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 18], 1, Concat, [1]] # cat head P4\n  - [-1, 2, DSC3k2, [512, True]] # 26\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  \n\n  - [26, 1, Conv, [512, 3, 2]]\n  - [[-1, 14], 1, Concat, [1]] # cat head P5\n  - [-1, 2, DSC3k2, [1024,True]] # 30 (P5/32-large)\n  - [[-1, 11], 1, FullPAD_Tunnel, []]  \n  \n  - [[23, 27, 31], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "09654eb02148c31bf0ac1292ad6e8659a4a35a465ab5834eaff6773e3c3c7091",
+     "source": {
+      "repo": "https://github.com/iMoonLab/yolov13",
+      "file": "ultralytics/cfg/models/v13/yolov13.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.3.63",
+      "commit": "73289949533efac82bb5f72ec19b746618656bd2"
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 2494151,
+      "gflops": 6.5464,
+      "layers": 33
+     }
+    },
+    "s": {
+     "modelName": "yolov13s.yaml",
+     "yamlText": "nc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov13n.yaml' will call yolov13.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024]   # Nano\n  s: [0.50, 0.50, 1024]   # Small\n  l: [1.00, 1.00, 512]    # Large\n  x: [1.00, 1.50, 512]    # Extra Large\n\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv,  [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv,  [128, 3, 2, 1, 2]] # 1-P2/4\n  - [-1, 2, DSC3k2,  [256, False, 0.25]]\n  - [-1, 1, Conv,  [256, 3, 2, 1, 4]] # 3-P3/8\n  - [-1, 2, DSC3k2,  [512, False, 0.25]]\n  - [-1, 1, DSConv,  [512, 3, 2]] # 5-P4/16\n  - [-1, 4, A2C2f, [512, True, 4]]\n  - [-1, 1, DSConv,  [1024, 3, 2]] # 7-P5/32\n  - [-1, 4, A2C2f, [1024, True, 1]] # 8\n\nhead:\n  - [[4, 6, 8], 2, HyperACE, [512, 8, True, True, 0.5, 1, \"both\"]]\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [ 9, 1, DownsampleConv, []]\n  - [[6, 9], 1, FullPAD_Tunnel, []]  #12     \n  - [[4, 10], 1, FullPAD_Tunnel, []]  #13    \n  - [[8, 11], 1, FullPAD_Tunnel, []] #14 \n  \n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 12], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, DSC3k2, [512, True]] # 17\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  #18\n\n  - [17, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 13], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, DSC3k2, [256, True]] # 21\n  - [10, 1, Conv, [256, 1, 1]]\n  - [[21, 22], 1, FullPAD_Tunnel, []]  #23\n  \n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 18], 1, Concat, [1]] # cat head P4\n  - [-1, 2, DSC3k2, [512, True]] # 26\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  \n\n  - [26, 1, Conv, [512, 3, 2]]\n  - [[-1, 14], 1, Concat, [1]] # cat head P5\n  - [-1, 2, DSC3k2, [1024,True]] # 30 (P5/32-large)\n  - [[-1, 11], 1, FullPAD_Tunnel, []]  \n  \n  - [[23, 27, 31], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "09654eb02148c31bf0ac1292ad6e8659a4a35a465ab5834eaff6773e3c3c7091",
+     "source": {
+      "repo": "https://github.com/iMoonLab/yolov13",
+      "file": "ultralytics/cfg/models/v13/yolov13.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.3.63",
+      "commit": "73289949533efac82bb5f72ec19b746618656bd2"
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 9055527,
+      "gflops": 21.173,
+      "layers": 33
+     }
+    },
+    "x": {
+     "modelName": "yolov13x.yaml",
+     "yamlText": "nc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov13n.yaml' will call yolov13.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024]   # Nano\n  s: [0.50, 0.50, 1024]   # Small\n  l: [1.00, 1.00, 512]    # Large\n  x: [1.00, 1.50, 512]    # Extra Large\n\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv,  [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv,  [128, 3, 2, 1, 2]] # 1-P2/4\n  - [-1, 2, DSC3k2,  [256, False, 0.25]]\n  - [-1, 1, Conv,  [256, 3, 2, 1, 4]] # 3-P3/8\n  - [-1, 2, DSC3k2,  [512, False, 0.25]]\n  - [-1, 1, DSConv,  [512, 3, 2]] # 5-P4/16\n  - [-1, 4, A2C2f, [512, True, 4]]\n  - [-1, 1, DSConv,  [1024, 3, 2]] # 7-P5/32\n  - [-1, 4, A2C2f, [1024, True, 1]] # 8\n\nhead:\n  - [[4, 6, 8], 2, HyperACE, [512, 8, True, True, 0.5, 1, \"both\"]]\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [ 9, 1, DownsampleConv, []]\n  - [[6, 9], 1, FullPAD_Tunnel, []]  #12     \n  - [[4, 10], 1, FullPAD_Tunnel, []]  #13    \n  - [[8, 11], 1, FullPAD_Tunnel, []] #14 \n  \n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 12], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, DSC3k2, [512, True]] # 17\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  #18\n\n  - [17, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 13], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, DSC3k2, [256, True]] # 21\n  - [10, 1, Conv, [256, 1, 1]]\n  - [[21, 22], 1, FullPAD_Tunnel, []]  #23\n  \n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 18], 1, Concat, [1]] # cat head P4\n  - [-1, 2, DSC3k2, [512, True]] # 26\n  - [[-1, 9], 1, FullPAD_Tunnel, []]  \n\n  - [26, 1, Conv, [512, 3, 2]]\n  - [[-1, 14], 1, Concat, [1]] # cat head P5\n  - [-1, 2, DSC3k2, [1024,True]] # 30 (P5/32-large)\n  - [[-1, 11], 1, FullPAD_Tunnel, []]  \n  \n  - [[23, 27, 31], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "09654eb02148c31bf0ac1292ad6e8659a4a35a465ab5834eaff6773e3c3c7091",
+     "source": {
+      "repo": "https://github.com/iMoonLab/yolov13",
+      "file": "ultralytics/cfg/models/v13/yolov13.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.3.63",
+      "commit": "73289949533efac82bb5f72ec19b746618656bd2"
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 64057511,
+      "gflops": 200.6534,
+      "layers": 33
+     }
+    }
+   }
+  }
+ }
+}

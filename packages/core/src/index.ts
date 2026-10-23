@@ -7,3 +7,6 @@ export * from "./engine/compute";
 export * from "./fixtures";
 export * from "./util/math";
 export * from "./compiler/export";
+export * from "./data";
+export * from "./catalog";
+export * from "./describe";

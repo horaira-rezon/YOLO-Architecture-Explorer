@@ -1,0 +1,146 @@
+{
+ "version": "v9",
+ "tasks": {
+  "detect": {
+   "variants": {
+    "c": {
+     "modelName": "yolov9c.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9c object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/detect\n# 358 layers, 25590912 parameters, 104.0 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 1, RepNCSPELAN4, [256, 128, 64, 1]] # 2\n  - [-1, 1, ADown, [256]] # 3-P3/8\n  - [-1, 1, RepNCSPELAN4, [512, 256, 128, 1]] # 4\n  - [-1, 1, ADown, [512]] # 5-P4/16\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 6\n  - [-1, 1, ADown, [512]] # 7-P5/32\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 8\n  - [-1, 1, SPPELAN, [512, 256]] # 9\n\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [256, 256, 128, 1]] # 15 (P3/8-small)\n\n  - [-1, 1, ADown, [256]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 18 (P4/16-medium)\n\n  - [-1, 1, ADown, [512]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "c7592eb3fda641d53d5776468345dd139593514de3f1fc067b53aedf1d9a5f92",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9c.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 25590912,
+      "gflops": 104.0145,
+      "layers": 23
+     }
+    },
+    "e": {
+     "modelName": "yolov9e.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9e object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/detect\n# 721 layers, 58206592 parameters, 193.0 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, nn.Identity, []]\n  - [-1, 1, Conv, [64, 3, 2]] # 1-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 2-P2/4\n  - [-1, 1, RepNCSPELAN4, [256, 128, 64, 2]] # 3\n  - [-1, 1, ADown, [256]] # 4-P3/8\n  - [-1, 1, RepNCSPELAN4, [512, 256, 128, 2]] # 5\n  - [-1, 1, ADown, [512]] # 6-P4/16\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 7\n  - [-1, 1, ADown, [1024]] # 8-P5/32\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 9\n\n  - [1, 1, CBLinear, [[64]]] # 10\n  - [3, 1, CBLinear, [[64, 128]]] # 11\n  - [5, 1, CBLinear, [[64, 128, 256]]] # 12\n  - [7, 1, CBLinear, [[64, 128, 256, 512]]] # 13\n  - [9, 1, CBLinear, [[64, 128, 256, 512, 1024]]] # 14\n\n  - [0, 1, Conv, [64, 3, 2]] # 15-P1/2\n  - [[10, 11, 12, 13, 14, -1], 1, CBFuse, [[0, 0, 0, 0, 0]]] # 16\n  - [-1, 1, Conv, [128, 3, 2]] # 17-P2/4\n  - [[11, 12, 13, 14, -1], 1, CBFuse, [[1, 1, 1, 1]]] # 18\n  - [-1, 1, RepNCSPELAN4, [256, 128, 64, 2]] # 19\n  - [-1, 1, ADown, [256]] # 20-P3/8\n  - [[12, 13, 14, -1], 1, CBFuse, [[2, 2, 2]]] # 21\n  - [-1, 1, RepNCSPELAN4, [512, 256, 128, 2]] # 22\n  - [-1, 1, ADown, [512]] # 23-P4/16\n  - [[13, 14, -1], 1, CBFuse, [[3, 3]]] # 24\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 25\n  - [-1, 1, ADown, [1024]] # 26-P5/32\n  - [[14, -1], 1, CBFuse, [[4]]] # 27\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 28\n  - [-1, 1, SPPELAN, [512, 256]] # 29\n\n# GELAN head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 25], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 2]] # 32\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 22], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [256, 256, 128, 2]] # 35 (P3/8-small)\n\n  - [-1, 1, ADown, [256]]\n  - [[-1, 32], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 2]] # 38 (P4/16-medium)\n\n  - [-1, 1, ADown, [512]]\n  - [[-1, 29], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [512, 1024, 512, 2]] # 41 (P5/32-large)\n\n  - [[35, 38, 41], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "3a5af63e5003a640fa3754e257200910cce4ac0ed26cdba5d6739a505f024b7f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9e.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 58206592,
+      "gflops": 193.0075,
+      "layers": 43
+     }
+    },
+    "m": {
+     "modelName": "yolov9m.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9m object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/detect\n# 348 layers, 20216160 parameters, 77.9 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, Conv, [32, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [64, 3, 2]] # 1-P2/4\n  - [-1, 1, RepNCSPELAN4, [128, 128, 64, 1]] # 2\n  - [-1, 1, AConv, [240]] # 3-P3/8\n  - [-1, 1, RepNCSPELAN4, [240, 240, 120, 1]] # 4\n  - [-1, 1, AConv, [360]] # 5-P4/16\n  - [-1, 1, RepNCSPELAN4, [360, 360, 180, 1]] # 6\n  - [-1, 1, AConv, [480]] # 7-P5/32\n  - [-1, 1, RepNCSPELAN4, [480, 480, 240, 1]] # 8\n  - [-1, 1, SPPELAN, [480, 240]] # 9\n\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [360, 360, 180, 1]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [240, 240, 120, 1]] # 15\n\n  - [-1, 1, AConv, [180]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [360, 360, 180, 1]] # 18 (P4/16-medium)\n\n  - [-1, 1, AConv, [240]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [480, 480, 240, 1]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "59c290df146c0b524c800e361f1e31cebe05666b44e81df02afaa1950c64ab0f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9m.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 20216160,
+      "gflops": 77.8604,
+      "layers": 23
+     }
+    },
+    "s": {
+     "modelName": "yolov9s.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9s object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/detect\n# 544 layers, 7318368 parameters, 27.6 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, Conv, [32, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [64, 3, 2]] # 1-P2/4\n  - [-1, 1, ELAN1, [64, 64, 32]] # 2\n  - [-1, 1, AConv, [128]] # 3-P3/8\n  - [-1, 1, RepNCSPELAN4, [128, 128, 64, 3]] # 4\n  - [-1, 1, AConv, [192]] # 5-P4/16\n  - [-1, 1, RepNCSPELAN4, [192, 192, 96, 3]] # 6\n  - [-1, 1, AConv, [256]] # 7-P5/32\n  - [-1, 1, RepNCSPELAN4, [256, 256, 128, 3]] # 8\n  - [-1, 1, SPPELAN, [256, 128]] # 9\n\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [192, 192, 96, 3]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [128, 128, 64, 3]] # 15\n\n  - [-1, 1, AConv, [96]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [192, 192, 96, 3]] # 18 (P4/16-medium)\n\n  - [-1, 1, AConv, [128]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [256, 256, 128, 3]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "716910b5835658e7243815e377c5eb27fab9bfa4ff0b9e3118c3f54b7aa7a595",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9s.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 7318368,
+      "gflops": 27.552,
+      "layers": 23
+     }
+    },
+    "t": {
+     "modelName": "yolov9t.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9t object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/detect\n# 544 layers, 2128720 parameters, 8.5 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, Conv, [16, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [32, 3, 2]] # 1-P2/4\n  - [-1, 1, ELAN1, [32, 32, 16]] # 2\n  - [-1, 1, AConv, [64]] # 3-P3/8\n  - [-1, 1, RepNCSPELAN4, [64, 64, 32, 3]] # 4\n  - [-1, 1, AConv, [96]] # 5-P4/16\n  - [-1, 1, RepNCSPELAN4, [96, 96, 48, 3]] # 6\n  - [-1, 1, AConv, [128]] # 7-P5/32\n  - [-1, 1, RepNCSPELAN4, [128, 128, 64, 3]] # 8\n  - [-1, 1, SPPELAN, [128, 64]] # 9\n\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [96, 96, 48, 3]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [64, 64, 32, 3]] # 15\n\n  - [-1, 1, AConv, [48]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [96, 96, 48, 3]] # 18 (P4/16-medium)\n\n  - [-1, 1, AConv, [64]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [128, 128, 64, 3]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "43c1a949713b7ee9a1b898908386b64a4b92fd49a75eaa7e7a86715bf0b4bc4a",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9t.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 2128720,
+      "gflops": 8.4811,
+      "layers": 23
+     }
+    }
+   }
+  },
+  "segment": {
+   "variants": {
+    "c": {
+     "modelName": "yolov9c-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9c-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/segment\n# 380 layers, 27897120 parameters, 159.4 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 1, RepNCSPELAN4, [256, 128, 64, 1]] # 2\n  - [-1, 1, ADown, [256]] # 3-P3/8\n  - [-1, 1, RepNCSPELAN4, [512, 256, 128, 1]] # 4\n  - [-1, 1, ADown, [512]] # 5-P4/16\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 6\n  - [-1, 1, ADown, [512]] # 7-P5/32\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 8\n  - [-1, 1, SPPELAN, [512, 256]] # 9\n\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [256, 256, 128, 1]] # 15 (P3/8-small)\n\n  - [-1, 1, ADown, [256]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 18 (P4/16-medium)\n\n  - [-1, 1, ADown, [512]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 1]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Segment, [nc, 32, 256]] # Segment(P3, P4, P5)\n",
+     "yamlSha256": "5011e843f709576ca9eab3331d7469e3ab8101498a22b6e07778e21013d1bea2",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9c-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 27897120,
+      "gflops": 149.3396,
+      "layers": 23
+     }
+    },
+    "e": {
+     "modelName": "yolov9e-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# YOLOv9e-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov9\n# Task docs: https://docs.ultralytics.com/tasks/segment\n# 743 layers, 60512800 parameters, 248.4 GFLOPs\n\n# Parameters\nnc: 80 # number of classes\n\n# GELAN backbone\nbackbone:\n  - [-1, 1, nn.Identity, []]\n  - [-1, 1, Conv, [64, 3, 2]] # 1-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 2-P2/4\n  - [-1, 1, RepNCSPELAN4, [256, 128, 64, 2]] # 3\n  - [-1, 1, ADown, [256]] # 4-P3/8\n  - [-1, 1, RepNCSPELAN4, [512, 256, 128, 2]] # 5\n  - [-1, 1, ADown, [512]] # 6-P4/16\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 7\n  - [-1, 1, ADown, [1024]] # 8-P5/32\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 9\n\n  - [1, 1, CBLinear, [[64]]] # 10\n  - [3, 1, CBLinear, [[64, 128]]] # 11\n  - [5, 1, CBLinear, [[64, 128, 256]]] # 12\n  - [7, 1, CBLinear, [[64, 128, 256, 512]]] # 13\n  - [9, 1, CBLinear, [[64, 128, 256, 512, 1024]]] # 14\n\n  - [0, 1, Conv, [64, 3, 2]] # 15-P1/2\n  - [[10, 11, 12, 13, 14, -1], 1, CBFuse, [[0, 0, 0, 0, 0]]] # 16\n  - [-1, 1, Conv, [128, 3, 2]] # 17-P2/4\n  - [[11, 12, 13, 14, -1], 1, CBFuse, [[1, 1, 1, 1]]] # 18\n  - [-1, 1, RepNCSPELAN4, [256, 128, 64, 2]] # 19\n  - [-1, 1, ADown, [256]] # 20-P3/8\n  - [[12, 13, 14, -1], 1, CBFuse, [[2, 2, 2]]] # 21\n  - [-1, 1, RepNCSPELAN4, [512, 256, 128, 2]] # 22\n  - [-1, 1, ADown, [512]] # 23-P4/16\n  - [[13, 14, -1], 1, CBFuse, [[3, 3]]] # 24\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 25\n  - [-1, 1, ADown, [1024]] # 26-P5/32\n  - [[14, -1], 1, CBFuse, [[4]]] # 27\n  - [-1, 1, RepNCSPELAN4, [1024, 512, 256, 2]] # 28\n  - [-1, 1, SPPELAN, [512, 256]] # 29\n\n# GELAN head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 25], 1, Concat, [1]] # cat backbone P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 2]] # 32\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 22], 1, Concat, [1]] # cat backbone P3\n  - [-1, 1, RepNCSPELAN4, [256, 256, 128, 2]] # 35 (P3/8-small)\n\n  - [-1, 1, ADown, [256]]\n  - [[-1, 32], 1, Concat, [1]] # cat head P4\n  - [-1, 1, RepNCSPELAN4, [512, 512, 256, 2]] # 38 (P4/16-medium)\n\n  - [-1, 1, ADown, [512]]\n  - [[-1, 29], 1, Concat, [1]] # cat head P5\n  - [-1, 1, RepNCSPELAN4, [512, 1024, 512, 2]] # 41 (P5/32-large)\n\n  - [[35, 38, 41], 1, Segment, [nc, 32, 256]] # Segment (P3, P4, P5)\n",
+     "yamlSha256": "595a54e631e0a14b823158abbe69ff49c3a61fd775332555217f17018f3bf3b7",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v9/yolov9e-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 60512800,
+      "gflops": 238.3326,
+      "layers": 43
+     }
+    }
+   }
+  }
+ }
+}

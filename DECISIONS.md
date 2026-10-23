@@ -41,3 +41,12 @@ Each block is a TypeScript function that mirrors the Ultralytics PyTorch module 
 
 ## D12 — Licence of bundled configs
 Model YAMLs are copied verbatim from Ultralytics (AGPL-3.0) and iMoonLab/yolov13 (AGPL-3.0, an Ultralytics fork) inside the fixtures, with source file, package version/commit and SHA-256 recorded. The project therefore ships under AGPL-3.0.
+
+## D13 — Default diagram layout: "classic" rows by map size
+A plain layered layout (ELK) draws YOLO as one very tall column, because the network is mostly a single chain. The default layout instead puts one row per feature-map size: the backbone runs down the first column, the neck's top-down (FPN) and bottom-up (PAN) passes get their own columns with each node in the row of its map size, heads sit to the right, then post-processing and a dashed training-only lane. This is the picture learners meet in papers. ELK (in a web worker, with stage partitions) remains as the "automatic flow" layout for unusual edited graphs.
+
+## D14 — YOLO27 is listed, not modelled
+Ultralytics announced YOLO27 (2026) but has not published configs, weights or code. It appears on the timeline as "announced, not released" with no explorable architecture, rather than being guessed.
+
+## D15 — YOLO26 extra tasks
+YOLO26 also ships semantic-segmentation and depth configs. The brief covers five tasks, so these are mentioned in the catalogue but not modelled.

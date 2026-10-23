@@ -1,0 +1,500 @@
+{
+ "version": "v8",
+ "tasks": {
+  "classify": {
+   "variants": {
+    "l": {
+     "modelName": "yolov8l-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-cls image classification model with YOLO backbone\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-cls.yaml' will call yolov8-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 1024]\n  l: [1.00, 1.00, 1024]\n  x: [1.00, 1.25, 1024]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1b9d269f0f82d125ab669665e70ce8bf576e81d8d930ceb34f7d2de5c42b7094",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 37480744,
+      "gflops": 12.145,
+      "layers": 10
+     }
+    },
+    "m": {
+     "modelName": "yolov8m-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-cls image classification model with YOLO backbone\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-cls.yaml' will call yolov8-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 1024]\n  l: [1.00, 1.00, 1024]\n  x: [1.00, 1.25, 1024]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1b9d269f0f82d125ab669665e70ce8bf576e81d8d930ceb34f7d2de5c42b7094",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 17053336,
+      "gflops": 5.1341,
+      "layers": 10
+     }
+    },
+    "n": {
+     "modelName": "yolov8n-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-cls image classification model with YOLO backbone\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-cls.yaml' will call yolov8-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 1024]\n  l: [1.00, 1.00, 1024]\n  x: [1.00, 1.25, 1024]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1b9d269f0f82d125ab669665e70ce8bf576e81d8d930ceb34f7d2de5c42b7094",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 2719288,
+      "gflops": 0.414,
+      "layers": 10
+     }
+    },
+    "s": {
+     "modelName": "yolov8s-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-cls image classification model with YOLO backbone\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-cls.yaml' will call yolov8-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 1024]\n  l: [1.00, 1.00, 1024]\n  x: [1.00, 1.25, 1024]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1b9d269f0f82d125ab669665e70ce8bf576e81d8d930ceb34f7d2de5c42b7094",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 6361736,
+      "gflops": 1.5442,
+      "layers": 10
+     }
+    },
+    "x": {
+     "modelName": "yolov8x-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-cls image classification model with YOLO backbone\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-cls.yaml' will call yolov8-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 1024]\n  l: [1.00, 1.00, 1024]\n  x: [1.00, 1.25, 1024]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1b9d269f0f82d125ab669665e70ce8bf576e81d8d930ceb34f7d2de5c42b7094",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 57422840,
+      "gflops": 18.9055,
+      "layers": 10
+     }
+    }
+   }
+  },
+  "detect": {
+   "variants": {
+    "l": {
+     "modelName": "yolov8l.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n summary: 129 layers, 3157200 parameters, 3157184 gradients, 8.9 GFLOPS\n  s: [0.33, 0.50, 1024] # YOLOv8s summary: 129 layers, 11166560 parameters, 11166544 gradients, 28.8 GFLOPS\n  m: [0.67, 0.75, 768] # YOLOv8m summary: 169 layers, 25902640 parameters, 25902624 gradients, 79.3 GFLOPS\n  l: [1.00, 1.00, 512] # YOLOv8l summary: 209 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPS\n  x: [1.00, 1.25, 512] # YOLOv8x summary: 209 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPS\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "405a3c302eb6096103a99af4d82c1d2d8b2bbff469a228c55aac944b2c19672a",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 43691520,
+      "gflops": 165.7347,
+      "layers": 23
+     }
+    },
+    "m": {
+     "modelName": "yolov8m.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n summary: 129 layers, 3157200 parameters, 3157184 gradients, 8.9 GFLOPS\n  s: [0.33, 0.50, 1024] # YOLOv8s summary: 129 layers, 11166560 parameters, 11166544 gradients, 28.8 GFLOPS\n  m: [0.67, 0.75, 768] # YOLOv8m summary: 169 layers, 25902640 parameters, 25902624 gradients, 79.3 GFLOPS\n  l: [1.00, 1.00, 512] # YOLOv8l summary: 209 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPS\n  x: [1.00, 1.25, 512] # YOLOv8x summary: 209 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPS\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "405a3c302eb6096103a99af4d82c1d2d8b2bbff469a228c55aac944b2c19672a",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 25902640,
+      "gflops": 79.3137,
+      "layers": 23
+     }
+    },
+    "n": {
+     "modelName": "yolov8n.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n summary: 129 layers, 3157200 parameters, 3157184 gradients, 8.9 GFLOPS\n  s: [0.33, 0.50, 1024] # YOLOv8s summary: 129 layers, 11166560 parameters, 11166544 gradients, 28.8 GFLOPS\n  m: [0.67, 0.75, 768] # YOLOv8m summary: 169 layers, 25902640 parameters, 25902624 gradients, 79.3 GFLOPS\n  l: [1.00, 1.00, 512] # YOLOv8l summary: 209 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPS\n  x: [1.00, 1.25, 512] # YOLOv8x summary: 209 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPS\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "405a3c302eb6096103a99af4d82c1d2d8b2bbff469a228c55aac944b2c19672a",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 3157200,
+      "gflops": 8.8551,
+      "layers": 23
+     }
+    },
+    "s": {
+     "modelName": "yolov8s.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n summary: 129 layers, 3157200 parameters, 3157184 gradients, 8.9 GFLOPS\n  s: [0.33, 0.50, 1024] # YOLOv8s summary: 129 layers, 11166560 parameters, 11166544 gradients, 28.8 GFLOPS\n  m: [0.67, 0.75, 768] # YOLOv8m summary: 169 layers, 25902640 parameters, 25902624 gradients, 79.3 GFLOPS\n  l: [1.00, 1.00, 512] # YOLOv8l summary: 209 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPS\n  x: [1.00, 1.25, 512] # YOLOv8x summary: 209 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPS\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "405a3c302eb6096103a99af4d82c1d2d8b2bbff469a228c55aac944b2c19672a",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 11166560,
+      "gflops": 28.8119,
+      "layers": 23
+     }
+    },
+    "x": {
+     "modelName": "yolov8x.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n.yaml' will call yolov8.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n summary: 129 layers, 3157200 parameters, 3157184 gradients, 8.9 GFLOPS\n  s: [0.33, 0.50, 1024] # YOLOv8s summary: 129 layers, 11166560 parameters, 11166544 gradients, 28.8 GFLOPS\n  m: [0.67, 0.75, 768] # YOLOv8m summary: 169 layers, 25902640 parameters, 25902624 gradients, 79.3 GFLOPS\n  l: [1.00, 1.00, 512] # YOLOv8l summary: 209 layers, 43691520 parameters, 43691504 gradients, 165.7 GFLOPS\n  x: [1.00, 1.25, 512] # YOLOv8x summary: 209 layers, 68229648 parameters, 68229632 gradients, 258.5 GFLOPS\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "405a3c302eb6096103a99af4d82c1d2d8b2bbff469a228c55aac944b2c19672a",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 68229648,
+      "gflops": 258.537,
+      "layers": 23
+     }
+    }
+   }
+  },
+  "obb": {
+   "variants": {
+    "l": {
+     "modelName": "yolov8l-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-obb.yaml' will call yolov8-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n-obb summary: 144 layers, 3228867 parameters, 3228851 gradients, 9.1 GFLOPs\n  s: [0.33, 0.50, 1024] # YOLOv8s-obb summary: 144 layers, 11452739 parameters, 11452723 gradients, 29.8 GFLOPs\n  m: [0.67, 0.75, 768] # YOLOv8m-obb summary: 184 layers, 26463235 parameters, 26463219 gradients, 81.5 GFLOPs\n  l: [1.00, 1.00, 512] # YOLOv8l-obb summary: 224 layers, 44540355 parameters, 44540339 gradients, 169.4 GFLOPs\n  x: [1.00, 1.25, 512] # YOLOv8x-obb summary: 224 layers, 69555651 parameters, 69555635 gradients, 264.3 GFLOPs\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, OBB, [nc, 1]] # OBB(P3, P4, P5)\n",
+     "yamlSha256": "3b0967731e6978a053368df18646d5c73ff5aa5cd5251e19db335ea11fcd0f18",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 44540355,
+      "gflops": 169.4307,
+      "layers": 23
+     }
+    },
+    "m": {
+     "modelName": "yolov8m-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-obb.yaml' will call yolov8-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n-obb summary: 144 layers, 3228867 parameters, 3228851 gradients, 9.1 GFLOPs\n  s: [0.33, 0.50, 1024] # YOLOv8s-obb summary: 144 layers, 11452739 parameters, 11452723 gradients, 29.8 GFLOPs\n  m: [0.67, 0.75, 768] # YOLOv8m-obb summary: 184 layers, 26463235 parameters, 26463219 gradients, 81.5 GFLOPs\n  l: [1.00, 1.00, 512] # YOLOv8l-obb summary: 224 layers, 44540355 parameters, 44540339 gradients, 169.4 GFLOPs\n  x: [1.00, 1.25, 512] # YOLOv8x-obb summary: 224 layers, 69555651 parameters, 69555635 gradients, 264.3 GFLOPs\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, OBB, [nc, 1]] # OBB(P3, P4, P5)\n",
+     "yamlSha256": "3b0967731e6978a053368df18646d5c73ff5aa5cd5251e19db335ea11fcd0f18",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 26463235,
+      "gflops": 81.4609,
+      "layers": 23
+     }
+    },
+    "n": {
+     "modelName": "yolov8n-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-obb.yaml' will call yolov8-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n-obb summary: 144 layers, 3228867 parameters, 3228851 gradients, 9.1 GFLOPs\n  s: [0.33, 0.50, 1024] # YOLOv8s-obb summary: 144 layers, 11452739 parameters, 11452723 gradients, 29.8 GFLOPs\n  m: [0.67, 0.75, 768] # YOLOv8m-obb summary: 184 layers, 26463235 parameters, 26463219 gradients, 81.5 GFLOPs\n  l: [1.00, 1.00, 512] # YOLOv8l-obb summary: 224 layers, 44540355 parameters, 44540339 gradients, 169.4 GFLOPs\n  x: [1.00, 1.25, 512] # YOLOv8x-obb summary: 224 layers, 69555651 parameters, 69555635 gradients, 264.3 GFLOPs\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, OBB, [nc, 1]] # OBB(P3, P4, P5)\n",
+     "yamlSha256": "3b0967731e6978a053368df18646d5c73ff5aa5cd5251e19db335ea11fcd0f18",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 3228867,
+      "gflops": 9.1027,
+      "layers": 23
+     }
+    },
+    "s": {
+     "modelName": "yolov8s-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-obb.yaml' will call yolov8-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n-obb summary: 144 layers, 3228867 parameters, 3228851 gradients, 9.1 GFLOPs\n  s: [0.33, 0.50, 1024] # YOLOv8s-obb summary: 144 layers, 11452739 parameters, 11452723 gradients, 29.8 GFLOPs\n  m: [0.67, 0.75, 768] # YOLOv8m-obb summary: 184 layers, 26463235 parameters, 26463219 gradients, 81.5 GFLOPs\n  l: [1.00, 1.00, 512] # YOLOv8l-obb summary: 224 layers, 44540355 parameters, 44540339 gradients, 169.4 GFLOPs\n  x: [1.00, 1.25, 512] # YOLOv8x-obb summary: 224 layers, 69555651 parameters, 69555635 gradients, 264.3 GFLOPs\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, OBB, [nc, 1]] # OBB(P3, P4, P5)\n",
+     "yamlSha256": "3b0967731e6978a053368df18646d5c73ff5aa5cd5251e19db335ea11fcd0f18",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 11452739,
+      "gflops": 29.7974,
+      "layers": 23
+     }
+    },
+    "x": {
+     "modelName": "yolov8x-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-obb.yaml' will call yolov8-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024] # YOLOv8n-obb summary: 144 layers, 3228867 parameters, 3228851 gradients, 9.1 GFLOPs\n  s: [0.33, 0.50, 1024] # YOLOv8s-obb summary: 144 layers, 11452739 parameters, 11452723 gradients, 29.8 GFLOPs\n  m: [0.67, 0.75, 768] # YOLOv8m-obb summary: 184 layers, 26463235 parameters, 26463219 gradients, 81.5 GFLOPs\n  l: [1.00, 1.00, 512] # YOLOv8l-obb summary: 224 layers, 44540355 parameters, 44540339 gradients, 169.4 GFLOPs\n  x: [1.00, 1.25, 512] # YOLOv8x-obb summary: 224 layers, 69555651 parameters, 69555635 gradients, 264.3 GFLOPs\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, OBB, [nc, 1]] # OBB(P3, P4, P5)\n",
+     "yamlSha256": "3b0967731e6978a053368df18646d5c73ff5aa5cd5251e19db335ea11fcd0f18",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 69555651,
+      "gflops": 264.3091,
+      "layers": 23
+     }
+    }
+   }
+  },
+  "pose": {
+   "variants": {
+    "l": {
+     "modelName": "yolov8l-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 1 # number of classes\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolov8n-pose.yaml' will call yolov8-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Pose, [nc, kpt_shape]] # Pose(P3, P4, P5)\n",
+     "yamlSha256": "2ddcdb8885649d940c2d8076c33087aae97736295f2a9e27c7949d68642c17ab",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 44489196,
+      "gflops": 169.1447,
+      "layers": 23
+     }
+    },
+    "m": {
+     "modelName": "yolov8m-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 1 # number of classes\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolov8n-pose.yaml' will call yolov8-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Pose, [nc, kpt_shape]] # Pose(P3, P4, P5)\n",
+     "yamlSha256": "2ddcdb8885649d940c2d8076c33087aae97736295f2a9e27c7949d68642c17ab",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 26464462,
+      "gflops": 81.4062,
+      "layers": 23
+     }
+    },
+    "n": {
+     "modelName": "yolov8n-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 1 # number of classes\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolov8n-pose.yaml' will call yolov8-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Pose, [nc, kpt_shape]] # Pose(P3, P4, P5)\n",
+     "yamlSha256": "2ddcdb8885649d940c2d8076c33087aae97736295f2a9e27c7949d68642c17ab",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 3295470,
+      "gflops": 9.2935,
+      "layers": 23
+     }
+    },
+    "s": {
+     "modelName": "yolov8s-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 1 # number of classes\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolov8n-pose.yaml' will call yolov8-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Pose, [nc, kpt_shape]] # Pose(P3, P4, P5)\n",
+     "yamlSha256": "2ddcdb8885649d940c2d8076c33087aae97736295f2a9e27c7949d68642c17ab",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 11626046,
+      "gflops": 30.4019,
+      "layers": 23
+     }
+    },
+    "x": {
+     "modelName": "yolov8x-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 1 # number of classes\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolov8n-pose.yaml' will call yolov8-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Pose, [nc, kpt_shape]] # Pose(P3, P4, P5)\n",
+     "yamlSha256": "2ddcdb8885649d940c2d8076c33087aae97736295f2a9e27c7949d68642c17ab",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 69491724,
+      "gflops": 263.9516,
+      "layers": 23
+     }
+    }
+   }
+  },
+  "segment": {
+   "variants": {
+    "l": {
+     "modelName": "yolov8l-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-seg.yaml' will call yolov8-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Segment, [nc, 32, 256]] # Segment(P3, P4, P5)\n",
+     "yamlSha256": "8457a23855704d5e33bf4f08ae64c8bb325c519998918ed2222da8577db67ba5",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 45997728,
+      "gflops": 211.0598,
+      "layers": 23
+     }
+    },
+    "m": {
+     "modelName": "yolov8m-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-seg.yaml' will call yolov8-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Segment, [nc, 32, 256]] # Segment(P3, P4, P5)\n",
+     "yamlSha256": "8457a23855704d5e33bf4f08ae64c8bb325c519998918ed2222da8577db67ba5",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 27285968,
+      "gflops": 104.9773,
+      "layers": 23
+     }
+    },
+    "n": {
+     "modelName": "yolov8n-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-seg.yaml' will call yolov8-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Segment, [nc, 32, 256]] # Segment(P3, P4, P5)\n",
+     "yamlSha256": "8457a23855704d5e33bf4f08ae64c8bb325c519998918ed2222da8577db67ba5",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 3409968,
+      "gflops": 12.1411,
+      "layers": 23
+     }
+    },
+    "s": {
+     "modelName": "yolov8s-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-seg.yaml' will call yolov8-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Segment, [nc, 32, 256]] # Segment(P3, P4, P5)\n",
+     "yamlSha256": "8457a23855704d5e33bf4f08ae64c8bb325c519998918ed2222da8577db67ba5",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 11821056,
+      "gflops": 40.3391,
+      "layers": 23
+     }
+    },
+    "x": {
+     "modelName": "yolov8x-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLOv8-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolov8\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolov8n-seg.yaml' will call yolov8-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.33, 0.25, 1024]\n  s: [0.33, 0.50, 1024]\n  m: [0.67, 0.75, 768]\n  l: [1.00, 1.00, 512]\n  x: [1.00, 1.25, 512]\n\n# YOLOv8.0n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 3, C2f, [128, True]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 6, C2f, [256, True]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 6, C2f, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 3, C2f, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5]] # 9\n\n# YOLOv8.0n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 3, C2f, [512]] # 12\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 3, C2f, [256]] # 15 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 12], 1, Concat, [1]] # cat head P4\n  - [-1, 3, C2f, [512]] # 18 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 9], 1, Concat, [1]] # cat head P5\n  - [-1, 3, C2f, [1024]] # 21 (P5/32-large)\n\n  - [[15, 18, 21], 1, Segment, [nc, 32, 256]] # Segment(P3, P4, P5)\n",
+     "yamlSha256": "8457a23855704d5e33bf4f08ae64c8bb325c519998918ed2222da8577db67ba5",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/v8/yolov8-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 71827888,
+      "gflops": 329.1888,
+      "layers": 23
+     }
+    }
+   }
+  }
+ }
+}

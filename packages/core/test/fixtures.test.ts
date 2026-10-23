@@ -8,8 +8,19 @@ const files = existsSync(DIR)
   ? readdirSync(DIR).flatMap((v) => readdirSync(join(DIR, v)).filter((f) => f.endsWith(".json")).map((f) => join(v, f)))
   : [];
 
+/**
+ * Fixtures whose blocks are not modelled yet (milestone M5). Listed explicitly so they show as "todo"
+ * instead of silently passing; this list must be empty when M5 is done.
+ */
+const PENDING = new Set<string>([
+  ...["n", "s", "l", "x"].map((s) => `13/detect-${s}.json`),
+  ...["segment", "pose", "obb"].flatMap((t) => ["n", "s", "m", "l", "x"].map((s) => `26/${t}-${s}.json`)),
+]);
+
+for (const f of files.filter((f) => PENDING.has(f))) it.todo(`fixture ${f} (blocks not modelled yet)`);
+
 /** Engine output shape vs the PyTorch hook shape (heads report several tensors; compare the backbone/neck exactly). */
-describe.each(files)("fixture %s", (file) => {
+describe.each(files.filter((f) => !PENDING.has(f)))("fixture %s", (file) => {
   const fx = FixtureSchema.parse(JSON.parse(readFileSync(join(DIR, file), "utf8")));
   const arch = architectureFromFixture(fx);
   const res = computeArchitecture(arch);

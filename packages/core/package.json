@@ -12,7 +12,8 @@
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
-    "content:qa": "tsx scripts/content-qa.ts"
+    "content:qa": "tsx scripts/content-qa.ts",
+    "data:build": "tsx scripts/build-model-data.ts"
   },
   "dependencies": {
     "yaml": "2.9.1",

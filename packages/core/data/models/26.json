@@ -1,0 +1,500 @@
+{
+ "version": "26",
+ "tasks": {
+  "classify": {
+   "variants": {
+    "l": {
+     "modelName": "yolo26l-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-cls image classification model\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolo26n-cls.yaml' will call yolo26-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 86 layers, 2,812,104 parameters, 2,812,104 gradients, 0.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 86 layers, 6,724,008 parameters, 6,724,008 gradients, 1.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 106 layers, 11,634,216 parameters, 11,634,216 gradients, 5.0 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 176 layers, 14,115,624 parameters, 14,115,624 gradients, 6.2 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 176 layers, 29,637,064 parameters, 29,637,064 gradients, 13.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 2, C2PSA, [1024]] # 9\n\n# YOLO26n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1a668bbe707ad97eabf7f999c29c746f62d3458217cd562a4aa47731ccb7dfa8",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 14115624,
+      "gflops": 6.1031,
+      "layers": 11
+     }
+    },
+    "m": {
+     "modelName": "yolo26m-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-cls image classification model\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolo26n-cls.yaml' will call yolo26-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 86 layers, 2,812,104 parameters, 2,812,104 gradients, 0.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 86 layers, 6,724,008 parameters, 6,724,008 gradients, 1.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 106 layers, 11,634,216 parameters, 11,634,216 gradients, 5.0 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 176 layers, 14,115,624 parameters, 14,115,624 gradients, 6.2 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 176 layers, 29,637,064 parameters, 29,637,064 gradients, 13.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 2, C2PSA, [1024]] # 9\n\n# YOLO26n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1a668bbe707ad97eabf7f999c29c746f62d3458217cd562a4aa47731ccb7dfa8",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 11634216,
+      "gflops": 4.8556,
+      "layers": 11
+     }
+    },
+    "n": {
+     "modelName": "yolo26n-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-cls image classification model\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolo26n-cls.yaml' will call yolo26-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 86 layers, 2,812,104 parameters, 2,812,104 gradients, 0.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 86 layers, 6,724,008 parameters, 6,724,008 gradients, 1.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 106 layers, 11,634,216 parameters, 11,634,216 gradients, 5.0 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 176 layers, 14,115,624 parameters, 14,115,624 gradients, 6.2 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 176 layers, 29,637,064 parameters, 29,637,064 gradients, 13.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 2, C2PSA, [1024]] # 9\n\n# YOLO26n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1a668bbe707ad97eabf7f999c29c746f62d3458217cd562a4aa47731ccb7dfa8",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 2812104,
+      "gflops": 0.4018,
+      "layers": 11
+     }
+    },
+    "s": {
+     "modelName": "yolo26s-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-cls image classification model\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolo26n-cls.yaml' will call yolo26-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 86 layers, 2,812,104 parameters, 2,812,104 gradients, 0.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 86 layers, 6,724,008 parameters, 6,724,008 gradients, 1.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 106 layers, 11,634,216 parameters, 11,634,216 gradients, 5.0 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 176 layers, 14,115,624 parameters, 14,115,624 gradients, 6.2 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 176 layers, 29,637,064 parameters, 29,637,064 gradients, 13.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 2, C2PSA, [1024]] # 9\n\n# YOLO26n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1a668bbe707ad97eabf7f999c29c746f62d3458217cd562a4aa47731ccb7dfa8",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 6724008,
+      "gflops": 1.4908,
+      "layers": 11
+     }
+    },
+    "x": {
+     "modelName": "yolo26x-cls.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-cls image classification model\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/classify\n\n# Parameters\nnc: 1000 # number of classes\nscales: # model compound scaling constants, i.e. 'model=yolo26n-cls.yaml' will call yolo26-cls.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 86 layers, 2,812,104 parameters, 2,812,104 gradients, 0.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 86 layers, 6,724,008 parameters, 6,724,008 gradients, 1.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 106 layers, 11,634,216 parameters, 11,634,216 gradients, 5.0 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 176 layers, 14,115,624 parameters, 14,115,624 gradients, 6.2 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 176 layers, 29,637,064 parameters, 29,637,064 gradients, 13.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 2, C2PSA, [1024]] # 9\n\n# YOLO26n head\nhead:\n  - [-1, 1, Classify, [nc]] # Classify\n",
+     "yamlSha256": "1a668bbe707ad97eabf7f999c29c746f62d3458217cd562a4aa47731ccb7dfa8",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-cls.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 224,
+     "measured": {
+      "params": 29637064,
+      "gflops": 13.6039,
+      "layers": 11
+     }
+    }
+   }
+  },
+  "detect": {
+   "variants": {
+    "l": {
+     "modelName": "yolo26l.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n.yaml' will call yolo26.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 260 layers, 2,572,280 parameters, 2,572,280 gradients, 6.1 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 260 layers, 10,009,784 parameters, 10,009,784 gradients, 22.8 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 280 layers, 21,896,248 parameters, 21,896,248 gradients, 75.4 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 392 layers, 26,299,704 parameters, 26,299,704 gradients, 93.8 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 392 layers, 58,993,368 parameters, 58,993,368 gradients, 209.5 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "b1d1fa0c69eced64f9939536038bd8d697c32e72200b34187a767de431af7ef0",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 26299704,
+      "gflops": 94.1582,
+      "layers": 24
+     }
+    },
+    "m": {
+     "modelName": "yolo26m.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n.yaml' will call yolo26.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 260 layers, 2,572,280 parameters, 2,572,280 gradients, 6.1 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 260 layers, 10,009,784 parameters, 10,009,784 gradients, 22.8 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 280 layers, 21,896,248 parameters, 21,896,248 gradients, 75.4 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 392 layers, 26,299,704 parameters, 26,299,704 gradients, 93.8 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 392 layers, 58,993,368 parameters, 58,993,368 gradients, 209.5 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "b1d1fa0c69eced64f9939536038bd8d697c32e72200b34187a767de431af7ef0",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 21896248,
+      "gflops": 75.6351,
+      "layers": 24
+     }
+    },
+    "n": {
+     "modelName": "yolo26n.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n.yaml' will call yolo26.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 260 layers, 2,572,280 parameters, 2,572,280 gradients, 6.1 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 260 layers, 10,009,784 parameters, 10,009,784 gradients, 22.8 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 280 layers, 21,896,248 parameters, 21,896,248 gradients, 75.4 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 392 layers, 26,299,704 parameters, 26,299,704 gradients, 93.8 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 392 layers, 58,993,368 parameters, 58,993,368 gradients, 209.5 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "b1d1fa0c69eced64f9939536038bd8d697c32e72200b34187a767de431af7ef0",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 2572280,
+      "gflops": 6.2397,
+      "layers": 24
+     }
+    },
+    "s": {
+     "modelName": "yolo26s.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n.yaml' will call yolo26.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 260 layers, 2,572,280 parameters, 2,572,280 gradients, 6.1 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 260 layers, 10,009,784 parameters, 10,009,784 gradients, 22.8 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 280 layers, 21,896,248 parameters, 21,896,248 gradients, 75.4 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 392 layers, 26,299,704 parameters, 26,299,704 gradients, 93.8 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 392 layers, 58,993,368 parameters, 58,993,368 gradients, 209.5 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "b1d1fa0c69eced64f9939536038bd8d697c32e72200b34187a767de431af7ef0",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 10009784,
+      "gflops": 23.0793,
+      "layers": 24
+     }
+    },
+    "x": {
+     "modelName": "yolo26x.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26 object detection model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/detect\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n.yaml' will call yolo26.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 260 layers, 2,572,280 parameters, 2,572,280 gradients, 6.1 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 260 layers, 10,009,784 parameters, 10,009,784 gradients, 22.8 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 280 layers, 21,896,248 parameters, 21,896,248 gradients, 75.4 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 392 layers, 26,299,704 parameters, 26,299,704 gradients, 93.8 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 392 layers, 58,993,368 parameters, 58,993,368 gradients, 209.5 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Detect, [nc]] # Detect(P3, P4, P5)\n",
+     "yamlSha256": "b1d1fa0c69eced64f9939536038bd8d697c32e72200b34187a767de431af7ef0",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 58993368,
+      "gflops": 210.0747,
+      "layers": 24
+     }
+    }
+   }
+  },
+  "obb": {
+   "variants": {
+    "l": {
+     "modelName": "yolo26l-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-obb.yaml' will call yolo26-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 291 layers, 2,715,614 parameters, 2,715,614 gradients, 16.9 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 291 layers, 10,582,142 parameters, 10,582,142 gradients, 63.5 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 311 layers, 23,593,918 parameters, 23,593,918 gradients, 211.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 423 layers, 27,997,374 parameters, 27,997,374 gradients, 259.0 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 423 layers, 62,811,678 parameters, 62,811,678 gradients, 578.9 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, OBB26, [nc, 1]] # OBB26(P3, P4, P5)\n",
+     "yamlSha256": "03d360e6764ea30ef8b5891e8f1a15c86076c33b488bf72e36ac58aea0794f7f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 27997374,
+      "gflops": 101.5504,
+      "layers": 24
+     }
+    },
+    "m": {
+     "modelName": "yolo26m-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-obb.yaml' will call yolo26-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 291 layers, 2,715,614 parameters, 2,715,614 gradients, 16.9 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 291 layers, 10,582,142 parameters, 10,582,142 gradients, 63.5 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 311 layers, 23,593,918 parameters, 23,593,918 gradients, 211.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 423 layers, 27,997,374 parameters, 27,997,374 gradients, 259.0 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 423 layers, 62,811,678 parameters, 62,811,678 gradients, 578.9 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, OBB26, [nc, 1]] # OBB26(P3, P4, P5)\n",
+     "yamlSha256": "03d360e6764ea30ef8b5891e8f1a15c86076c33b488bf72e36ac58aea0794f7f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 23593918,
+      "gflops": 83.0273,
+      "layers": 24
+     }
+    },
+    "n": {
+     "modelName": "yolo26n-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-obb.yaml' will call yolo26-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 291 layers, 2,715,614 parameters, 2,715,614 gradients, 16.9 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 291 layers, 10,582,142 parameters, 10,582,142 gradients, 63.5 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 311 layers, 23,593,918 parameters, 23,593,918 gradients, 211.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 423 layers, 27,997,374 parameters, 27,997,374 gradients, 259.0 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 423 layers, 62,811,678 parameters, 62,811,678 gradients, 578.9 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, OBB26, [nc, 1]] # OBB26(P3, P4, P5)\n",
+     "yamlSha256": "03d360e6764ea30ef8b5891e8f1a15c86076c33b488bf72e36ac58aea0794f7f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 2715614,
+      "gflops": 6.7348,
+      "layers": 24
+     }
+    },
+    "s": {
+     "modelName": "yolo26s-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-obb.yaml' will call yolo26-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 291 layers, 2,715,614 parameters, 2,715,614 gradients, 16.9 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 291 layers, 10,582,142 parameters, 10,582,142 gradients, 63.5 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 311 layers, 23,593,918 parameters, 23,593,918 gradients, 211.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 423 layers, 27,997,374 parameters, 27,997,374 gradients, 259.0 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 423 layers, 62,811,678 parameters, 62,811,678 gradients, 578.9 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, OBB26, [nc, 1]] # OBB26(P3, P4, P5)\n",
+     "yamlSha256": "03d360e6764ea30ef8b5891e8f1a15c86076c33b488bf72e36ac58aea0794f7f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 10582142,
+      "gflops": 25.0502,
+      "layers": 24
+     }
+    },
+    "x": {
+     "modelName": "yolo26x-obb.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-obb Oriented Bounding Boxes (OBB) model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/obb\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-obb.yaml' will call yolo26-obb.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 291 layers, 2,715,614 parameters, 2,715,614 gradients, 16.9 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 291 layers, 10,582,142 parameters, 10,582,142 gradients, 63.5 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 311 layers, 23,593,918 parameters, 23,593,918 gradients, 211.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 423 layers, 27,997,374 parameters, 27,997,374 gradients, 259.0 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 423 layers, 62,811,678 parameters, 62,811,678 gradients, 578.9 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, OBB26, [nc, 1]] # OBB26(P3, P4, P5)\n",
+     "yamlSha256": "03d360e6764ea30ef8b5891e8f1a15c86076c33b488bf72e36ac58aea0794f7f",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-obb.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 62811678,
+      "gflops": 226.6926,
+      "layers": 24
+     }
+    }
+   }
+  },
+  "pose": {
+   "variants": {
+    "l": {
+     "modelName": "yolo26l-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolo26n-pose.yaml' will call yolo26-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 363 layers, 3,747,554 parameters, 3,747,554 gradients, 10.7 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 363 layers, 11,870,498 parameters, 11,870,498 gradients, 29.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 383 layers, 24,344,482 parameters, 24,344,482 gradients, 85.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 495 layers, 28,747,938 parameters, 28,747,938 gradients, 104.3 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 495 layers, 62,914,350 parameters, 62,914,350 gradients, 226.3 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Pose26, [nc, kpt_shape]] # Pose26(P3, P4, P5)\n",
+     "yamlSha256": "07ba82d9637023f261e526c38fa9aeb8ab05d911766ffd8cf4f48cd33f27188d",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 28747938,
+      "gflops": 104.6585,
+      "layers": 24
+     }
+    },
+    "m": {
+     "modelName": "yolo26m-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolo26n-pose.yaml' will call yolo26-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 363 layers, 3,747,554 parameters, 3,747,554 gradients, 10.7 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 363 layers, 11,870,498 parameters, 11,870,498 gradients, 29.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 383 layers, 24,344,482 parameters, 24,344,482 gradients, 85.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 495 layers, 28,747,938 parameters, 28,747,938 gradients, 104.3 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 495 layers, 62,914,350 parameters, 62,914,350 gradients, 226.3 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Pose26, [nc, kpt_shape]] # Pose26(P3, P4, P5)\n",
+     "yamlSha256": "07ba82d9637023f261e526c38fa9aeb8ab05d911766ffd8cf4f48cd33f27188d",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 24344482,
+      "gflops": 86.1354,
+      "layers": 24
+     }
+    },
+    "n": {
+     "modelName": "yolo26n-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolo26n-pose.yaml' will call yolo26-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 363 layers, 3,747,554 parameters, 3,747,554 gradients, 10.7 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 363 layers, 11,870,498 parameters, 11,870,498 gradients, 29.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 383 layers, 24,344,482 parameters, 24,344,482 gradients, 85.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 495 layers, 28,747,938 parameters, 28,747,938 gradients, 104.3 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 495 layers, 62,914,350 parameters, 62,914,350 gradients, 226.3 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Pose26, [nc, kpt_shape]] # Pose26(P3, P4, P5)\n",
+     "yamlSha256": "07ba82d9637023f261e526c38fa9aeb8ab05d911766ffd8cf4f48cd33f27188d",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 3747554,
+      "gflops": 10.7864,
+      "layers": 24
+     }
+    },
+    "s": {
+     "modelName": "yolo26s-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolo26n-pose.yaml' will call yolo26-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 363 layers, 3,747,554 parameters, 3,747,554 gradients, 10.7 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 363 layers, 11,870,498 parameters, 11,870,498 gradients, 29.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 383 layers, 24,344,482 parameters, 24,344,482 gradients, 85.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 495 layers, 28,747,938 parameters, 28,747,938 gradients, 104.3 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 495 layers, 62,914,350 parameters, 62,914,350 gradients, 226.3 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Pose26, [nc, kpt_shape]] # Pose26(P3, P4, P5)\n",
+     "yamlSha256": "07ba82d9637023f261e526c38fa9aeb8ab05d911766ffd8cf4f48cd33f27188d",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 11870498,
+      "gflops": 29.8195,
+      "layers": 24
+     }
+    },
+    "x": {
+     "modelName": "yolo26x-pose.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-pose keypoints/pose estimation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/pose\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nkpt_shape: [17, 3] # number of keypoints, number of dims (2 for x,y or 3 for x,y,visible)\nscales: # model compound scaling constants, i.e. 'model=yolo26n-pose.yaml' will call yolo26-pose.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 363 layers, 3,747,554 parameters, 3,747,554 gradients, 10.7 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 363 layers, 11,870,498 parameters, 11,870,498 gradients, 29.6 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 383 layers, 24,344,482 parameters, 24,344,482 gradients, 85.9 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 495 layers, 28,747,938 parameters, 28,747,938 gradients, 104.3 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 495 layers, 62,914,350 parameters, 62,914,350 gradients, 226.3 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Pose26, [nc, kpt_shape]] # Pose26(P3, P4, P5)\n",
+     "yamlSha256": "07ba82d9637023f261e526c38fa9aeb8ab05d911766ffd8cf4f48cd33f27188d",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-pose.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 62914350,
+      "gflops": 226.8538,
+      "layers": 24
+     }
+    }
+   }
+  },
+  "segment": {
+   "variants": {
+    "l": {
+     "modelName": "yolo26l-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-seg.yaml' will call yolo26-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 309 layers, 3,126,280 parameters, 3,126,280 gradients, 10.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 309 layers, 11,505,800 parameters, 11,505,800 gradients, 37.4 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 329 layers, 27,112,072 parameters, 27,112,072 gradients, 132.5 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 441 layers, 31,515,528 parameters, 31,515,528 gradients, 150.9 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 441 layers, 70,693,800 parameters, 70,693,800 gradients, 337.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Segment26, [nc, 32, 256]] # Segment26(P3, P4, P5)\n",
+     "yamlSha256": "53c0348a36a3e19bbc3bd4f695f50cbbfc97a3059f62e9b251f278ad74fdd7cb",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 31515528,
+      "gflops": 151.304,
+      "layers": 24
+     }
+    },
+    "m": {
+     "modelName": "yolo26m-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-seg.yaml' will call yolo26-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 309 layers, 3,126,280 parameters, 3,126,280 gradients, 10.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 309 layers, 11,505,800 parameters, 11,505,800 gradients, 37.4 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 329 layers, 27,112,072 parameters, 27,112,072 gradients, 132.5 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 441 layers, 31,515,528 parameters, 31,515,528 gradients, 150.9 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 441 layers, 70,693,800 parameters, 70,693,800 gradients, 337.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Segment26, [nc, 32, 256]] # Segment26(P3, P4, P5)\n",
+     "yamlSha256": "53c0348a36a3e19bbc3bd4f695f50cbbfc97a3059f62e9b251f278ad74fdd7cb",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 27112072,
+      "gflops": 132.7809,
+      "layers": 24
+     }
+    },
+    "n": {
+     "modelName": "yolo26n-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-seg.yaml' will call yolo26-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 309 layers, 3,126,280 parameters, 3,126,280 gradients, 10.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 309 layers, 11,505,800 parameters, 11,505,800 gradients, 37.4 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 329 layers, 27,112,072 parameters, 27,112,072 gradients, 132.5 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 441 layers, 31,515,528 parameters, 31,515,528 gradients, 150.9 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 441 layers, 70,693,800 parameters, 70,693,800 gradients, 337.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Segment26, [nc, 32, 256]] # Segment26(P3, P4, P5)\n",
+     "yamlSha256": "53c0348a36a3e19bbc3bd4f695f50cbbfc97a3059f62e9b251f278ad74fdd7cb",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 3126280,
+      "gflops": 10.6304,
+      "layers": 24
+     }
+    },
+    "s": {
+     "modelName": "yolo26s-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-seg.yaml' will call yolo26-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 309 layers, 3,126,280 parameters, 3,126,280 gradients, 10.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 309 layers, 11,505,800 parameters, 11,505,800 gradients, 37.4 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 329 layers, 27,112,072 parameters, 27,112,072 gradients, 132.5 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 441 layers, 31,515,528 parameters, 31,515,528 gradients, 150.9 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 441 layers, 70,693,800 parameters, 70,693,800 gradients, 337.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Segment26, [nc, 32, 256]] # Segment26(P3, P4, P5)\n",
+     "yamlSha256": "53c0348a36a3e19bbc3bd4f695f50cbbfc97a3059f62e9b251f278ad74fdd7cb",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 11505800,
+      "gflops": 37.6619,
+      "layers": 24
+     }
+    },
+    "x": {
+     "modelName": "yolo26x-seg.yaml",
+     "yamlText": "# Ultralytics 🚀 AGPL-3.0 License - https://ultralytics.com/license\n\n# Ultralytics YOLO26-seg instance segmentation model with P3/8 - P5/32 outputs\n# Model docs: https://docs.ultralytics.com/models/yolo26\n# Task docs: https://docs.ultralytics.com/tasks/segment\n\n# Parameters\nnc: 80 # number of classes\nend2end: True # whether to use end-to-end mode\nreg_max: 1 # DFL bins\nscales: # model compound scaling constants, i.e. 'model=yolo26n-seg.yaml' will call yolo26-seg.yaml with scale 'n'\n  # [depth, width, max_channels]\n  n: [0.50, 0.25, 1024] # summary: 309 layers, 3,126,280 parameters, 3,126,280 gradients, 10.5 GFLOPs\n  s: [0.50, 0.50, 1024] # summary: 309 layers, 11,505,800 parameters, 11,505,800 gradients, 37.4 GFLOPs\n  m: [0.50, 1.00, 512] # summary: 329 layers, 27,112,072 parameters, 27,112,072 gradients, 132.5 GFLOPs\n  l: [1.00, 1.00, 512] # summary: 441 layers, 31,515,528 parameters, 31,515,528 gradients, 150.9 GFLOPs\n  x: [1.00, 1.50, 512] # summary: 441 layers, 70,693,800 parameters, 70,693,800 gradients, 337.7 GFLOPs\n\n# YOLO26n backbone\nbackbone:\n  # [from, repeats, module, args]\n  - [-1, 1, Conv, [64, 3, 2]] # 0-P1/2\n  - [-1, 1, Conv, [128, 3, 2]] # 1-P2/4\n  - [-1, 2, C3k2, [256, False, 0.25]]\n  - [-1, 1, Conv, [256, 3, 2]] # 3-P3/8\n  - [-1, 2, C3k2, [512, False, 0.25]]\n  - [-1, 1, Conv, [512, 3, 2]] # 5-P4/16\n  - [-1, 2, C3k2, [512, True]]\n  - [-1, 1, Conv, [1024, 3, 2]] # 7-P5/32\n  - [-1, 2, C3k2, [1024, True]]\n  - [-1, 1, SPPF, [1024, 5, 3, True]] # 9\n  - [-1, 2, C2PSA, [1024]] # 10\n\n# YOLO26n head\nhead:\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 6], 1, Concat, [1]] # cat backbone P4\n  - [-1, 2, C3k2, [512, True]] # 13\n\n  - [-1, 1, nn.Upsample, [None, 2, \"nearest\"]]\n  - [[-1, 4], 1, Concat, [1]] # cat backbone P3\n  - [-1, 2, C3k2, [256, True]] # 16 (P3/8-small)\n\n  - [-1, 1, Conv, [256, 3, 2]]\n  - [[-1, 13], 1, Concat, [1]] # cat head P4\n  - [-1, 2, C3k2, [512, True]] # 19 (P4/16-medium)\n\n  - [-1, 1, Conv, [512, 3, 2]]\n  - [[-1, 10], 1, Concat, [1]] # cat head P5\n  - [-1, 1, C3k2, [1024, True, 0.5, True]] # 22 (P5/32-large)\n\n  - [[16, 19, 22], 1, Segment26, [nc, 32, 256]] # Segment26(P3, P4, P5)\n",
+     "yamlSha256": "53c0348a36a3e19bbc3bd4f695f50cbbfc97a3059f62e9b251f278ad74fdd7cb",
+     "source": {
+      "repo": "https://github.com/ultralytics/ultralytics",
+      "file": "ultralytics/cfg/models/26/yolo26-seg.yaml",
+      "package": "ultralytics",
+      "packageVersion": "8.4.184",
+      "commit": null
+     },
+     "retrievedAt": "2026-10-23",
+     "inputSize": 640,
+     "measured": {
+      "params": 70693800,
+      "gflops": 338.2033,
+      "layers": 24
+     }
+    }
+   }
+  }
+ }
+}
