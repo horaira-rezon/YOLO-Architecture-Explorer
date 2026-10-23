@@ -26,3 +26,18 @@ Okabe–Ito hues: input grey, backbone blue, neck bluish-green, head orange, los
 
 ## D8 — Own command stack instead of zundo
 Every edit is already an `Operation` with an inverse snapshot, so undo/redo is a stack of (forward ops, previous graph) entries. This gives grouped undo for AI patches for free; zundo would duplicate it.
+
+## D9 — What the fixtures contain and how we compare
+- One forward pass on a blank image: 640×640 for detect/segment/pose/obb, **224×224 for classify** (the size Ultralytics uses for its classification models and their published GFLOPs).
+- Per layer: output shape (forward hook), parameters (`sum(p.numel())`, including the frozen DFL weights, like `model.info()`), FLOPs from `thop.profile(ret_layer_info=True)` at full size, and the PyTorch sub-module tree.
+- thop counts functional matrix products (attention `q @ k`) globally, not per layer. The engine tracks them separately (`functionalFlops`): per-layer tests compare without them, the total compares with them.
+- Tests are strict: shapes exact, **per-layer** params exact (stronger than the required 1% total), per-layer FLOPs exact, total GFLOPs within 1%.
+
+## D10 — Edges are derived from `from`
+A node's `from` list is the single source of truth for connections (exactly like the YAML). Edges for drawing are derived. This removes a whole class of "edge list and from list disagree" bugs.
+
+## D11 — Engine mirrors module construction
+Each block is a TypeScript function that mirrors the Ultralytics PyTorch module (same sub-module names and order). Shapes, params, FLOPs and the zoomed-in L2/L3 graphs all come from that one description, and the fixtures check it layer by layer.
+
+## D12 — Licence of bundled configs
+Model YAMLs are copied verbatim from Ultralytics (AGPL-3.0) and iMoonLab/yolov13 (AGPL-3.0, an Ultralytics fork) inside the fixtures, with source file, package version/commit and SHA-256 recorded. The project therefore ships under AGPL-3.0.
