@@ -78,3 +78,30 @@ test("after an AI patch every node (changed or not) explains itself for the goal
   await page.getByTestId("apply-args").click();
   await expect(page.getByTestId("goal-stale")).toBeVisible();
 });
+
+test("Gemini rejects the response schema with 400 → the app retries in plain JSON mode", async ({ page }) => {
+  const bodies: Record<string, unknown>[] = [];
+  await page.route("https://generativelanguage.googleapis.com/**", async (route) => {
+    const body = route.request().postDataJSON() as Record<string, unknown>;
+    bodies.push(body);
+    const cfg = body.generationConfig as Record<string, unknown>;
+    if (cfg.responseJsonSchema) {
+      await route.fulfill({ status: 400, json: { error: { code: 400, message: "Request contains an invalid argument.", status: "INVALID_ARGUMENT" } } });
+      return;
+    }
+    const patch = { summary: "Add a P2 level for small cracks.", assumptions: [], suggestedExperiments: ["Baseline"], operations: [{ op: "addHeadLevel", level: "P2", rationaleSimple: "More detail.", rationaleForGoal: "Small cracks get more cells.", tradeoff: "More compute.", risk: "Slower.", confidence: "high", isHypothesis: true, breaksPretrained: true }] };
+    await route.fulfill({ json: { candidates: [{ content: { role: "model", parts: [{ text: JSON.stringify(patch) }] }, finishReason: "STOP" }] } });
+  });
+  await page.goto("/settings");
+  await page.getByRole("radio", { name: /Google Gemini/ }).check();
+  await page.getByPlaceholder("paste your key").fill("test-key-not-real");
+  await page.getByTestId("save-ai").click();
+  await page.goto("/lab/v8/detect/n");
+  await page.getByTestId("open-ai").click();
+  await page.getByTestId("example-preset").click();
+  await page.getByTestId("generate").click();
+  await expect(page.getByTestId("patch-preview")).toContainText("Add a P2 level");
+  expect(bodies.length).toBe(2);
+  expect((bodies[1]!.generationConfig as Record<string, unknown>).responseMimeType).toBe("application/json");
+  expect(JSON.stringify(bodies[1]!.systemInstruction)).toContain("Return only JSON matching this JSON Schema");
+});

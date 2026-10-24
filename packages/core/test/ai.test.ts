@@ -48,9 +48,12 @@ describe("AI patch loop (MockProvider)", () => {
 });
 
 describe("AI plumbing", () => {
-  it("patch JSON schema is flat (no refs, unions or recursion)", () => {
+  it("patch JSON schema is flat and portable (no refs, unions, bounds or strictness keywords)", () => {
     const s = JSON.stringify(toJsonSchema(PatchSchema));
-    expect(s).not.toMatch(/\$ref|anyOf|oneOf|allOf/);
+    expect(s).not.toMatch(/\$ref|anyOf|oneOf|allOf|\$schema|minimum|maximum|minLength|maxItems|additionalProperties/);
+    expect(s).not.toMatch(/9007199254740991/);
+    expect(s).toContain('"required"');
+    expect(s).toContain('"enum"');
   });
   it("extracts JSON from fenced replies", () => {
     expect(extractJson('Sure!\n```json\n{"a": 1}\n```')).toEqual({ a: 1 });

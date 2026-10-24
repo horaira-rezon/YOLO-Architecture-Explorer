@@ -4,23 +4,39 @@ import { AIError, statusError, type CompletionRequest, type LLMClient } from "./
 export class GeminiClient implements LLMClient {
   readonly id = "gemini";
   constructor(private apiKey: string, readonly model: string) {}
+  /** Set after a model rejects responseJsonSchema; later requests use plain JSON mode straight away. */
+  private schemaRejected = false;
+
   async complete(req: CompletionRequest): Promise<string> {
     const { GoogleGenAI, ApiError } = await import("@google/genai");
     const ai = new GoogleGenAI({ apiKey: this.apiKey });
-    try {
+    const call = async (withSchema: boolean) => {
       const res = await ai.models.generateContent({
         model: this.model,
         contents: req.user,
         config: {
-          systemInstruction: req.system,
+          systemInstruction: req.system + (req.json && !withSchema ? `\nReturn only JSON matching this JSON Schema: ${JSON.stringify(req.json.schema)}` : ""),
           temperature: req.temperature ?? 0.4,
           abortSignal: req.signal,
-          ...(req.json ? { responseMimeType: "application/json", responseJsonSchema: req.json.schema } : {}),
+          ...(req.json ? { responseMimeType: "application/json" } : {}),
+          ...(req.json && withSchema ? { responseJsonSchema: req.json.schema } : {}),
         },
       });
       const text = res.text;
       if (!text) throw new AIError("Gemini returned an empty answer (it may have been blocked by a safety filter).");
       return text;
+    };
+    try {
+      try {
+        return await call(!!req.json && !this.schemaRejected);
+      } catch (e) {
+        // some models reject a response schema with 400 INVALID_ARGUMENT: retry once in plain JSON mode
+        if (e instanceof ApiError && e.status === 400 && req.json && !this.schemaRejected) {
+          this.schemaRejected = true;
+          return await call(false);
+        }
+        throw e;
+      }
     } catch (e) {
       if (req.signal?.aborted) throw new AIError("Cancelled");
       if (e instanceof ApiError) throw statusError(e.status, e.message);

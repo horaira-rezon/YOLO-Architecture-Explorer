@@ -130,9 +130,22 @@ export function toOperation(p: PatchOp): Operation {
   return r.data;
 }
 
-/** JSON Schema for providers' structured-output modes (kept flat). */
+/** Keywords every provider's structured-output mode understands. Everything else is checked locally by Zod. */
+const PORTABLE_KEYS = new Set(["type", "properties", "required", "items", "enum", "description"]);
+
+/** Keep only portable keywords (drops min/max bounds such as Zod's 2^53 integer limit, minLength, additionalProperties…). */
+export function portableSchema(node: unknown): unknown {
+  if (Array.isArray(node)) return node.map(portableSchema);
+  if (!node || typeof node !== "object") return node;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(node as Record<string, unknown>)) {
+    if (!PORTABLE_KEYS.has(k)) continue;
+    out[k] = k === "properties" ? Object.fromEntries(Object.entries(v as Record<string, unknown>).map(([p, d]) => [p, portableSchema(d)])) : portableSchema(v);
+  }
+  return out;
+}
+
+/** JSON Schema for providers' structured-output modes (flat and portable; Zod still validates every answer). */
 export function toJsonSchema(schema: z.ZodType): unknown {
-  const js = z.toJSONSchema(schema, { target: "draft-7" }) as Record<string, unknown>;
-  delete js.$schema;
-  return js;
+  return portableSchema(z.toJSONSchema(schema, { target: "draft-7" }));
 }
