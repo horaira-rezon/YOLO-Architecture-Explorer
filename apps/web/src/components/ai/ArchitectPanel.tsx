@@ -6,6 +6,7 @@ import { useAtlas } from "../../store/atlas";
 import { applyPatch } from "../../store/lab";
 import { getProvider, isMock } from "../../lib/ai";
 import { describeOp } from "./describeOp";
+import { ChangeStory } from "./ChangeStory";
 
 const EMPTY: GoalSpec = { goal: "", dataset: {}, deploymentTarget: "", budget: "", alreadyTried: "" };
 
@@ -20,6 +21,7 @@ export function ArchitectPanel() {
   const [followUp, setFollowUp] = useState("");
   const [applied, setApplied] = useState(false);
   const abort = useRef<AbortController | null>(null);
+  const [tab, setTab] = useState<"suggest" | "story">("suggest");
   const provider = getProvider();
 
   const preview = useMemo(() => (result?.patch && base ? applyPatchDraft(base, result.patch, selected) : null), [result, base, selected]);
@@ -64,6 +66,7 @@ export function ArchitectPanel() {
     setAISession({ id: sessionId, goal, patch: result.patch, providerLabel: provider.label, applied: [...selected], notes: r.notes });
     setDiffView(true);
     setApplied(true);
+    setTab("story");
   };
 
   const field = "mt-0.5 w-full rounded border border-border bg-bg px-2 py-1";
@@ -74,6 +77,14 @@ export function ArchitectPanel() {
         <h2 className="flex-1 text-lg font-semibold">AI Architect</h2>
         <button type="button" onClick={() => setAIPanelOpen(false)} aria-label="Close AI Architect" className="rounded p-1 hover:bg-surface-2"><X size={18} /></button>
       </header>
+      <div role="tablist" className="flex gap-1 border-b border-border px-4 pt-2 text-sm">
+        {(["suggest", "story"] as const).map((t) => (
+          <button key={t} role="tab" type="button" aria-selected={tab === t} onClick={() => setTab(t)} className={`rounded-t px-3 py-1 ${tab === t ? "border-b-2 border-accent font-semibold" : "text-muted"}`} data-testid={`tab-${t}`}>
+            {t === "suggest" ? "Suggest changes" : "Change story"}
+          </button>
+        ))}
+      </div>
+      {tab === "story" ? <div className="px-4 py-3"><ChangeStory /></div> : (
       <div className="space-y-3 px-4 py-3 text-sm">
         <p className="flex items-center gap-1 text-xs text-muted"><Bot size={14} aria-hidden /> Using: <strong>{provider.label}</strong> · <Link to="/settings" className="underline">change</Link></p>
         {isMock(provider) && <p className="rounded border border-warn/50 bg-warn/10 p-2 text-xs">Offline demo: suggestions come from simple keyword rules, not an AI. Connect a provider in Settings for real suggestions.</p>}
@@ -155,6 +166,7 @@ export function ArchitectPanel() {
           </div>
         )}
       </div>
+      )}
     </aside>
   );
 }

@@ -11,7 +11,7 @@ test("AI Architect with the offline MockProvider: preset → generate → accept
   await page.getByTestId("patch-op-3").getByRole("checkbox").uncheck();
   await expect(page.getByTestId("patch-preview")).toContainText("The resulting model is valid");
   await page.getByTestId("apply-patch").click();
-  await expect(page.getByTestId("apply-patch")).toHaveText(/Applied/);
+  await expect(page.getByTestId("change-story")).toBeVisible();
   await expect(page.getByTestId("validation-button")).toHaveText(/Valid/);
   await expect(page.locator('[data-origin="added"]')).toHaveCount(7); // CBAM + 6 P2 nodes
   // undo the whole patch in one step
@@ -47,4 +47,30 @@ test("Gemini provider: structured-output request is well formed (network interce
   expect(cfg.responseMimeType).toBe("application/json");
   expect(cfg.responseJsonSchema).toBeTruthy();
   expect(JSON.stringify(body.systemInstruction)).toContain("Return a PATCH");
+});
+
+test("after an AI patch every node (changed or not) explains itself for the goal", async ({ page }) => {
+  await page.goto("/lab/v8/detect/n");
+  await page.getByTestId("open-ai").click();
+  await page.getByTestId("weed-preset").click();
+  await page.getByTestId("generate").click();
+  await page.getByTestId("apply-patch").click();
+  await expect(page.getByTestId("change-story")).toContainText("The problem");
+  await expect(page.getByTestId("change-story")).toContainText("Add a P2 detection level");
+  // background job: explain all layers
+  await page.getByTestId("explain-all-start").click();
+  await expect(page.getByTestId("explain-all-start")).toContainText("Done");
+  // close the AI panel and click an unchanged node and a modified node
+  await page.getByRole("button", { name: "Close AI Architect" }).click();
+  await page.getByTestId("node-n3").click();
+  await expect(page.getByTestId("goal-section")).toContainText("For your goal");
+  await expect(page.getByTestId("goal-section")).toContainText("unchanged");
+  await page.locator('[data-origin="added"]').first().click();
+  await expect(page.getByTestId("goal-section")).toContainText("Why the AI changed it");
+  // a manual edit of a block that already has an explanation marks it out of date
+  await page.getByTestId("node-n4").click();
+  await expect(page.getByTestId("goal-section")).toContainText("For your goal");
+  await page.locator("#arg-c2").fill("320");
+  await page.getByTestId("apply-args").click();
+  await expect(page.getByTestId("goal-stale")).toBeVisible();
 });

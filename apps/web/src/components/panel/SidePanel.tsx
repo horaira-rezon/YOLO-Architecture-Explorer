@@ -12,6 +12,7 @@ import { CodeBlock } from "../text/CodeBlock";
 import { ReadingLevelSwitch } from "../ReadingLevelSwitch";
 import { ParamEditor } from "../lab/ParamEditor";
 import { BlockChat } from "../ai/BlockChat";
+import { GoalSection } from "../ai/GoalSection";
 import { computeArchitecture, diffById } from "@yolo-atlas/core";
 
 function Section({ title, children, id }: { title: string; children: ReactNode; id: string }) {
@@ -29,7 +30,7 @@ function Badge({ children, tone = "muted" }: { children: ReactNode; tone?: "mute
 }
 
 export function SidePanel() {
-  const { arch: liveArch, computed: liveComp, selectedId: rawId, select, readingLevel: level, mode, original } = useAtlas();
+  const { arch: liveArch, computed: liveComp, selectedId: rawId, select, readingLevel: level, mode, original, goal, aiSession } = useAtlas();
   // removed blocks ("ghosts" in the change view) are explained from the original model
   const ghost = !!rawId?.startsWith("ghost:");
   const origComp = useMemo(() => (original ? computeArchitecture(original) : null), [original]);
@@ -78,6 +79,7 @@ export function SidePanel() {
         {change && (
           <Section title={change.kind === "removed" ? "Removed in the Lab" : change.kind === "added" ? "Added in the Lab" : "What changed"} id="changed">
             {(change.b ?? change.a)?.modification?.summary && <p><strong>{(change.b ?? change.a)!.modification!.summary}</strong></p>}
+            {(() => { const op = (change.b ?? change.a)?.modification ? aiSession?.notes[(change.b ?? change.a)!.modification!.opId] : undefined; return op ? <p><strong>Why:</strong> {op.rationaleForGoal} <span className="text-muted">Trade-off: {op.tradeoff}</span></p> : null; })()}
             {change.kind === "removed" && <p>This block was in the original model. It no longer runs; its explanation below describes what it used to do.</p>}
             {change.kind === "added" && <p>This block is not in the official {arch.version} model.</p>}
             {change.changes.length > 0 && (
@@ -208,6 +210,9 @@ export function SidePanel() {
           </Section>
         ) : null}
 
+        {node && !ghost && (goal || aiSession) && (
+          <Section title="How this helps your goal" id="goal"><GoalSection nodeId={node.id} /></Section>
+        )}
         <Section title="Ask about this block" id="ask">
           <BlockChat context={[
             `Model: ${arch.version} ${arch.task} (scale ${arch.config.scale ?? "fixed"}, input ${arch.inputSize}).`,

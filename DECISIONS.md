@@ -92,3 +92,6 @@ Keys come only from the Settings form (localStorage, with a warning) or the prox
 
 ## D29 — MockProvider is honest about being a demo
 The offline provider builds patches from keyword rules (nc from the goal, CBAM + P2 for tiny objects, GhostConv for edge devices) and labels itself "Offline demo (no AI)" everywhere. It powers tests and E2E and lets the whole flow work without a network.
+
+## D30 — Goal explanations: three layers, cached, with staleness
+The panel stacks (1) authored block content, (2) computed positional text and (3) AI goal context, and labels (3) "AI-generated · not verified". Goal context is cached in IndexedDB under hash(goal, reading level, provider/model, prompt version) per node, together with a signature of the node and its inputs/consumers (module, args, shapes). When the signature changes the explanation shows "out of date" with an Update button. Generation is lazy on click (node + up to 5 neighbours, so neighbours also get refreshed) or a background job over all layers in batches of 12 with progress and cancel; fresh entries are skipped.

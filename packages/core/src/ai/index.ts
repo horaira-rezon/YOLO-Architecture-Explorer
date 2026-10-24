@@ -8,3 +8,4 @@ export * from "./loop";
 export { PATCH_PROMPT_VERSION } from "./prompts/patch.v1";
 export { EXPLAIN_PROMPT_VERSION } from "./prompts/explain.v1";
 export { CHAT_PROMPT_VERSION } from "./prompts/chat.v1";
+export * from "./goalContext";
