@@ -4,7 +4,7 @@ import {
   type Edge, type Node, type NodeProps,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { ChevronRight, LogIn } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { blockGraph, flattenIR, formatCount, formatShape, type FlatGraph, type IRGraph } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
 import { layoutPlain, type Box, type Point } from "../../graph/layout";
@@ -43,7 +43,7 @@ function InnerNodeImpl({ id, data }: NodeProps<Node<InnerData>>) {
   const io = data.io;
   return (
     <div
-      role="button"
+      role="group"
       aria-label={io ? `${data.label}, ${data.shape}` : `${data.label} (${data.type}), output ${data.shape}${data.expandable ? ", can be opened" : ""}`}
       data-testid={`inner-${id}`}
       className={`relative flex h-full w-full flex-col justify-between rounded-lg border px-2 py-1 text-left ${
@@ -184,7 +184,7 @@ function Canvas() {
       aria-label={`Inside layer ${comp?.index}`}
     >
       <Background gap={20} size={1} color="var(--border)" />
-      <MiniMap pannable zoomable ariaLabel="Mini map" style={{ background: "var(--surface)" }} />
+      <MiniMap pannable zoomable ariaLabel="Mini map" style={{ background: "var(--surface)" }} className="!hidden md:!block" />
       <Controls showInteractive={false} position="top-left" />
     </ReactFlow>
   );
@@ -198,33 +198,3 @@ export function InsideView() {
   );
 }
 
-/** "YOLOv8n › Backbone › Layer 6 C2f › m › 0" with each crumb clickable. */
-export function Breadcrumbs() {
-  const { arch, computed, inside, selectedId, enter, exitInside, insideSelect } = useAtlas();
-  if (!arch || !computed) return null;
-  const nodeId = inside?.nodeId ?? selectedId;
-  const node = nodeId ? arch.nodes.find((n) => n.id === nodeId) : undefined;
-  const c = node ? computed.nodes[node.id] : undefined;
-  const segs = inside?.path ? inside.path.split(".") : [];
-  const crumbs: { label: string; onClick?: () => void }[] = [
-    { label: `${arch.version} ${arch.task} ${arch.config.scale ?? ""}`.trim(), onClick: exitInside },
-  ];
-  if (node) crumbs.push({ label: node.stage[0]!.toUpperCase() + node.stage.slice(1), onClick: exitInside });
-  if (node && c) crumbs.push({ label: `Layer ${c.index} ${node.module}`, onClick: inside ? () => enter(node.id, "") : () => enter(node.id) });
-  segs.forEach((s, i) => crumbs.push({ label: s, onClick: () => enter(node!.id, segs.slice(0, i + 1).join(".")) }));
-  if (inside?.selected) crumbs.push({ label: inside.selected.split(".").slice(segs.length).join(" › "), onClick: () => insideSelect(inside.selected) });
-  return (
-    <nav aria-label="Breadcrumbs" className="flex min-w-0 items-center gap-0.5 overflow-x-auto text-xs" data-testid="breadcrumbs">
-      {crumbs.map((cr, i) => (
-        <span key={i} className="flex shrink-0 items-center gap-0.5">
-          {i > 0 && <ChevronRight size={12} className="text-muted" aria-hidden />}
-          {cr.onClick && i < crumbs.length - 1 ? (
-            <button type="button" className="rounded px-1 py-0.5 hover:bg-surface-2" onClick={cr.onClick}>{cr.label}</button>
-          ) : (
-            <span className="px-1 py-0.5 font-semibold" aria-current="location">{cr.label}</span>
-          )}
-        </span>
-      ))}
-    </nav>
-  );
-}

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArrowDownUp, ArrowLeftRight, Footprints, LayoutGrid, List, Network, Search, Workflow } from "lucide-react";
 import { TASKS, VERSIONS, formatCount, getVersion, type Task } from "@yolo-atlas/core";
@@ -13,22 +13,36 @@ import { SizeRuler } from "../components/SizeRuler";
 import type { Architecture, ComputeResult } from "@yolo-atlas/core";
 import { ListView } from "../components/ListView";
 import { SidePanel } from "../components/panel/SidePanel";
-import { InsidePanel } from "../components/panel/InsidePanel";
-import { InsideView, Breadcrumbs } from "../components/canvas/InsideView";
-import { OverviewCanvas } from "../components/canvas/OverviewCanvas";
+
+import { Breadcrumbs } from "../components/canvas/Breadcrumbs";
+
 import { ZoomBar } from "../components/ZoomBar";
-import { CommandPalette } from "../components/CommandPalette";
-import { Walkthrough } from "../components/Walkthrough";
+
+
 import { useKeyboardNav } from "../lib/keyboard";
 import { Provenance } from "../components/Provenance";
-import { Palette } from "../components/lab/Palette";
-import { LabToolbar } from "../components/lab/LabToolbar";
-import { StatsBar } from "../components/lab/StatsBar";
-import { ModelSettings } from "../components/lab/ModelSettings";
+
+
+
+
 import { useAutosave } from "../lib/autosave";
-import { ArchitectPanel } from "../components/ai/ArchitectPanel";
+
+import { Tour } from "../components/Tour";
+import { loadContent } from "../lib/content";
 import { computeArchitecture } from "@yolo-atlas/core";
 import { FlaskConical, Telescope } from "lucide-react";
+
+// Lab, AI, zoomed-in views and search load on demand so the first diagram appears sooner
+const InsideView = lazy(() => import("../components/canvas/InsideView").then((m) => ({ default: m.InsideView })));
+const OverviewCanvas = lazy(() => import("../components/canvas/OverviewCanvas").then((m) => ({ default: m.OverviewCanvas })));
+const InsidePanel = lazy(() => import("../components/panel/InsidePanel").then((m) => ({ default: m.InsidePanel })));
+const Palette = lazy(() => import("../components/lab/Palette").then((m) => ({ default: m.Palette })));
+const LabToolbar = lazy(() => import("../components/lab/LabToolbar").then((m) => ({ default: m.LabToolbar })));
+const StatsBar = lazy(() => import("../components/lab/StatsBar").then((m) => ({ default: m.StatsBar })));
+const ModelSettings = lazy(() => import("../components/lab/ModelSettings").then((m) => ({ default: m.ModelSettings })));
+const ArchitectPanel = lazy(() => import("../components/ai/ArchitectPanel").then((m) => ({ default: m.ArchitectPanel })));
+const CommandPalette = lazy(() => import("../components/CommandPalette").then((m) => ({ default: m.CommandPalette })));
+const Walkthrough = lazy(() => import("../components/Walkthrough").then((m) => ({ default: m.Walkthrough })));
 
 export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   const { version = "v8", task = "detect", scale } = useParams();
@@ -39,6 +53,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   const original = useAtlas((s) => s.original);
   const diffView = useAtlas((s) => s.diffView);
   const aiPanelOpen = useAtlas((s) => s.aiPanelOpen);
+  const paletteSheet = useAtlas((s) => s.paletteSheet);
   useEffect(() => useAtlas.getState().setMode(mode), [mode]);
   const modelKey = `${version}-${task}-${scale ?? "default"}`;
   const restore = useAutosave(mode === "lab", modelKey);
@@ -95,6 +110,13 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
     };
   }, [graph, direction, layoutMode]);
 
+  useEffect(() => {
+    if (!layout) return;
+    const w = window as Window & { requestIdleCallback?: (f: () => void) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(() => void loadContent());
+    else setTimeout(() => void loadContent(), 200);
+  }, [layout]);
+
   const go = (v: string, t: string, s?: string) => navigate(`/${mode}/${v}/${t}${s ? `/${s}` : ""}`);
   const available = VERSIONS.filter((v) => v.status === "released" && v.tasks[task as Task]?.supported);
 
@@ -110,7 +132,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="flex flex-wrap items-center gap-2 border-b border-border bg-surface px-3 py-2 text-sm">
+      <div className="flex items-center gap-2 overflow-x-auto border-b border-border bg-surface px-3 py-2 text-sm md:flex-wrap md:overflow-visible [&>*]:shrink-0">
         <label className="flex items-center gap-1">
           <span className="sr-only">Version</span>
           <select className="rounded border border-border bg-bg px-2 py-1" value={version} onChange={(e) => go(e.target.value, task)} aria-label="Version">
@@ -127,10 +149,10 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
         </select>
         {arch && <Provenance arch={arch} info={info} />}
         <Link to={`/compare/${task}?a=${version}`} className="rounded px-1.5 py-1 text-xs hover:bg-surface-2" data-testid="compare-from-explorer">Compare</Link>
-        <Link to={`/${mode === "lab" ? "explore" : "lab"}/${version}/${task}${scale ? `/${scale}` : ""}`} className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold ${mode === "lab" ? "bg-surface-2" : "bg-accent text-accent-fg"}`} data-testid="mode-toggle">
+        <Link to={`/${mode === "lab" ? "explore" : "lab"}/${version}/${task}${scale ? `/${scale}` : ""}`} className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold ${mode === "lab" ? "bg-surface-2" : "bg-accent text-accent-fg"}`} data-testid="mode-toggle" data-tour="mode">
           {mode === "lab" ? <><Telescope size={14} /> Back to Explorer</> : <><FlaskConical size={14} /> Edit in Lab</>}
         </Link>
-        <ZoomBar />
+        <div data-tour="zoom"><ZoomBar /></div>
         <div className="ml-auto flex items-center gap-1">
           {computed && (
             <span className="mr-2 hidden text-xs text-muted md:inline" data-testid="stats">
@@ -139,7 +161,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           )}
           <button type="button" className={`flex items-center gap-1 rounded px-1.5 py-1 hover:bg-surface-2 ${walk.active ? "bg-surface-2" : ""}`}
             onClick={() => { setWalk({ active: !walk.active, playing: !walk.active, step: 0 }); if (inside) useAtlas.getState().exitInside(); setListView(false); }}
-            aria-pressed={walk.active} title="Follow the image through the network" data-testid="walk-toggle">
+            aria-pressed={walk.active} title="Follow the image through the network" data-testid="walk-toggle" data-tour="walk">
             <Footprints size={16} /> <span className="hidden text-xs lg:inline">Follow the image</span>
           </button>
           <button type="button" className="rounded p-1.5 hover:bg-surface-2" onClick={() => setPaletteOpen(true)} aria-label="Search (Ctrl+K or /)" title="Search (Ctrl+K or /)">
@@ -165,7 +187,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           {info.notes[0]}
         </div>
       )}
-      {mode === "lab" && <LabToolbar modelKey={modelKey} />}
+      {mode === "lab" && <Lazy><LabToolbar modelKey={modelKey} /></Lazy>}
       {restore && (
         <div role="note" className="flex items-center gap-2 border-b border-accent/40 bg-accent/10 px-3 py-1.5 text-sm" data-testid="restore-banner">
           You have unsaved Lab work for this model from {new Date(restore.savedAt).toLocaleString()}.
@@ -177,14 +199,15 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
         <div className="border-b border-border bg-surface px-3 py-1"><Breadcrumbs /></div>
       )}
       <div className="flex min-h-0 flex-1">
-        {mode === "lab" && <Palette />}
-        <div className="relative min-w-0 flex-1">
+        {mode === "lab" && <Lazy><Palette /></Lazy>}
+        {mode === "lab" && paletteSheet && <Lazy><Palette sheet /></Lazy>}
+        <div className="relative min-w-0 flex-1" data-tour="canvas">
           {!arch || !computed ? (
             <div className="flex h-full items-center justify-center text-muted" role="status">Loading the model…</div>
           ) : inside && zoomLevel >= 2 ? (
-            <InsideView />
+            <Lazy fallback={<div className="flex h-full items-center justify-center text-muted" role="status">Opening the block…</div>}><InsideView /></Lazy>
           ) : zoomLevel === 0 && !listView ? (
-            <OverviewCanvas arch={arch} comp={computed} />
+            <Lazy fallback={<div className="flex h-full items-center justify-center text-muted" role="status">Loading the overview…</div>}><OverviewCanvas arch={arch} comp={computed} /></Lazy>
           ) : listView ? (
             <div className="h-full overflow-auto"><ListView arch={arch} comp={computed} /></div>
           ) : !layout || !graph ? (
@@ -193,16 +216,22 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
             <GraphCanvas graph={graph} layout={layout} fitKey={`${arch.id}|${direction}|${layoutMode}|${zoomLevel}`} />
           )}
           {arch && computed && !listView && zoomLevel === 1 && !walk.active && <CanvasLegend arch={arch} comp={computed} />}
-          {zoomLevel === 1 && !listView && <Walkthrough />}
+          {zoomLevel === 1 && !listView && walk.active && <Lazy><Walkthrough /></Lazy>}
         </div>
-        {mode === "lab" && aiPanelOpen ? <ArchitectPanel /> : inside && zoomLevel >= 2 ? (inside.selected ? <InsidePanel /> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active ? <SidePanel /> : mode === "lab" && arch ? (
-          <aside className="hidden w-[380px] shrink-0 overflow-y-auto border-l border-border bg-surface md:block" aria-label="Whole-model settings"><ModelSettings /></aside>
+        {mode === "lab" && aiPanelOpen ? <Lazy><ArchitectPanel /></Lazy> : inside && zoomLevel >= 2 ? (inside.selected ? <Lazy><InsidePanel /></Lazy> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active ? <SidePanel /> : mode === "lab" && arch ? (
+          <aside className="hidden w-[380px] shrink-0 overflow-y-auto border-l border-border bg-surface md:block" aria-label="Whole-model settings"><Lazy><ModelSettings /></Lazy></aside>
         ) : null}
-        <CommandPalette />
+        <Lazy><CommandPalette /></Lazy>
       </div>
-      {mode === "lab" && <StatsBar />}
+      {arch && layout && mode === "explore" && <Tour />}
+      {mode === "lab" && <Lazy><StatsBar /></Lazy>}
     </div>
   );
+}
+
+/** Boundary for one lazily loaded part, so loading it never blanks the rest of the page. */
+function Lazy({ children, fallback = null }: { children: React.ReactNode; fallback?: React.ReactNode }) {
+  return <Suspense fallback={fallback}>{children}</Suspense>;
 }
 
 function CanvasLegend({ arch, comp }: { arch: Architecture; comp: ComputeResult }) {

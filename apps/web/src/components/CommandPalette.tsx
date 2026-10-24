@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { BookOpen, Box, GitBranch, Search } from "lucide-react";
 import { VERSIONS, formatShape, getBlock } from "@yolo-atlas/core";
 import { useAtlas } from "../store/atlas";
-import { GLOSSARY } from "../lib/content";
+import { GLOSSARY, loadContent, useContentReady } from "../lib/content";
 
 interface Result {
   key: string;
@@ -16,6 +16,8 @@ interface Result {
 
 /** Ctrl/Cmd-K or "/": jump to a layer, look up a glossary term, or switch version. */
 export function CommandPalette() {
+  useContentReady((s) => s.ready);
+  void loadContent();
   const { paletteOpen, setPaletteOpen, arch, computed, select, centerOn, exitInside, readingLevel } = useAtlas();
   const navigate = useNavigate();
   const [q, setQ] = useState("");

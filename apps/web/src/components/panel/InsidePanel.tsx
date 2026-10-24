@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import { blockGraph, formatCount, formatShape, type IRNode } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
-import { CONTENT, innerContentId } from "../../lib/content";
+import { loadContent, useContentReady, CONTENT, innerContentId } from "../../lib/content";
 import { RichText } from "../text/RichText";
 import { MathBlock } from "../text/MathBlock";
 import { CodeBlock } from "../text/CodeBlock";
@@ -59,6 +59,8 @@ function primitiveCode(n: IRNode): string | null {
 }
 
 export function InsidePanel() {
+  useContentReady((s) => s.ready);
+  void loadContent();
   const { computed, inside, insideSelect, readingLevel: level, zoomLevel } = useAtlas();
   if (!computed || !inside?.selected) return null;
   const ir = computed.nodes[inside.nodeId]?.ir;

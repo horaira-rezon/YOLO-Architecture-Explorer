@@ -41,9 +41,10 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
     : `${d.title}. ${d.subtitle}. ${STAGE_CONTENT[d.stage].title}.`;
   return (
     <div
-      role="button"
+      role="group"
+      aria-roledescription="layer"
       aria-label={label}
-      aria-pressed={isSelected}
+      aria-current={isSelected ? "true" : undefined}
       data-testid={`node-${id}`}
       className={`relative flex flex-col justify-between rounded-lg border bg-surface px-2.5 py-1.5 text-left text-fg shadow-sm transition-opacity ${
         training || ghost ? "border-dashed" : ""
@@ -66,7 +67,8 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
           <button
             type="button"
             className="nodrag shrink-0 rounded p-0.5 text-muted hover:bg-surface-2 hover:text-fg"
-            aria-label={`Look inside layer ${d.index}`}
+            aria-hidden
+            tabIndex={-1}
             title="Look inside (Enter)"
             data-testid={`enter-${id}`}
             onClick={(e) => {
@@ -120,15 +122,16 @@ function BandNodeImpl({ data }: NodeProps<Node<BandNodeData>>) {
         height: band.h,
       }}
     >
-      <button
-        type="button"
-        className="pointer-events-auto m-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wide hover:bg-surface"
+      {/* mouse shortcut only: the stage legend (outside the zoomed canvas) is the accessible way in */}
+      <span
+        aria-hidden
+        className="pointer-events-auto m-1.5 inline-flex min-h-6 cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs font-semibold uppercase tracking-wide hover:bg-surface"
         style={{ color: st.color }}
         onClick={() => select(`stage:${band.stage}`)}
         data-testid={`band-${band.stage}`}
       >
         <Icon size={13} aria-hidden /> {STAGE_CONTENT[band.stage].title}
-      </button>
+      </span>
     </div>
   );
 }

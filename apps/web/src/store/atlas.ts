@@ -73,6 +73,8 @@ export interface AtlasState {
   diffView: boolean;
   labError: string | null;
   aiPanelOpen: boolean;
+  /** Palette as a bottom sheet on small screens. */
+  paletteSheet: boolean;
   aiSession: AISession | null;
   goal: GoalSpec | null;
   setAIPanelOpen(v: boolean): void;
@@ -144,6 +146,7 @@ export const useAtlas = create<AtlasState>((set) => ({
   diffView: false,
   labError: null,
   aiPanelOpen: false,
+  paletteSheet: false,
   aiSession: null,
   goal: null,
   setAIPanelOpen: (aiPanelOpen) => set({ aiPanelOpen }),

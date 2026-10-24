@@ -24,8 +24,9 @@ export interface AIProvider {
   chat(input: ChatInput): Promise<string>;
 }
 
-const patchSchema = toJsonSchema(PatchSchema);
-const goalsSchema = toJsonSchema(NodeGoalsSchema);
+// built on first use: converting Zod to JSON Schema at import time would slow every page load
+let schemas: { patch: unknown; goals: unknown } | null = null;
+const getSchemas = () => (schemas ??= { patch: toJsonSchema(PatchSchema), goals: toJsonSchema(NodeGoalsSchema) });
 
 /** Provider backed by any LLM client (Gemini, OpenAI-compatible, Anthropic, proxy). */
 export class LLMProvider implements AIProvider {
@@ -34,11 +35,11 @@ export class LLMProvider implements AIProvider {
     return `${this.client.id}:${this.client.model}`;
   }
   async generatePatch(ctx: PatchContext, signal?: AbortSignal): Promise<unknown> {
-    const text = await this.client.complete({ system: PATCH_SYSTEM, user: buildPatchUser(ctx), json: { name: "patch", schema: patchSchema }, temperature: ctx.repair ? 0.2 : 0.4, signal });
+    const text = await this.client.complete({ system: PATCH_SYSTEM, user: buildPatchUser(ctx), json: { name: "patch", schema: getSchemas().patch }, temperature: ctx.repair ? 0.2 : 0.4, signal });
     return extractJson(text);
   }
   async explainNodes(ctx: ExplainContext, signal?: AbortSignal): Promise<NodeGoals> {
-    const text = await this.client.complete({ system: EXPLAIN_SYSTEM, user: buildExplainUser(ctx), json: { name: "explanations", schema: goalsSchema }, temperature: 0.3, signal });
+    const text = await this.client.complete({ system: EXPLAIN_SYSTEM, user: buildExplainUser(ctx), json: { name: "explanations", schema: getSchemas().goals }, temperature: 0.3, signal });
     return NodeGoalsSchema.parse(extractJson(text));
   }
   async chat(input: ChatInput): Promise<string> {

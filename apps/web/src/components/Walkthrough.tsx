@@ -4,10 +4,12 @@ import { explainPosition, formatShape, getBlock } from "@yolo-atlas/core";
 import { useAtlas } from "../store/atlas";
 import { useHighlight } from "../store/highlight";
 import { useWalkEdges } from "../store/walk";
-import { CONTENT } from "../lib/content";
+import { CONTENT, loadContent, useContentReady } from "../lib/content";
 
 /** "Follow the image": walk the tensor through the network one layer at a time. */
 export function Walkthrough() {
+  useContentReady((s) => s.ready);
+  void loadContent();
   const { arch, computed, walk, setWalk, centerOn, readingLevel } = useAtlas();
   const setHighlight = useHighlight((s) => s.setIds);
   const setEdges = useWalkEdges((s) => s.set);
@@ -31,6 +33,12 @@ export function Walkthrough() {
       setEdges(new Set(), walk.speed);
     }
   }, [walk.active, walk.speed, setHighlight, setEdges]);
+
+  // clear the highlight when the walkthrough closes (this component unmounts)
+  useEffect(() => () => {
+    setHighlight(null);
+    setEdges(new Set(), 1);
+  }, [setHighlight, setEdges]);
 
   // autoplay
   useEffect(() => {

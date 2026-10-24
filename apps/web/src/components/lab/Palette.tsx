@@ -1,10 +1,11 @@
 import { useMemo, useState } from "react";
 import { GripVertical, Plus } from "lucide-react";
-import { allBlocks, getBlock, type BlockCategory } from "@yolo-atlas/core";
+import { allBlocks, type BlockCategory } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
 import { applyOps } from "../../store/lab";
-import { PRESETS, nodeSpec, type PaletteItem } from "../../lib/labDefaults";
-import { CONTENT } from "../../lib/content";
+import { PRESETS, type PaletteItem } from "../../lib/labDefaults";
+import { DRAG_TYPE, insertItem } from "../../lib/labPalette";
+import { loadContent, useContentReady, CONTENT } from "../../lib/content";
 import { useTemplates, type Template } from "../../lib/persist";
 
 const GROUPS: { title: string; cats: BlockCategory[] }[] = [
@@ -16,24 +17,9 @@ const GROUPS: { title: string; cats: BlockCategory[] }[] = [
   { title: "Extras from the literature", cats: ["extra"] },
 ];
 
-export const DRAG_TYPE = "application/x-yolo-atlas-block";
-
-/** Insert after the selected layer (or before the head when nothing is selected). */
-export function insertItem(item: PaletteItem, afterId?: string): void {
-  const st = useAtlas.getState();
-  if (!st.arch) return;
-  const live = st.arch.nodes;
-  const after = afterId ?? (st.selectedId && live.some((n) => n.id === st.selectedId) ? st.selectedId : live[live.length - 2]?.id);
-  if (!after) return;
-  const near = live.find((n) => n.id === after);
-  const r = applyOps([{ op: "insertNode", after, node: nodeSpec(item, near, st.computed) }], `Insert ${item.label}`);
-  if (!r) {
-    const added = useAtlas.getState().arch!.nodes.find((n, i) => i === live.findIndex((x) => x.id === after) + 1);
-    if (added) useAtlas.getState().select(added.id);
-  }
-}
-
-export function Palette() {
+export function Palette({ sheet = false }: { sheet?: boolean }) {
+  useContentReady((s) => s.ready);
+  void loadContent();
   const [q, setQ] = useState("");
   const level = useAtlas((s) => s.readingLevel);
   const templates = useTemplates();
@@ -61,7 +47,7 @@ export function Palette() {
       >
         <GripVertical size={12} className="text-muted" aria-hidden />
         <span className="min-w-0 flex-1 truncate">{i.label}</span>
-        <button type="button" onClick={() => insertItem(i)} className="rounded p-0.5 opacity-60 hover:bg-surface hover:opacity-100 focus:opacity-100" aria-label={`Insert ${i.label} after the selected layer`}>
+        <button type="button" onClick={() => { insertItem(i); if (sheet) useAtlas.setState({ paletteSheet: false }); }} className="rounded p-0.5 opacity-60 hover:bg-surface hover:opacity-100 focus:opacity-100" aria-label={`Insert ${i.label} after the selected layer`}>
           <Plus size={14} />
         </button>
       </div>
@@ -69,7 +55,8 @@ export function Palette() {
   );
   const tplItems = templates.map((t: Template) => t);
   return (
-    <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-surface lg:flex" aria-label="Block palette" data-testid="palette">
+    <aside className={sheet ? "fixed inset-x-0 bottom-0 z-40 flex max-h-[60vh] flex-col rounded-t-2xl border-t border-border bg-surface shadow-2xl lg:hidden" : "hidden w-60 shrink-0 flex-col border-r border-border bg-surface lg:flex"} aria-label="Block palette" data-testid={sheet ? "palette-sheet" : "palette"}>
+      {sheet && <button type="button" onClick={() => useAtlas.setState({ paletteSheet: false })} className="self-end px-3 pt-2 text-sm text-muted">Close</button>}
       <div className="border-b border-border p-2">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Find a block…" aria-label="Find a block" className="w-full rounded border border-border bg-bg px-2 py-1 text-sm" />
         <p className="mt-1 text-[11px] text-muted">Drag onto a layer to insert after it, or press + to insert after the selected layer.</p>
@@ -110,9 +97,3 @@ export function Palette() {
   );
 }
 
-export function paletteItemByKey(key: string): PaletteItem | undefined {
-  const preset = PRESETS.find((p) => p.key === key);
-  if (preset) return preset;
-  const b = getBlock(key);
-  return b ? { key: b.id, label: b.displayName, module: b.yamlName, hint: "" } : undefined;
-}

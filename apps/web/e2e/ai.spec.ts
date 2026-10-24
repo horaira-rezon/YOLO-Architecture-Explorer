@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+// the first-run tour is tested on its own; other tests start with it dismissed
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorage.setItem("atlas-tour-done", "1")); });
+
 test("AI Architect with the offline MockProvider: preset → generate → accept some → apply", async ({ page }) => {
   await page.goto("/lab/v8/detect/n");
   await page.getByTestId("open-ai").click();
@@ -13,6 +16,7 @@ test("AI Architect with the offline MockProvider: preset → generate → accept
   await page.getByTestId("apply-patch").click();
   await expect(page.getByTestId("change-story")).toBeVisible();
   await expect(page.getByTestId("validation-button")).toHaveText(/Valid/);
+  await page.locator(".react-flow__controls-fitview").click(); // only nodes in view are rendered
   await expect(page.locator('[data-origin="added"]')).toHaveCount(7); // CBAM + 6 P2 nodes
   // undo the whole patch in one step
   await page.getByTestId("undo").click();

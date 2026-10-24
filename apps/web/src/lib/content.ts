@@ -1,20 +1,24 @@
-import {
-  BlockContentSchema, GlossarySchema, getBlock, innerContentCandidates,
-  type Architecture, type BlockContent, type GlossaryTerm, type Leveled,
-} from "@yolo-atlas/core";
-import glossaryJson from "@yolo-atlas/core/content/glossary.json";
+import { create } from "zustand";
+import { getBlock, innerContentCandidates, type Architecture, type BlockContent, type GlossaryTerm, type Leveled } from "@yolo-atlas/core";
 import { STAGE_CONTENT } from "./stages";
 
-const files = import.meta.glob<{ default: unknown }>("../../../../packages/core/content/{blocks,items}/*.json", { eager: true });
-
+/** Filled by loadContent(); components re-render via useContentReady. */
 export const CONTENT = new Map<string, BlockContent>();
-for (const [path, mod] of Object.entries(files)) {
-  const r = BlockContentSchema.safeParse(mod.default);
-  if (r.success) CONTENT.set(r.data.id, r.data);
-  else console.error(`Invalid content file ${path}`, r.error.issues);
-}
+export const GLOSSARY: GlossaryTerm[] = [];
 
-export const GLOSSARY: GlossaryTerm[] = GlossarySchema.parse(glossaryJson);
+export const useContentReady = create<{ ready: boolean }>(() => ({ ready: false }));
+
+let loading: Promise<void> | null = null;
+/** Load all explanations (one chunk). Called after the first paint and whenever a panel needs it. */
+export function loadContent(): Promise<void> {
+  loading ??= import("./contentBundle").then(({ parseAll }) => {
+    const { content, glossary } = parseAll();
+    for (const [k, v] of content) CONTENT.set(k, v);
+    GLOSSARY.push(...glossary);
+    useContentReady.setState({ ready: true });
+  });
+  return loading;
+}
 
 export interface ItemRef {
   kind: "layer" | "item" | "stage";

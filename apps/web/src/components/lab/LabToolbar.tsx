@@ -1,8 +1,8 @@
 import * as Menu from "@radix-ui/react-dropdown-menu";
-import { Sparkles, BookmarkPlus, ClipboardPaste, Copy, CopyPlus, GitCompare, Group, MousePointerSquareDashed, Redo2, RotateCcw, Scissors, Trash2, Undo2, X } from "lucide-react";
+import { PlusSquare, Sparkles, BookmarkPlus, ClipboardPaste, Copy, CopyPlus, GitCompare, Group, MousePointerSquareDashed, Redo2, RotateCcw, Scissors, Trash2, Undo2, X } from "lucide-react";
 import type { Stage } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
-import { applyOps, copySelection, paste, redo, replaceArch, undo } from "../../store/lab";
+import { applyOps, copySelection, deleteSelected, groupSelected, paste, redo, replaceArch, selectedIds, undo } from "../../store/lab";
 import { saveTemplate } from "../../lib/persist";
 import { ValidationButton } from "./ValidationPanel";
 import { ExportMenu } from "./ExportMenu";
@@ -17,33 +17,13 @@ function Btn({ label, onClick, disabled, children, testid }: { label: string; on
   );
 }
 
-export function selectedIds(): string[] {
-  const st = useAtlas.getState();
-  return st.selection.length ? st.selection : st.selectedId && st.arch?.nodes.some((n) => n.id === st.selectedId) ? [st.selectedId] : [];
-}
-
-export function deleteSelected(mode: "bridge" | "dangling" = "bridge"): void {
-  const st = useAtlas.getState();
-  const ids = selectedIds().filter((id) => st.arch?.nodes.find((n) => n.id === id)?.stage !== "head");
-  if (!ids.length) return;
-  applyOps(ids.map((nodeId) => ({ op: "deleteNode" as const, nodeId, mode })), `Delete ${ids.length} block(s)`);
-  st.select(null);
-  st.setSelection([]);
-}
-
-export function groupSelected(): void {
-  const ids = selectedIds();
-  if (ids.length < 2) return;
-  const name = window.prompt("Name for this group", "My block");
-  if (name) applyOps([{ op: "groupNodes", nodeIds: ids, name }], `Group ${ids.length} blocks`);
-}
-
 export function LabToolbar({ modelKey }: { modelKey: string }) {
   const { past, future, clipboard, selection, selectedId, diffView, setDiffView, original, arch, labError, setSelection } = useAtlas();
   const hasSel = selection.length > 0 || (!!selectedId && !!arch?.nodes.some((n) => n.id === selectedId));
   const stages: Stage[] = ["backbone", "neck", "head"];
   return (
-    <div className="relative flex flex-wrap items-center gap-0.5 border-b border-border bg-surface px-2 py-1" role="toolbar" aria-label="Lab tools" data-testid="lab-toolbar">
+    <div className="relative flex items-center gap-0.5 overflow-x-auto border-b border-border bg-surface px-2 py-1 md:flex-wrap md:overflow-visible [&>*]:shrink-0" role="toolbar" aria-label="Lab tools" data-testid="lab-toolbar">
+      <button type="button" onClick={() => useAtlas.setState((st) => ({ paletteSheet: !st.paletteSheet }))} className="mr-1 flex items-center gap-1 rounded bg-accent px-2 py-1 text-xs text-accent-fg lg:hidden" data-testid="open-palette"><PlusSquare size={14} /> Add block</button>
       <Btn label="Undo (Ctrl+Z)" onClick={undo} disabled={!past.length} testid="undo"><Undo2 size={16} /></Btn>
       <Btn label="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={!future.length} testid="redo"><Redo2 size={16} /></Btn>
       <span className="mx-1 h-5 w-px bg-border" aria-hidden />

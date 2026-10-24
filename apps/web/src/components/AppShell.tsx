@@ -23,7 +23,7 @@ export function AppShell() {
           <img src="/favicon.svg" alt="" className="h-6 w-6" />
           YOLO Atlas
         </Link>
-        <div className="ml-auto hidden sm:block"><ReadingLevelSwitch compact /></div>
+        <div className="ml-auto hidden sm:block" data-tour="level"><ReadingLevelSwitch compact /></div>
         <nav className="flex items-center gap-1 text-sm" aria-label="Main">
           <NavLink to="/" end className={({ isActive }) => `rounded px-2 py-1 ${isActive ? "bg-surface-2" : "hover:bg-surface-2"}`}>
             Tasks

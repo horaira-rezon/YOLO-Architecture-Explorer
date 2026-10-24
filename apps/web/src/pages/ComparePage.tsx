@@ -6,7 +6,7 @@ import {
   type Architecture, type ComputeResult, type DiffKind, type Task,
 } from "@yolo-atlas/core";
 import { loadArchitecture } from "../lib/modelData";
-import { CONTENT } from "../lib/content";
+import { CONTENT, loadContent, useContentReady } from "../lib/content";
 import { useAtlas } from "../store/atlas";
 import { RichText } from "../components/text/RichText";
 
@@ -26,6 +26,8 @@ const KIND: Record<DiffKind, { label: string; icon: typeof Plus; cls: string }> 
 
 /** Compare two versions: what blocks are new, what changed, and the numbers. No AI involved. */
 export function ComparePage() {
+  useContentReady((s) => s.ready);
+  void loadContent();
   const { task = "detect" } = useParams();
   const [params, setParams] = useSearchParams();
   const level = useAtlas((s) => s.readingLevel);

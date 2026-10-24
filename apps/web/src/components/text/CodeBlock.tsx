@@ -6,8 +6,14 @@ let highlighter: Promise<Highlighter> | null = null;
 
 function getHighlighter(): Promise<Highlighter> {
   // Shiki is large: load it only when code is first shown
-  highlighter ??= import("shiki").then(({ codeToHtml }) => (code: string, lang: string) =>
-    codeToHtml(code, { lang, themes: { light: "github-light", dark: "github-dark" }, defaultColor: false }));
+  // fine-grained Shiki: only Python + YAML and two themes are bundled
+  highlighter ??= Promise.all([
+    import("shiki/core"), import("shiki/engine/javascript"), import("shiki/langs/python.mjs"), import("shiki/langs/yaml.mjs"),
+    import("shiki/themes/github-light-high-contrast.mjs"), import("shiki/themes/github-dark-high-contrast.mjs"),
+  ]).then(async ([core, engine, py, yml, light, dark]) => {
+    const h = await core.createHighlighterCore({ themes: [light.default, dark.default], langs: [py.default, yml.default], engine: engine.createJavaScriptRegexEngine() });
+    return async (code: string, lang: string) => h.codeToHtml(code, { lang, themes: { light: "github-light-high-contrast", dark: "github-dark-high-contrast" }, defaultColor: false });
+  });
   return highlighter;
 }
 
@@ -31,7 +37,7 @@ export function CodeBlock({ code, lang, label }: { code: string; lang: "python" 
     }
   };
   return (
-    <figure className="relative rounded-lg border border-border bg-surface-2 text-xs">
+    <figure className="relative rounded-lg border border-border bg-surface text-xs">
       <figcaption className="flex items-center justify-between border-b border-border px-2 py-1 text-muted">
         {label}
         <button type="button" onClick={copy} className="rounded p-1 hover:bg-surface" aria-label={`Copy ${label}`}>

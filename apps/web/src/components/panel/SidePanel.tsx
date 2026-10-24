@@ -5,7 +5,7 @@ import {
   type Leveled,
 } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
-import { CONTENT, resolveItem } from "../../lib/content";
+import { loadContent, useContentReady, CONTENT, resolveItem } from "../../lib/content";
 import { RichText } from "../text/RichText";
 import { MathBlock } from "../text/MathBlock";
 import { CodeBlock } from "../text/CodeBlock";
@@ -30,6 +30,8 @@ function Badge({ children, tone = "muted" }: { children: ReactNode; tone?: "mute
 }
 
 export function SidePanel() {
+  useContentReady((s) => s.ready);
+  void loadContent();
   const { arch: liveArch, computed: liveComp, selectedId: rawId, select, readingLevel: level, mode, original, goal, aiSession } = useAtlas();
   // removed blocks ("ghosts" in the change view) are explained from the original model
   const ghost = !!rawId?.startsWith("ghost:");
@@ -71,7 +73,14 @@ export function SidePanel() {
           </div>
           <button type="button" onClick={() => select(null)} className="rounded p-1 hover:bg-surface-2" aria-label="Close details"><X size={18} /></button>
         </div>
-        <div className="mt-2"><ReadingLevelSwitch /></div>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <ReadingLevelSwitch />
+          {node && !ghost && c?.ir && (
+            <button type="button" onClick={() => useAtlas.getState().enter(node.id)} className="min-h-6 rounded border border-border px-2 py-1 text-xs hover:bg-surface-2" data-testid="panel-look-inside">
+              Look inside this block (Enter)
+            </button>
+          )}
+        </div>
       </header>
 
       <div className="px-4 pb-6">

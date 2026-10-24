@@ -1,6 +1,6 @@
 import { Fragment, useMemo, type ReactNode } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
-import { GLOSSARY } from "../../lib/content";
+import { GLOSSARY, useContentReady } from "../../lib/content";
 import { useAtlas } from "../../store/atlas";
 import type { GlossaryTerm } from "@yolo-atlas/core";
 
@@ -20,6 +20,7 @@ function buildMatcher(): Matcher {
 }
 
 let matcher: Matcher | null = null;
+let builtFor = 0;
 
 export function GlossaryTip({ term, children }: { term: GlossaryTerm; children: ReactNode }) {
   const level = useAtlas((s) => s.readingLevel);
@@ -43,8 +44,13 @@ export function GlossaryTip({ term, children }: { term: GlossaryTerm; children: 
 
 /** Plain text with glossary terms underlined (first mention of each term only) and hover/focus definitions. */
 export function RichText({ text, seen }: { text: string; seen?: Set<string> }) {
+  const ready = useContentReady((s) => s.ready);
   const parts = useMemo(() => {
-    matcher ??= buildMatcher();
+    if (!GLOSSARY.length) return [text];
+    if (!matcher || builtFor !== GLOSSARY.length) {
+      matcher = buildMatcher();
+      builtFor = GLOSSARY.length;
+    }
     const used = seen ?? new Set<string>();
     const out: (string | { t: GlossaryTerm; s: string })[] = [];
     let last = 0;
@@ -57,7 +63,8 @@ export function RichText({ text, seen }: { text: string; seen?: Set<string> }) {
     }
     out.push(text.slice(last));
     return out;
-  }, [text, seen]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `ready` re-runs this once the glossary arrives
+  }, [text, seen, ready]);
   return (
     <>
       {parts.map((p, i) => (typeof p === "string" ? <Fragment key={i}>{p}</Fragment> : <GlossaryTip key={i} term={p.t}>{p.s}</GlossaryTip>))}

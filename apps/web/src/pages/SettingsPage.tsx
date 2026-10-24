@@ -4,6 +4,7 @@ import { GEMINI_MODELS, clearAIKeys, getProvider, loadAISettings, saveAISettings
 import { useAtlas } from "../store/atlas";
 import { ReadingLevelSwitch } from "../components/ReadingLevelSwitch";
 import { persist } from "../lib/persist";
+import { resetTour } from "../components/Tour";
 
 const PROVIDERS: { id: ProviderKind; label: string; hint: string }[] = [
   { id: "mock", label: "Offline demo (no AI)", hint: "Rule-based example patches. Nothing leaves your browser." },
@@ -45,6 +46,7 @@ export function SettingsPage() {
       <section className="mt-6 space-y-2" aria-labelledby="s-read">
         <h2 id="s-read" className="font-semibold">Reading</h2>
         <div className="flex items-center gap-3 text-sm">Default reading level <ReadingLevelSwitch /></div>
+        <button type="button" className="rounded border border-border px-2 py-1 text-sm" onClick={() => { resetTour(); window.alert("The tour will show next time you open a model."); }}>Show the guided tour again</button>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={autoZoom} onChange={(e) => setAutoZoom(e.target.checked)} /> Change zoom level automatically when zooming the diagram far in or out</label>
       </section>
 

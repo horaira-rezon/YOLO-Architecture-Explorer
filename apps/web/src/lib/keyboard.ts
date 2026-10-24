@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useAtlas } from "../store/atlas";
-import { copySelection, paste, redo, undo, applyOps } from "../store/lab";
-import { deleteSelected, groupSelected, selectedIds } from "../components/lab/LabToolbar";
+import { copySelection, paste, redo, undo, applyOps, deleteSelected, groupSelected, selectedIds } from "../store/lab";
 
 function typing(t: EventTarget | null): boolean {
   const el = t as HTMLElement | null;

@@ -1,5 +1,8 @@
 import { expect, test } from "@playwright/test";
 
+// the first-run tour is tested on its own; other tests start with it dismissed
+test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorage.setItem("atlas-tour-done", "1")); });
+
 test("zoom levels, inside view, keyboard, search and walkthrough", async ({ page }) => {
   await page.goto("/explore/v8/detect/n");
   await expect(page.getByTestId("node-n6")).toBeVisible();

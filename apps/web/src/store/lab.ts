@@ -91,3 +91,25 @@ export function applyPatch(sessionId: string, patch: Patch, selected: number[]):
   st.setArch(arch);
   return { error: null, notes };
 }
+
+export function selectedIds(): string[] {
+  const st = useAtlas.getState();
+  return st.selection.length ? st.selection : st.selectedId && st.arch?.nodes.some((n) => n.id === st.selectedId) ? [st.selectedId] : [];
+}
+
+export function deleteSelected(mode: "bridge" | "dangling" = "bridge"): void {
+  const st = useAtlas.getState();
+  const ids = selectedIds().filter((id) => st.arch?.nodes.find((n) => n.id === id)?.stage !== "head");
+  if (!ids.length) return;
+  applyOps(ids.map((nodeId) => ({ op: "deleteNode" as const, nodeId, mode })), `Delete ${ids.length} block(s)`);
+  st.select(null);
+  st.setSelection([]);
+}
+
+export function groupSelected(): void {
+  const ids = selectedIds();
+  if (ids.length < 2) return;
+  const name = window.prompt("Name for this group", "My block");
+  if (name) applyOps([{ op: "groupNodes", nodeIds: ids, name }], `Group ${ids.length} blocks`);
+}
+

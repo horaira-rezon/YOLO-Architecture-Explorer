@@ -5,8 +5,8 @@ import {
 } from "@xyflow/react";
 import { getBlock } from "@yolo-atlas/core";
 import { applyOps } from "../../store/lab";
-import { DRAG_TYPE, insertItem, paletteItemByKey } from "../lab/Palette";
-import { PRESETS } from "../../lib/labDefaults";
+import { DRAG_TYPE, insertItem, paletteItemByKey } from "../../lib/labPalette";
+import { PRESETS, nodeSpec } from "../../lib/labDefaults";
 import "@xyflow/react/dist/style.css";
 import type { DisplayGraph } from "../../graph/displayGraph";
 import type { LayoutResult } from "../../graph/layout";
@@ -206,6 +206,7 @@ function Canvas({ graph, layout, fitKey }: Props) {
         ariaLabel="Mini map"
         nodeColor={(n) => (n.type === "band" ? "transparent" : STAGE_STYLE[(n.data as LayerNodeData).d.stage].color)}
         style={{ background: "var(--surface)" }}
+        className="!hidden md:!block"
       />
       <Controls showInteractive={false} position="top-left" aria-label="Zoom controls" />
     </ReactFlow>
@@ -217,9 +218,7 @@ function Canvas({ graph, layout, fitKey }: Props) {
             onClick={() => {
               const st = useAtlas.getState();
               const near = st.arch?.nodes.find((n) => n.id === edgeMenu.source);
-              void import("../../lib/labDefaults").then(({ nodeSpec }) => {
-                applyOps([{ op: "insertNode", after: edgeMenu.source, node: nodeSpec(it, near, st.computed), rewire: [edgeMenu.target] }], `Insert ${it.label}`);
-              });
+              applyOps([{ op: "insertNode", after: edgeMenu.source, node: nodeSpec(it, near, st.computed), rewire: [edgeMenu.target] }], `Insert ${it.label}`);
               setEdgeMenu(null);
             }}>{it.label}</button>
         ))}
