@@ -1,0 +1,28 @@
+{
+  "id": "GhostBottleneck",
+  "name": "Ghost Bottleneck",
+  "whatIsIt": {
+    "eli5": "A Bottleneck built from Ghost steps.",
+    "simple": "Two GhostConvs (with an optional stride-2 depthwise step between) plus a shortcut.",
+    "engineer": "GhostConv(c1, c_/2) → [DWConv s2] → GhostConv(c_, c2, act=False) + shortcut."
+  },
+  "whyExists": {
+    "eli5": "Cheap helper with a shortcut.",
+    "simple": "Light residual unit used inside C3Ghost.",
+    "engineer": "GhostNet bottleneck."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Ghost step.",
+      "Ghost step.",
+      "Add back."
+    ],
+    "simple": [
+      "Two GhostConvs.",
+      "Shortcut add."
+    ],
+    "engineer": [
+      "Stride-2 version adds DW conv on both paths."
+    ]
+  }
+}

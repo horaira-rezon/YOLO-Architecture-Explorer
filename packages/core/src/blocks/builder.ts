@@ -230,6 +230,11 @@ export class Builder {
     return this.push({ name, type: "softmax", kind: "prim", inputs: [x.id], out: x.shape, params: 0, ops: 0, attrs: { dim } });
   }
 
+  /** Any other primitive, with its counts given explicitly (Lab extras such as Conv1d or deformable conv). */
+  prim(name: string, type: string, xs: Ref[], out: Shape, params: number, ops: number, attrs?: IRNode["attrs"]): Ref {
+    return this.push({ name, type, kind: "prim", inputs: xs.map((x) => x.id), out, params, ops, attrs });
+  }
+
   /** A learnable tensor owned directly by the block (e.g. A2C2f `gamma`). */
   param(name: string, count: number): void {
     this.push({ name, type: "Parameter", kind: "prim", inputs: [], out: [count], params: count, ops: 0 });

@@ -1,0 +1,41 @@
+{
+  "id": "CoordAtt",
+  "name": "Coordinate attention",
+  "whatIsIt": {
+    "eli5": "Volume knobs that also remember where along the rows and columns things are.",
+    "simple": "Pools along the height and along the width separately, mixes them, and produces one gate per row and one per column for every channel.",
+    "engineer": "pool_h, pool_w → cat → Conv1×1(→mip) + BN + h-swish → split → Conv1×1 (h), Conv1×1 (w) → σ → x·a_h·a_w."
+  },
+  "whyExists": {
+    "eli5": "Rows of crops and lines of weeds have a direction; this keeps it.",
+    "simple": "Keeps positional information that global pooling (SE) throws away, which helps locate long or thin objects.",
+    "engineer": "Direction-aware channel attention (Hou et al., 2021)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Summarize each row and each column.",
+      "Mix them.",
+      "Turn rows and columns up or down."
+    ],
+    "simple": [
+      "Average along the width (one value per row) and along the height (one per column).",
+      "Shared 1×1 Conv, BN, activation.",
+      "Two 1×1 Convs give row gates and column gates.",
+      "Multiply into the map."
+    ],
+    "engineer": [
+      "mip = max(8, c/r)."
+    ]
+  },
+  "costNote": {
+    "eli5": "Cheap.",
+    "simple": "About 3·c·mip parameters. Needs the parse_model edit.",
+    "engineer": "~3·c·mip params."
+  },
+  "references": [
+    {
+      "label": "Coordinate Attention paper",
+      "url": "https://arxiv.org/abs/2103.02907"
+    }
+  ]
+}

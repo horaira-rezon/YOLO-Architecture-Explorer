@@ -1,0 +1,39 @@
+{
+  "id": "WeightedAdd",
+  "name": "Weighted fusion (BiFPN-style)",
+  "whatIsIt": {
+    "eli5": "Adds several pictures of the same size, but learns how much each should count.",
+    "simple": "Learnable weighted sum of 2–4 same-size maps (fast normalised fusion from BiFPN). Can replace a Concat when the inputs have equal channels.",
+    "engineer": "Σ ReLU(w_i)·x_i / (Σ ReLU(w_j) + ε), one weight per input."
+  },
+  "whyExists": {
+    "eli5": "Some inputs are more useful than others.",
+    "simple": "Concat treats all inputs the same and doubles the channels; weighted fusion learns their importance and keeps channels fixed, which is cheaper for the next block.",
+    "engineer": "Learned input importance in multi-scale fusion (Tan et al., 2020)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Give each picture a weight.",
+      "Add them."
+    ],
+    "simple": [
+      "All inputs must have the same shape.",
+      "Weights are kept positive and normalised.",
+      "Weighted sum."
+    ],
+    "engineer": [
+      "n params; inputs often need 1×1 Convs first to match channels."
+    ]
+  },
+  "costNote": {
+    "eli5": "Almost free.",
+    "simple": "n parameters. Inputs must match exactly (use a 1×1 Conv first if channels differ). Needs the parse_model edit.",
+    "engineer": "n params; may require channel-matching projections."
+  },
+  "references": [
+    {
+      "label": "EfficientDet / BiFPN paper",
+      "url": "https://arxiv.org/abs/1911.09070"
+    }
+  ]
+}

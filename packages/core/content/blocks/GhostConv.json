@@ -1,0 +1,40 @@
+{
+  "id": "GhostConv",
+  "name": "Ghost Conv",
+  "whatIsIt": {
+    "eli5": "Makes half the notes the normal way and the other half cheaply from the first half.",
+    "simple": "A Conv makes half the output channels; a cheap 5×5 depthwise Conv makes 'ghost' channels from them; both halves are joined.",
+    "engineer": "cv1 Conv(c1, c2/2, k, s) → cv2 Conv(c2/2, c2/2, 5, 1, g=c2/2) → cat."
+  },
+  "whyExists": {
+    "eli5": "Many notes are near-copies anyway.",
+    "simple": "Feature maps contain many similar channels; generating some cheaply roughly halves the cost.",
+    "engineer": "GhostNet (Han et al., 2020)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Make half.",
+      "Make the rest cheaply.",
+      "Join."
+    ],
+    "simple": [
+      "Normal Conv to half the channels.",
+      "Depthwise 5×5 Conv on that half.",
+      "Concatenate."
+    ],
+    "engineer": [
+      "Already in Ultralytics (base_modules); used in yolov8-ghost.yaml."
+    ]
+  },
+  "costNote": {
+    "eli5": "About half the cost of a normal step.",
+    "simple": "Roughly halves params and FLOPs vs Conv; already supported by Ultralytics, no stub needed.",
+    "engineer": "~½ of a dense conv."
+  },
+  "references": [
+    {
+      "label": "GhostNet paper",
+      "url": "https://arxiv.org/abs/1911.11907"
+    }
+  ]
+}

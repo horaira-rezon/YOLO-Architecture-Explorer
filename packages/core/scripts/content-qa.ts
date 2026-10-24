@@ -107,6 +107,11 @@ for (const id of [...used].sort()) {
   else errors.push(`missing content/blocks/${id}.json (block used by a shipped model)`);
 }
 
+// every block the Lab palette can insert needs content too
+import { allBlocks } from "../src/blocks/registry";
+for (const d of allBlocks()) if (!content.has(d.id)) errors.push(`missing content/blocks/${d.id}.json (block in the Lab palette)`);
+for (const d of allBlocks().filter((x) => x.extra)) if (!content.get(d.id)?.costNote) errors.push(`content/blocks/${d.id}.json: Lab extras need a costNote`);
+
 // ---- glossary
 const g = GlossarySchema.safeParse(read(join(C, "glossary.json")));
 if (!g.success) errors.push(`glossary.json: ${g.error.message}`);

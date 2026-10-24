@@ -1,0 +1,29 @@
+{
+  "id": "C2fPSA",
+  "name": "C2fPSA",
+  "whatIsIt": {
+    "eli5": "A C2f team whose helpers let spots look at each other.",
+    "simple": "A C2f block whose inner units are PSABlocks (attention + feed-forward).",
+    "engineer": "C2f with PSABlock units."
+  },
+  "whyExists": {
+    "eli5": "Team design plus attention.",
+    "simple": "Adds global context inside a C2f layout.",
+    "engineer": "Attention-augmented CSP."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "Look around.",
+      "Join."
+    ],
+    "simple": [
+      "cv1 and split.",
+      "PSABlocks.",
+      "Join; cv2."
+    ],
+    "engineer": [
+      "Requires c1 == c2."
+    ]
+  }
+}

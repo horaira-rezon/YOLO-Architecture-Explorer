@@ -1,0 +1,27 @@
+{
+  "id": "SPP",
+  "name": "SPP (spatial pyramid pooling)",
+  "whatIsIt": {
+    "eli5": "Looks at three window sizes at once and joins what it found.",
+    "simple": "Parallel max-pools of size 5, 9 and 13 on the same map, joined with the input.",
+    "engineer": "cv1 → [x, MP5, MP9, MP13] → cat → cv2."
+  },
+  "whyExists": {
+    "eli5": "Bigger view for free.",
+    "simple": "Multi-scale context; SPPF does the same faster.",
+    "engineer": "Original SPP (He et al., 2014)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Three window sizes.",
+      "Join."
+    ],
+    "simple": [
+      "Three parallel pools.",
+      "Join; 1×1 Conv."
+    ],
+    "engineer": [
+      "Numerically equal to SPPF with k = 5."
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "id": "C3Ghost",
+  "name": "C3 Ghost",
+  "whatIsIt": {
+    "eli5": "A C3 team whose helpers are cheap Ghost helpers.",
+    "simple": "A C3 block with Ghost Bottlenecks.",
+    "engineer": "C3 with GhostBottleneck units."
+  },
+  "whyExists": {
+    "eli5": "Cheaper team.",
+    "simple": "Used by yolov8-ghost.yaml to make a lighter model.",
+    "engineer": "Lightweight CSP."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "Ghost helpers.",
+      "Join."
+    ],
+    "simple": [
+      "Two 1×1 branches, Ghost Bottlenecks on one, join, 1×1."
+    ],
+    "engineer": [
+      "Already in Ultralytics (base_modules + repeat_modules)."
+    ]
+  },
+  "costNote": {
+    "eli5": "Cheaper than C2f.",
+    "simple": "Fewer params and FLOPs than C2f/C3 at the same width; supported by Ultralytics.",
+    "engineer": "Lightweight replacement for C2f/C3k2."
+  },
+  "references": [
+    {
+      "label": "GhostNet paper",
+      "url": "https://arxiv.org/abs/1911.11907"
+    }
+  ]
+}

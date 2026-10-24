@@ -1,0 +1,39 @@
+{
+  "id": "DeformConv",
+  "name": "Deformable convolution (DCNv2)",
+  "whatIsIt": {
+    "eli5": "A pattern finder whose window can bend to follow the shape of a thing, like a curvy leaf.",
+    "simple": "A Conv whose sampling positions are shifted by learned offsets (predicted from the input), plus a learned mask. It can follow irregular shapes.",
+    "engineer": "Offset/mask conv (3k² channels) + torchvision deform_conv2d + BN + SiLU."
+  },
+  "whyExists": {
+    "eli5": "Weeds and leaves are not square.",
+    "simple": "Regular grids sample the same pattern everywhere; deformable sampling adapts to object shape and scale.",
+    "engineer": "Adaptive receptive fields (Dai et al., 2017; Zhu et al., 2019)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Guess where to look for each spot.",
+      "Look there instead of on the fixed grid."
+    ],
+    "simple": [
+      "A normal conv predicts 2 offsets and 1 mask value for each kernel position.",
+      "The main conv samples at the shifted positions, weighted by the mask.",
+      "BN and SiLU."
+    ],
+    "engineer": [
+      "Offsets initialised to zero, so it starts as a normal conv."
+    ]
+  },
+  "costNote": {
+    "eli5": "Costs more and is slower than a normal pattern finder.",
+    "simple": "Extra offset branch (≈27·c1 weights per position for k = 3) and the sampling step is slow on many edge devices and may not export to every runtime. FLOPs shown here are an estimate.",
+    "engineer": "Not all export targets support deform_conv2d; latency often much higher than params suggest."
+  },
+  "references": [
+    {
+      "label": "DCNv2 paper",
+      "url": "https://arxiv.org/abs/1811.11168"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "C3",
+  "name": "C3 (CSP bottleneck with three convs)",
+  "whatIsIt": {
+    "eli5": "A team: half the notes go through helpers, half skip, then they are joined.",
+    "simple": "The YOLOv5-era CSP block: two 1×1 branches, a chain of Bottlenecks on one, then a 1×1 Conv over the join.",
+    "engineer": "cv1, cv2 (1×1, c_) → m (n × Bottleneck, k = (1, 3)) on cv1 → cat → cv3."
+  },
+  "whyExists": {
+    "eli5": "Saves work.",
+    "simple": "CSP splits the work and keeps a short path for learning.",
+    "engineer": "Cross Stage Partial design."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "Helpers.",
+      "Join."
+    ],
+    "simple": [
+      "Two 1×1 branches.",
+      "Bottlenecks on one.",
+      "Join; 1×1 Conv."
+    ],
+    "engineer": [
+      "Unlike C2f, only the last bottleneck output is concatenated."
+    ]
+  }
+}

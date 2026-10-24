@@ -1,0 +1,40 @@
+{
+  "id": "ECA",
+  "name": "ECA (efficient channel attention)",
+  "whatIsIt": {
+    "eli5": "Like SE, a volume knob for each layer of notes, but even cheaper.",
+    "simple": "Averages each channel, then a tiny 1-D convolution across neighbouring channels decides each channel's weight. No channel reduction.",
+    "engineer": "GAP → Conv1d(1, 1, k) over channels → σ → scale."
+  },
+  "whyExists": {
+    "eli5": "Same idea as SE with only a few learned numbers.",
+    "simple": "Avoids SE's squeeze step, which the paper finds can hurt, and costs only k parameters.",
+    "engineer": "Local cross-channel interaction without dimensionality reduction (Wang et al., 2020)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Average each layer.",
+      "Look at a few neighbouring layers.",
+      "Turn each layer up or down."
+    ],
+    "simple": [
+      "Global average pool.",
+      "1-D conv with kernel k across channels.",
+      "Sigmoid; multiply channels."
+    ],
+    "engineer": [
+      "k is often 3 or 5; params = k."
+    ]
+  },
+  "costNote": {
+    "eli5": "Almost free.",
+    "simple": "Only k parameters and almost no compute. Needs the parse_model edit.",
+    "engineer": "k params."
+  },
+  "references": [
+    {
+      "label": "ECA-Net paper",
+      "url": "https://arxiv.org/abs/1910.03151"
+    }
+  ]
+}

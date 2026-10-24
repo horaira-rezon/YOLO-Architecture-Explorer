@@ -1,0 +1,40 @@
+{
+  "id": "CBAM",
+  "name": "CBAM (channel + spatial attention)",
+  "whatIsIt": {
+    "eli5": "Two volume knobs: one for each layer of notes, one for each place in the picture.",
+    "simple": "Channel attention (which channels matter) followed by spatial attention (which places matter), using a 7×7 conv on the channel mean and max.",
+    "engineer": "Ultralytics CBAM: ChannelAttention(GAP → 1×1 → σ) then SpatialAttention(cat[mean, max] → Conv7×7 → σ)."
+  },
+  "whyExists": {
+    "eli5": "Small weeds are in a few places; this helps the model look there.",
+    "simple": "Spatial attention can highlight small regions, which is why CBAM is a common choice for small-object work. Gains are not guaranteed and must be tested.",
+    "engineer": "Sequential channel and spatial gating (Woo et al., 2018)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Turn layers up or down.",
+      "Make a heat map of where to look.",
+      "Turn places up or down."
+    ],
+    "simple": [
+      "Channel weights from a global average and a 1×1 Conv.",
+      "Spatial weights from a 7×7 Conv on the mean and max over channels.",
+      "Multiply both into the map."
+    ],
+    "engineer": [
+      "Ultralytics' version uses a full c×c 1×1 conv (no reduction)."
+    ]
+  },
+  "costNote": {
+    "eli5": "Cheap.",
+    "simple": "About c² + c + 98 parameters. Already in Ultralytics; it only needs the parse_model edit so the channels are filled in automatically.",
+    "engineer": "c² + c + 2k² params."
+  },
+  "references": [
+    {
+      "label": "CBAM paper",
+      "url": "https://arxiv.org/abs/1807.06521"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "SimAM",
+  "name": "SimAM (parameter-free attention)",
+  "whatIsIt": {
+    "eli5": "A volume knob that needs no learning: it turns up spots that stand out from their surroundings.",
+    "simple": "Computes, for every value, how much it differs from its channel's average (an energy function) and uses that as a gate. No parameters.",
+    "engineer": "Closed-form energy per neuron → σ → scale; zero params."
+  },
+  "whyExists": {
+    "eli5": "Things that stand out are often what we look for.",
+    "simple": "Adds attention without any learned weights, so pretrained weights stay usable and cost is tiny.",
+    "engineer": "Neuroscience-inspired, parameter-free 3-D attention (Yang et al., 2021)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Compare each spot with the average.",
+      "Spots that stand out are turned up."
+    ],
+    "simple": [
+      "Distance of each value from its channel mean, normalised by the variance.",
+      "Sigmoid; multiply."
+    ],
+    "engineer": [
+      "λ = 1e-4 regulariser."
+    ]
+  },
+  "costNote": {
+    "eli5": "No learned numbers at all.",
+    "simple": "No parameters; small compute. Needs the parse_model edit.",
+    "engineer": "0 params."
+  },
+  "references": [
+    {
+      "label": "SimAM paper",
+      "url": "https://proceedings.mlr.press/v139/yang21o.html"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": "SE",
+  "name": "SE (squeeze-and-excitation) attention",
+  "whatIsIt": {
+    "eli5": "A volume knob for each layer of notes: it looks at the whole picture and turns useful layers up and others down.",
+    "simple": "Averages each channel over the whole map, passes the result through two tiny 1×1 Convs, and uses the output (0–1) to scale each channel.",
+    "engineer": "GAP → Conv1×1(c → max(c/r, 8)) → ReLU → Conv1×1 → σ → channel-wise scaling."
+  },
+  "whyExists": {
+    "eli5": "Not every kind of note matters equally for every picture.",
+    "simple": "Lets the network emphasise channels that matter for the current image (for example 'green, thin leaf' patterns for weeds).",
+    "engineer": "Channel recalibration using global context (Hu et al., 2018)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Average each layer of notes.",
+      "Decide how important each layer is.",
+      "Turn each layer up or down."
+    ],
+    "simple": [
+      "Global average pool: one number per channel.",
+      "1×1 Conv shrinks by r, ReLU, 1×1 Conv back, sigmoid.",
+      "Multiply each channel by its weight."
+    ],
+    "engineer": [
+      "Params ≈ 2c²/r; FLOPs negligible (on a 1×1 map)."
+    ]
+  },
+  "costNote": {
+    "eli5": "Very cheap.",
+    "simple": "Adds about 2·c²/r parameters and almost no compute. Changes the YAML (custom block), so it needs the parse_model edit; weights for this block start from scratch.",
+    "engineer": "~2c²/r params; latency mainly from the extra memory pass."
+  },
+  "typicalPositions": {
+    "eli5": "After a block, often in the mixing part.",
+    "simple": "Commonly after the last block of a backbone stage or after neck blocks that feed the head.",
+    "engineer": "Post-stage or pre-head refinement."
+  },
+  "references": [
+    {
+      "label": "SE-Net paper",
+      "url": "https://arxiv.org/abs/1709.01507"
+    }
+  ]
+}

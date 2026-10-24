@@ -2,6 +2,10 @@ import type { Builder, Ref, Shape } from "./builder";
 import type { YamlValue } from "../schema";
 import * as M from "./modules";
 import { makeDivisible } from "../util/math";
+import * as X from "./extras";
+
+/** parse rule for attention-style extras: output channels = input channels, c1 is prepended. */
+const sameChannels = ({ c1s, args }: ResolveInput) => ({ args: [c1s[0] ?? 0, ...args], c2: c1s[0] ?? 0, n: 1 });
 
 /** How Ultralytics `parse_model` turns YAML args into constructor args and output channels. */
 export type ParseKind =
@@ -100,11 +104,6 @@ const defs: BlockDefinition[] = [
     id: "GhostConv", yamlName: "GhostConv", displayName: "Ghost Conv", category: "conv", parse: "base", inputs: one,
     args: [C2(), { name: "k", label: "Kernel size", kind: "int", default: 1, min: 1, max: 9 }, { name: "s", label: "Stride", kind: "int", default: 1, min: 1, max: 4 }],
     build: (b, [x], a) => M.GhostConv(b, "ghostconv", x!, num(a[1], 0), num(a[2], 1), num(a[3], 1)),
-  },
-  {
-    id: "RepConv", yamlName: "RepConv", displayName: "RepConv", category: "conv", parse: "passthrough", inputs: one, extra: true,
-    args: [C2(), { name: "k", label: "Kernel size", kind: "int", default: 3 }, { name: "s", label: "Stride", kind: "int", default: 1 }],
-    build: (b, [x], a) => M.RepConv(b, "repconv", x!, num(a[0], x!.shape[0]!), 3, num(a[2], 1)),
   },
   // ------------------------------------------------------------ CSP / ELAN families
   {
@@ -273,6 +272,48 @@ const defs: BlockDefinition[] = [
       return ins.map((t, i) => (i < ins.length - 1 ? t[idx[i] ?? 0]! : t[0]!));
     },
     build: (b, ins) => M.CBFuse(b, "cbfuse", ins),
+  },
+  // ------------------------------------------------------------ Lab extras (not in official configs)
+  {
+    id: "SE", yamlName: "SE", displayName: "SE attention", category: "extra", parse: "custom", inputs: one, extra: true,
+    args: [{ name: "r", label: "Reduction ratio", kind: "int", default: 16, min: 2, max: 64 }],
+    resolve: sameChannels,
+    build: (b, [x], a) => X.SE(b, "se", x!, num(a[1], 16)),
+  },
+  {
+    id: "ECA", yamlName: "ECA", displayName: "ECA attention", category: "extra", parse: "custom", inputs: one, extra: true,
+    args: [{ name: "k", label: "Kernel size (channels)", kind: "int", default: 3, min: 1, max: 9, step: 2 }],
+    resolve: sameChannels,
+    build: (b, [x], a) => X.ECA(b, "eca", x!, num(a[1], 3)),
+  },
+  {
+    id: "CBAM", yamlName: "CBAM", displayName: "CBAM attention", category: "extra", parse: "custom", inputs: one, extra: true,
+    args: [{ name: "kernel_size", label: "Spatial kernel", kind: "enum", default: 7, options: ["3", "7"] }],
+    resolve: sameChannels,
+    build: (b, [x], a) => X.CBAM(b, "cbam", x!, Number(a[1] ?? 7)),
+  },
+  {
+    id: "CoordAtt", yamlName: "CoordAtt", displayName: "Coordinate attention", category: "extra", parse: "custom", inputs: one, extra: true,
+    args: [{ name: "r", label: "Reduction ratio", kind: "int", default: 32, min: 4, max: 64 }],
+    resolve: sameChannels,
+    build: (b, [x], a) => X.CoordAtt(b, "coordatt", x!, num(a[1], 32)),
+  },
+  {
+    id: "SimAM", yamlName: "SimAM", displayName: "SimAM (parameter-free attention)", category: "extra", parse: "custom", inputs: one, extra: true,
+    args: [],
+    resolve: sameChannels,
+    build: (b, [x]) => X.SimAM(b, "simam", x!),
+  },
+  {
+    id: "WeightedAdd", yamlName: "WeightedAdd", displayName: "Weighted fusion (BiFPN)", category: "extra", parse: "custom", inputs: { min: 2, max: 4 }, extra: true,
+    args: [],
+    resolve: ({ c1s, args }) => ({ args: [c1s.length, ...args], c2: c1s[0] ?? 0, n: 1 }),
+    build: (b, ins) => X.WeightedAdd(b, "wadd", ins),
+  },
+  {
+    id: "DeformConv", yamlName: "DeformConv", displayName: "Deformable Conv (DCNv2)", category: "extra", parse: "base", inputs: one, extra: true,
+    args: [C2(), { name: "k", label: "Kernel size", kind: "int", default: 3, min: 1, max: 7, step: 2 }, { name: "s", label: "Stride", kind: "int", default: 1, min: 1, max: 2 }],
+    build: (b, [x], a) => X.DeformConv(b, "deformconv", x!, num(a[1], 0), num(a[2], 3), num(a[3], 1)),
   },
   // ------------------------------------------------------------ heads
   {
