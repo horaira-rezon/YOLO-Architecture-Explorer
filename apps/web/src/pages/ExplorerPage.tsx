@@ -72,6 +72,8 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
         setLoaded(a, sc);
         const node = params.get("node");
         if (node) select(node);
+        const z = Number(params.get("zoom"));
+        if (z >= 0 && z <= 4 && params.has("zoom")) useAtlas.getState().setZoomLevel(z as 0 | 1 | 2 | 3 | 4);
       })
       .catch((e: unknown) => alive && setError(e instanceof Error ? e.message : String(e)));
     return () => {
@@ -80,16 +82,19 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- only reload when the model changes
   }, [version, task, scale]);
 
-  // keep ?node= in the URL so links are shareable
+  // keep ?node= and ?zoom= in the URL so links are shareable
   useEffect(() => {
-    const cur = params.get("node");
-    if ((selectedId ?? null) !== cur) {
+    const wantNode = selectedId ?? null;
+    const wantZoom = zoomLevel === 1 ? null : String(zoomLevel);
+    if (wantNode !== params.get("node") || wantZoom !== params.get("zoom")) {
       const next = new URLSearchParams(params);
-      if (selectedId) next.set("node", selectedId);
+      if (wantNode) next.set("node", wantNode);
       else next.delete("node");
+      if (wantZoom) next.set("zoom", wantZoom);
+      else next.delete("zoom");
       setParams(next, { replace: true });
     }
-  }, [selectedId, params, setParams]);
+  }, [selectedId, zoomLevel, params, setParams]);
 
   const originalComp = useMemo(() => (original ? computeArchitecture(original) : null), [original]);
   const graph = useMemo(

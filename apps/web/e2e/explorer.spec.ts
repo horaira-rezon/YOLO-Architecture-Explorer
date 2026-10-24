@@ -103,3 +103,10 @@ test("Lab: insert, delete with validation, P2 helper, undo, export YAML re-impor
   await page.getByTestId("import-run").click();
   await expect(page.getByRole("status").filter({ hasText: "Imported 29 layers." })).toBeVisible();
 });
+
+test("shareable URL restores the selected node and zoom level", async ({ page }) => {
+  await page.goto("/explore/v8/detect/n?node=n2&zoom=3");
+  await expect(page.getByTestId("inner-m.0.cv1.conv")).toBeVisible();
+  await expect(page.getByTestId("breadcrumbs")).toContainText("Layer 2 C2f");
+  await expect(page).toHaveURL(/zoom=3/);
+});
