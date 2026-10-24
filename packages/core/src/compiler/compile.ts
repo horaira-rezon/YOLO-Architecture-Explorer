@@ -108,6 +108,7 @@ export function compileModel(model: YamlModel, opts: CompileOptions): Architectu
     training: defaultTraining(model, hasDual, opts.task, opts.version),
     postprocess: defaultPostprocess(endToEnd, opts.task),
     meta: opts.meta,
+    groups: [],
     nextId: nodes.length,
   };
 }

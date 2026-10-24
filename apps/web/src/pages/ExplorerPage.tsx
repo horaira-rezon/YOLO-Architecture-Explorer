@@ -21,6 +21,13 @@ import { CommandPalette } from "../components/CommandPalette";
 import { Walkthrough } from "../components/Walkthrough";
 import { useKeyboardNav } from "../lib/keyboard";
 import { Provenance } from "../components/Provenance";
+import { Palette } from "../components/lab/Palette";
+import { LabToolbar } from "../components/lab/LabToolbar";
+import { StatsBar } from "../components/lab/StatsBar";
+import { ModelSettings } from "../components/lab/ModelSettings";
+import { useAutosave } from "../lib/autosave";
+import { computeArchitecture } from "@yolo-atlas/core";
+import { FlaskConical, Telescope } from "lucide-react";
 
 export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   const { version = "v8", task = "detect", scale } = useParams();
@@ -28,6 +35,11 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   const navigate = useNavigate();
   const { arch, computed, scales, direction, listView, layoutMode, selectedId, setLoaded, setDirection, setListView, setLayoutMode, select, zoomLevel, inside, walk, setWalk, setPaletteOpen } = useAtlas();
   useKeyboardNav();
+  const original = useAtlas((s) => s.original);
+  const diffView = useAtlas((s) => s.diffView);
+  useEffect(() => useAtlas.getState().setMode(mode), [mode]);
+  const modelKey = `${version}-${task}-${scale ?? "default"}`;
+  const restore = useAutosave(mode === "lab", modelKey);
   const [error, setError] = useState<string | null>(null);
   const [layout, setLayout] = useState<LayoutResult | null>(null);
   const info = getVersion(version);
@@ -62,7 +74,11 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
     }
   }, [selectedId, params, setParams]);
 
-  const graph = useMemo(() => (arch && computed ? buildDisplayGraph(arch, computed) : null), [arch, computed]);
+  const originalComp = useMemo(() => (original ? computeArchitecture(original) : null), [original]);
+  const graph = useMemo(
+    () => (arch && computed ? buildDisplayGraph(arch, computed, mode === "lab" && diffView && original && originalComp ? { original, originalComp } : undefined) : null),
+    [arch, computed, mode, diffView, original, originalComp],
+  );
 
   useEffect(() => {
     if (!graph) return;
@@ -109,6 +125,9 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
         </select>
         {arch && <Provenance arch={arch} info={info} />}
         <Link to={`/compare/${task}?a=${version}`} className="rounded px-1.5 py-1 text-xs hover:bg-surface-2" data-testid="compare-from-explorer">Compare</Link>
+        <Link to={`/${mode === "lab" ? "explore" : "lab"}/${version}/${task}${scale ? `/${scale}` : ""}`} className={`flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold ${mode === "lab" ? "bg-surface-2" : "bg-accent text-accent-fg"}`} data-testid="mode-toggle">
+          {mode === "lab" ? <><Telescope size={14} /> Back to Explorer</> : <><FlaskConical size={14} /> Edit in Lab</>}
+        </Link>
         <ZoomBar />
         <div className="ml-auto flex items-center gap-1">
           {computed && (
@@ -144,10 +163,19 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           {info.notes[0]}
         </div>
       )}
+      {mode === "lab" && <LabToolbar modelKey={modelKey} />}
+      {restore && (
+        <div role="note" className="flex items-center gap-2 border-b border-accent/40 bg-accent/10 px-3 py-1.5 text-sm" data-testid="restore-banner">
+          You have unsaved Lab work for this model from {new Date(restore.savedAt).toLocaleString()}.
+          <button type="button" className="rounded bg-accent px-2 py-0.5 text-accent-fg" onClick={restore.restore}>Continue it</button>
+          <button type="button" className="rounded border border-border px-2 py-0.5" onClick={restore.discard}>Start fresh</button>
+        </div>
+      )}
       {arch && computed && (zoomLevel !== 1 || inside || selectedId) && (
         <div className="border-b border-border bg-surface px-3 py-1"><Breadcrumbs /></div>
       )}
       <div className="flex min-h-0 flex-1">
+        {mode === "lab" && <Palette />}
         <div className="relative min-w-0 flex-1">
           {!arch || !computed ? (
             <div className="flex h-full items-center justify-center text-muted" role="status">Loading the model…</div>
@@ -160,14 +188,17 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           ) : !layout || !graph ? (
             <div className="flex h-full items-center justify-center text-muted" role="status">Arranging the diagram…</div>
           ) : (
-            <GraphCanvas graph={graph} layout={layout} />
+            <GraphCanvas graph={graph} layout={layout} fitKey={`${arch.id}|${direction}|${layoutMode}|${zoomLevel}`} />
           )}
           {arch && computed && !listView && zoomLevel === 1 && !walk.active && <CanvasLegend arch={arch} comp={computed} />}
           {zoomLevel === 1 && !listView && <Walkthrough />}
         </div>
-        {inside && zoomLevel >= 2 ? (inside.selected ? <InsidePanel /> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active && <SidePanel />}
+        {inside && zoomLevel >= 2 ? (inside.selected ? <InsidePanel /> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active ? <SidePanel /> : mode === "lab" && arch ? (
+          <aside className="hidden w-[380px] shrink-0 overflow-y-auto border-l border-border bg-surface md:block" aria-label="Whole-model settings"><ModelSettings /></aside>
+        ) : null}
         <CommandPalette />
       </div>
+      {mode === "lab" && <StatsBar />}
     </div>
   );
 }

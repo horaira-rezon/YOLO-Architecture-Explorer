@@ -1,5 +1,15 @@
 import { create } from "zustand";
-import { computeArchitecture, type Architecture, type ComputeResult } from "@yolo-atlas/core";
+import { computeArchitecture, type Architecture, type ComputeResult, type Stage, type YamlValue } from "@yolo-atlas/core";
+import type { HistoryEntry } from "./lab";
+
+export interface ClipNode {
+  id: string;
+  module: string;
+  args: YamlValue[];
+  repeats: number;
+  from: string[];
+  stage: Stage;
+}
 
 export type ReadingLevel = "eli5" | "simple" | "engineer";
 export type Direction = "DOWN" | "RIGHT";
@@ -42,6 +52,17 @@ export interface AtlasState {
   autoZoom: boolean;
   paletteOpen: boolean;
   walk: WalkState;
+  mode: "explore" | "lab";
+  past: HistoryEntry[];
+  future: HistoryEntry[];
+  /** Multi-selection in the Lab (node ids). */
+  selection: string[];
+  clipboard: ClipNode[];
+  diffView: boolean;
+  labError: string | null;
+  setMode(m: "explore" | "lab"): void;
+  setSelection(ids: string[]): void;
+  setDiffView(v: boolean): void;
   /** Ask the canvas to bring a node into view (bumped counter so repeats re-trigger). */
   centerReq: { id: string; n: number } | null;
   centerOn(id: string): void;
@@ -97,6 +118,16 @@ export const useAtlas = create<AtlasState>((set) => ({
   inside: null,
   autoZoom: readPref("atlas-autozoom", ["on", "off"] as const, "on") === "on",
   paletteOpen: false,
+  mode: "explore",
+  past: [],
+  future: [],
+  selection: [],
+  clipboard: [],
+  diffView: false,
+  labError: null,
+  setMode: (mode) => set({ mode }),
+  setSelection: (selection) => set({ selection }),
+  setDiffView: (diffView) => set({ diffView }),
   centerReq: null,
   centerOn: (id) => set((s) => ({ centerReq: { id, n: (s.centerReq?.n ?? 0) + 1 } })),
   walk: { active: false, step: 0, playing: false, speed: 1.6 },
@@ -117,7 +148,7 @@ export const useAtlas = create<AtlasState>((set) => ({
   },
   setPaletteOpen: (paletteOpen) => set({ paletteOpen }),
   setWalk: (w) => set((s) => ({ walk: { ...s.walk, ...w } })),
-  setLoaded: (arch, scales) => set({ original: arch, arch, computed: computeArchitecture(arch), scales, selectedId: null, hoveredId: null, inside: null, zoomLevel: 1, walk: { active: false, step: 0, playing: false, speed: 1.6 } }),
+  setLoaded: (arch, scales) => set({ original: arch, arch, computed: computeArchitecture(arch), scales, selectedId: null, hoveredId: null, inside: null, zoomLevel: 1, walk: { active: false, step: 0, playing: false, speed: 1.6 }, past: [], future: [], selection: [], labError: null }),
   setArch: (arch) => set({ arch, computed: computeArchitecture(arch) }),
   select: (selectedId) => set({ selectedId }),
   hover: (hoveredId) => set({ hoveredId }),

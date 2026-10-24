@@ -68,6 +68,8 @@ export const LossItemSchema = z.object({
   note: z.string().optional(),
 });
 
+export type LossItem = z.infer<typeof LossItemSchema>;
+
 export const TrainingSchema = z.object({
   losses: z.array(LossItemSchema),
   assigner: z.string(),
@@ -112,6 +114,8 @@ export const ArchitectureSchema = z.object({
   training: TrainingSchema,
   postprocess: PostprocessSchema,
   meta: MetaSchema,
+  /** Named visual groups of nodes (Lab). They do not change the exported YAML. */
+  groups: z.array(z.object({ id: z.string(), name: z.string(), nodeIds: z.array(z.string()).min(1) })).default([]),
   /** Counter for fresh node ids. */
   nextId: z.number().int().min(0),
 });

@@ -1,5 +1,7 @@
 import { useEffect } from "react";
 import { useAtlas } from "../store/atlas";
+import { copySelection, paste, redo, undo, applyOps } from "../store/lab";
+import { deleteSelected, groupSelected, selectedIds } from "../components/lab/LabToolbar";
 
 function typing(t: EventTarget | null): boolean {
   const el = t as HTMLElement | null;
@@ -20,6 +22,20 @@ export function useKeyboardNav(): void {
         return;
       }
       if (typing(e.target) || st.paletteOpen) return;
+      if (st.mode === "lab") {
+        const mod = e.ctrlKey || e.metaKey;
+        const k = e.key.toLowerCase();
+        const run = (f: () => void) => { e.preventDefault(); f(); };
+        if (mod && k === "z") return run(e.shiftKey ? redo : undo);
+        if (mod && k === "y") return run(redo);
+        if (mod && k === "c") return run(() => copySelection(false));
+        if (mod && k === "x") return run(() => copySelection(true));
+        if (mod && k === "v") return run(paste);
+        if (mod && k === "d") return run(() => { const ids = selectedIds(); if (ids.length) applyOps([{ op: "duplicateNodes", nodeIds: ids }], "Duplicate"); });
+        if (mod && k === "a") return run(() => st.setSelection(st.arch?.nodes.map((n) => n.id) ?? []));
+        if (mod && k === "g") return run(groupSelected);
+        if (e.key === "Delete" || e.key === "Backspace") return run(() => deleteSelected("bridge"));
+      }
       if (e.key === "/") {
         e.preventDefault();
         st.setPaletteOpen(true);

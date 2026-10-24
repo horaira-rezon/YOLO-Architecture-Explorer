@@ -1,8 +1,12 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState, type DragEvent } from "react";
 import {
   Background, Controls, MarkerType, MiniMap, ReactFlow, ReactFlowProvider, useReactFlow,
-  type Edge, type Node, type NodeMouseHandler,
+  type Connection, type Edge, type EdgeMouseHandler, type Node, type NodeMouseHandler, type OnSelectionChangeFunc,
 } from "@xyflow/react";
+import { getBlock } from "@yolo-atlas/core";
+import { applyOps } from "../../store/lab";
+import { DRAG_TYPE, insertItem, paletteItemByKey } from "../lab/Palette";
+import { PRESETS } from "../../lib/labDefaults";
 import "@xyflow/react/dist/style.css";
 import type { DisplayGraph } from "../../graph/displayGraph";
 import type { LayoutResult } from "../../graph/layout";
@@ -11,18 +15,30 @@ import { useAtlas } from "../../store/atlas";
 import { useHighlight } from "../../store/highlight";
 import { STAGE_STYLE } from "../../lib/stages";
 import { useTheme } from "../../lib/theme";
-import { BandNode, LayerNode, type BandNodeData, type LayerNodeData } from "./nodes";
+import { BandNode, GroupNode, LayerNode, type BandNodeData, type GroupNodeData, type LayerNodeData } from "./nodes";
 import { ElkEdge, type ElkEdgeData } from "./ElkEdge";
 
-const nodeTypes = { layer: LayerNode, band: BandNode };
+const nodeTypes = { layer: LayerNode, band: BandNode, group: GroupNode };
 const edgeTypes = { elk: ElkEdge };
 
 interface Props {
   graph: DisplayGraph;
   layout: LayoutResult;
+  /** The view is re-fitted only when this changes (not after every Lab edit). */
+  fitKey: string;
 }
 
-function Canvas({ graph, layout }: Props) {
+interface EdgeMenu {
+  source: string;
+  target: string;
+  x: number;
+  y: number;
+}
+
+function Canvas({ graph, layout, fitKey }: Props) {
+  const lab = useAtlas((s) => s.mode === "lab");
+  const groups = useAtlas((s) => s.arch?.groups ?? []);
+  const [edgeMenu, setEdgeMenu] = useState<EdgeMenu | null>(null);
   const direction = useAtlas((s) => s.direction);
   const select = useAtlas((s) => s.select);
   const setHighlight = useHighlight((s) => s.setIds);
@@ -38,8 +54,15 @@ function Canvas({ graph, layout }: Props) {
       const box = layout.boxes[d.id] ?? { x: 0, y: 0, w: NODE_SIZE[d.kind].w, h: NODE_SIZE[d.kind].h };
       return { id: d.id, type: "layer", position: { x: box.x, y: box.y }, data: { d, w: box.w, h: box.h, vertical: direction === "DOWN" }, draggable: false, width: box.w, height: box.h };
     });
-    return [...bands, ...items];
-  }, [graph, layout, direction]);
+    const groupBoxes: Node<GroupNodeData>[] = groups.flatMap((g) => {
+      const bs = g.nodeIds.map((id) => layout.boxes[id]).filter(Boolean);
+      if (!bs.length) return [];
+      const x0 = Math.min(...bs.map((b) => b!.x)) - 10, y0 = Math.min(...bs.map((b) => b!.y)) - 10;
+      const x1 = Math.max(...bs.map((b) => b!.x + b!.w)) + 10, y1 = Math.max(...bs.map((b) => b!.y + b!.h)) + 10;
+      return [{ id: `group:${g.id}`, type: "group", position: { x: x0, y: y0 }, data: { name: g.name, w: x1 - x0, h: y1 - y0, groupId: g.id }, draggable: false, selectable: false, focusable: false, zIndex: -1 }];
+    });
+    return [...bands, ...groupBoxes, ...items];
+  }, [graph, layout, direction, groups]);
 
   const edges = useMemo<Edge<ElkEdgeData>[]>(
     () => graph.edges.map((e) => ({
@@ -47,8 +70,9 @@ function Canvas({ graph, layout }: Props) {
       data: { points: layout.edges[e.id] ?? [], label: e.label, skip: e.skip, kind: e.kind },
       markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: "var(--muted)" },
       focusable: false,
+      interactionWidth: lab ? 14 : 0,
     })),
-    [graph, layout],
+    [graph, layout, lab],
   );
 
   // neighbours for hover highlighting
@@ -73,14 +97,48 @@ function Canvas({ graph, layout }: Props) {
     useAtlas.getState().hover(null);
     setHighlight(null);
   }, [setHighlight]);
-  const onClick: NodeMouseHandler = useCallback((_, n) => {
-    if (n.type !== "band") select(n.id);
-  }, [select]);
+  const onClick: NodeMouseHandler = useCallback((e, n) => {
+    if (n.type === "band" || n.type === "group") return;
+    if (lab && e.shiftKey) return; // shift-click adds to the multi-selection (handled by React Flow)
+    select(n.id);
+  }, [select, lab]);
+
+  // ---- Lab: selection, rewiring by dragging handles, inserting on edges, dropping from the palette
+  const onSelectionChange: OnSelectionChangeFunc = useCallback(({ nodes: sel }) => {
+    if (!lab) return;
+    useAtlas.getState().setSelection(sel.filter((n) => n.type === "layer" && !n.id.startsWith("ghost:") && /^(n|x)\d+$/.test(n.id)).map((n) => n.id));
+  }, [lab]);
+  const onConnect = useCallback((c: Connection) => {
+    const st = useAtlas.getState();
+    const target = st.arch?.nodes.find((n) => n.id === c.target);
+    if (!target || !c.source || !st.arch?.nodes.some((n) => n.id === c.source)) return;
+    const def = getBlock(target.module);
+    const from = target.from.length < (def?.inputs.max ?? 1) ? [...target.from, c.source] : [...target.from.slice(0, -1), c.source];
+    applyOps([{ op: "rewire", nodeId: target.id, from }], "Rewire by dragging");
+  }, []);
+  const onEdgeClick: EdgeMouseHandler = useCallback((e, edge) => {
+    if (!lab || !useAtlas.getState().arch?.nodes.some((n) => n.id === edge.source)) return;
+    setEdgeMenu({ source: edge.source, target: edge.target, x: e.clientX, y: e.clientY });
+  }, [lab]);
+  const onDrop = useCallback((e: DragEvent) => {
+    const raw = e.dataTransfer.getData(DRAG_TYPE);
+    if (!raw) return;
+    e.preventDefault();
+    const item = paletteItemByKey(JSON.parse(raw) as string);
+    if (!item) return;
+    const p = rf.screenToFlowPosition({ x: e.clientX, y: e.clientY });
+    const hit = graph.nodes.find((n) => {
+      const b = layout.boxes[n.id];
+      return n.kind === "layer" && n.nodeId && !n.id.startsWith("ghost:") && b && p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+    });
+    insertItem(item, hit?.nodeId);
+  }, [rf, graph, layout]);
 
   useEffect(() => {
     const t = setTimeout(() => rf.fitView({ padding: 0.08, duration: 300 }), 30);
     return () => clearTimeout(t);
-  }, [layout, rf]);
+     
+  }, [fitKey, rf]);
 
   // keyboard / search / walkthrough ask to bring a node into view
   const centerReq = useAtlas((s) => s.centerReq);
@@ -110,6 +168,7 @@ function Canvas({ graph, layout }: Props) {
   }, [autoZoom, graph, layout]);
 
   return (
+    <div className="h-full w-full" onDragOver={(e) => { if (lab) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; } }} onDrop={lab ? onDrop : undefined}>
     <ReactFlow
       nodes={nodes}
       edges={edges}
@@ -118,14 +177,20 @@ function Canvas({ graph, layout }: Props) {
       onNodeMouseEnter={onEnter}
       onNodeMouseLeave={onLeave}
       onNodeClick={onClick}
-      onPaneClick={() => select(null)}
+      onPaneClick={() => { select(null); setEdgeMenu(null); }}
+      onSelectionChange={onSelectionChange}
+      onConnect={onConnect}
+      onEdgeClick={onEdgeClick}
+      multiSelectionKeyCode="Shift"
+      selectionKeyCode="Shift"
+      deleteKeyCode={null}
       onNodeDoubleClick={(_, n) => {
         const d = n.data as LayerNodeData;
         if (n.type === "layer" && d.d.nodeId) useAtlas.getState().enter(d.d.nodeId);
       }}
       onMoveEnd={onMoveEnd}
       nodesDraggable={false}
-      nodesConnectable={false}
+      nodesConnectable={lab}
       elementsSelectable
       onlyRenderVisibleElements
       minZoom={0.05}
@@ -144,6 +209,30 @@ function Canvas({ graph, layout }: Props) {
       />
       <Controls showInteractive={false} position="top-left" aria-label="Zoom controls" />
     </ReactFlow>
+    {edgeMenu && (
+      <div role="menu" className="fixed z-50 w-56 rounded-lg border border-border bg-surface p-1 text-sm shadow-xl" style={{ left: edgeMenu.x, top: edgeMenu.y }} data-testid="edge-menu">
+        <p className="px-2 py-1 text-xs text-muted">Insert on this connection</p>
+        {[...PRESETS, ...["C2f", "C3k2", "CBAM", "SE", "ECA", "CoordAtt"].map((id) => paletteItemByKey(id)!).filter(Boolean)].map((it) => (
+          <button key={it.key} role="menuitem" type="button" className="block w-full rounded px-2 py-1 text-left hover:bg-surface-2"
+            onClick={() => {
+              const st = useAtlas.getState();
+              const near = st.arch?.nodes.find((n) => n.id === edgeMenu.source);
+              void import("../../lib/labDefaults").then(({ nodeSpec }) => {
+                applyOps([{ op: "insertNode", after: edgeMenu.source, node: nodeSpec(it, near, st.computed), rewire: [edgeMenu.target] }], `Insert ${it.label}`);
+              });
+              setEdgeMenu(null);
+            }}>{it.label}</button>
+        ))}
+        <button role="menuitem" type="button" className="mt-1 block w-full rounded px-2 py-1 text-left text-danger hover:bg-surface-2"
+          onClick={() => {
+            const t = useAtlas.getState().arch?.nodes.find((n) => n.id === edgeMenu.target);
+            if (t) applyOps([{ op: "rewire", nodeId: t.id, from: t.from.filter((f) => f !== edgeMenu.source) }], "Remove connection");
+            setEdgeMenu(null);
+          }}>Remove this connection</button>
+        <button role="menuitem" type="button" className="block w-full rounded px-2 py-1 text-left text-muted hover:bg-surface-2" onClick={() => setEdgeMenu(null)}>Cancel</button>
+      </div>
+    )}
+    </div>
   );
 }
 

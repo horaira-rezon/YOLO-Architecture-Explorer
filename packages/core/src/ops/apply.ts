@@ -134,6 +134,7 @@ export function applyOperation(input: Architecture, rawOp: Operation, ctx: Apply
       const { node } = find(arch, op.nodeId);
       if (getBlock(node.module)?.isHead) throw new OperationError("The head cannot be deleted; replace it instead.");
       arch.nodes = arch.nodes.filter((n) => n.id !== node.id);
+      arch.groups = arch.groups.map((g) => ({ ...g, nodeIds: g.nodeIds.filter((x) => x !== node.id) })).filter((g) => g.nodeIds.length);
       for (const c of consumersOf(arch, node.id)) {
         c.from = op.mode === "bridge" && node.from[0] ? c.from.map((f) => (f === node.id ? node.from[0]! : f)) : c.from.filter((f) => f !== node.id);
         markModified(c, ctx, op.mode === "bridge" ? `Bridged over the removed ${node.module}` : `Lost input from the removed ${node.module}`);
@@ -230,6 +231,14 @@ export function applyOperation(input: Architecture, rawOp: Operation, ctx: Apply
       break;
     case "changeNc":
       arch.config.nc = op.nc;
+      break;
+    case "groupNodes": {
+      for (const id of op.nodeIds) find(arch, id);
+      arch.groups = [...arch.groups.map((g) => ({ ...g, nodeIds: g.nodeIds.filter((x) => !op.nodeIds.includes(x)) })).filter((g) => g.nodeIds.length), { id: `g${arch.nextId++}`, name: op.name, nodeIds: [...op.nodeIds] }];
+      break;
+    }
+    case "ungroup":
+      arch.groups = arch.groups.filter((g) => g.id !== op.groupId);
       break;
     case "changeHead": {
       const head = headNode(arch);

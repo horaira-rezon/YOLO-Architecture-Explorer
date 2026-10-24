@@ -41,6 +41,8 @@ export const OperationSchema = z.discriminatedUnion("op", [
   z.object({ op: z.literal("changeScale"), scale: z.string().nullable(), depthMultiple: z.number().optional(), widthMultiple: z.number().optional(), maxChannels: z.number().nullable().optional() }),
   z.object({ op: z.literal("changeInputSize"), inputSize: z.number().int().min(32).max(4096) }),
   z.object({ op: z.literal("changeNc"), nc: z.number().int().min(1).max(100000) }),
+  z.object({ op: z.literal("groupNodes"), nodeIds: z.array(z.string()).min(1), name: z.string().min(1) }),
+  z.object({ op: z.literal("ungroup"), groupId: z.string() }),
   z.object({ op: z.literal("changeHead"), module: z.string(), args: z.array(YamlValueSchema).optional() }),
 ]);
 export type Operation = z.infer<typeof OperationSchema>;

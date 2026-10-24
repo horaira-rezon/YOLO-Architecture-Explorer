@@ -1,4 +1,4 @@
-import type { Architecture, ComputeResult, Stage } from "@yolo-atlas/core";
+import type { Architecture, ComputeResult, Origin, Stage } from "@yolo-atlas/core";
 import { formatShape, getBlock, levelLabel, summarizeArgs } from "@yolo-atlas/core";
 
 export type DisplayKind = "layer" | "input" | "post" | "train";
@@ -19,6 +19,12 @@ export interface DisplayNode {
   nodeId?: string;
   module?: string;
   trainingOnly?: boolean;
+  origin?: Origin;
+}
+
+export interface GhostSource {
+  original: Architecture;
+  originalComp: ComputeResult;
 }
 
 export interface DisplayEdge {
@@ -39,7 +45,7 @@ export interface DisplayGraph {
 export const STAGE_ORDER: Stage[] = ["input", "backbone", "neck", "head", "postprocess", "loss"];
 
 /** Turn an architecture into the boxes and arrows shown on the canvas (adds input / post-processing / training items). */
-export function buildDisplayGraph(arch: Architecture, comp: ComputeResult): DisplayGraph {
+export function buildDisplayGraph(arch: Architecture, comp: ComputeResult, ghosts?: GhostSource): DisplayGraph {
   const nodes: DisplayNode[] = [];
   const edges: DisplayEdge[] = [];
   const inShape = [arch.inputChannels, arch.inputSize, arch.inputSize];
@@ -52,7 +58,7 @@ export function buildDisplayGraph(arch: Architecture, comp: ComputeResult): Disp
     nodes.push({
       id: n.id, kind: "layer", stage: n.stage, title: def?.displayName ?? n.module, subtitle: summarizeArgs(n, c),
       index: c?.index ?? null, shape: c?.outShape ?? null, level: levelLabel(c?.stride ?? null), stride: c?.stride ?? null,
-      error: comp.issues.some((i) => i.nodeId === n.id && i.severity === "error"), nodeId: n.id, module: n.module,
+      error: comp.issues.some((i) => i.nodeId === n.id && i.severity === "error"), nodeId: n.id, module: n.module, origin: n.origin,
     });
     const sources = n.from.length === 0 ? ["input"] : n.from;
     sources.forEach((s, k) => {
@@ -61,6 +67,23 @@ export function buildDisplayGraph(arch: Architecture, comp: ComputeResult): Disp
       const skip = s !== "input" && sc != null && c != null && sc.index !== c.index - 1;
       edges.push({ id: `${s}->${n.id}#${k}`, source: s, target: n.id, label: formatShape(shape), skip, kind: "data" });
     });
+  }
+
+  // diff view: removed blocks stay visible as faded "ghosts" at their old place
+  if (ghosts) {
+    const ids = new Set(arch.nodes.map((n) => n.id));
+    for (const n of ghosts.original.nodes) {
+      if (ids.has(n.id)) continue;
+      const c = ghosts.originalComp.nodes[n.id];
+      const def = getBlock(n.module);
+      // place it just after the surviving node that came before it
+      const prevIdx = ghosts.original.nodes.slice(0, c?.index ?? 0).reverse().find((p) => ids.has(p.id));
+      const at = prevIdx ? (comp.nodes[prevIdx.id]?.index ?? 0) + 0.5 : -0.5;
+      nodes.push({
+        id: `ghost:${n.id}`, kind: "layer", stage: n.stage, title: def?.displayName ?? n.module, subtitle: "removed",
+        index: at, shape: c?.outShape ?? null, level: levelLabel(c?.stride ?? null), stride: c?.stride ?? null, error: false, nodeId: n.id, module: n.module, origin: "removed-ghost",
+      });
+    }
   }
 
   const heads = live.filter((n) => n.stage === "head");

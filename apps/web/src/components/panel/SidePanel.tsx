@@ -11,6 +11,8 @@ import { RichText } from "../text/RichText";
 import { MathBlock } from "../text/MathBlock";
 import { CodeBlock } from "../text/CodeBlock";
 import { ReadingLevelSwitch } from "../ReadingLevelSwitch";
+import { ParamEditor } from "../lab/ParamEditor";
+import { computeArchitecture, diffById } from "@yolo-atlas/core";
 
 function Section({ title, children, id }: { title: string; children: ReactNode; id: string }) {
   return (
@@ -27,9 +29,19 @@ function Badge({ children, tone = "muted" }: { children: ReactNode; tone?: "mute
 }
 
 export function SidePanel() {
-  const { arch, computed, selectedId, select, readingLevel: level } = useAtlas();
+  const { arch: liveArch, computed: liveComp, selectedId: rawId, select, readingLevel: level, mode, original } = useAtlas();
+  // removed blocks ("ghosts" in the change view) are explained from the original model
+  const ghost = !!rawId?.startsWith("ghost:");
+  const origComp = useMemo(() => (original ? computeArchitecture(original) : null), [original]);
+  const arch = ghost ? original : liveArch;
+  const computed = ghost ? origComp : liveComp;
+  const selectedId = ghost ? rawId!.slice(6) : rawId;
   const item = useMemo(() => (arch && selectedId ? resolveItem(arch, selectedId) : null), [arch, selectedId]);
   const pos = useMemo(() => (arch && computed && item?.nodeId ? explainPosition(arch, computed, item.nodeId) : null), [arch, computed, item]);
+  const change = useMemo(() => {
+    if (!original || !liveArch || !item?.nodeId || !origComp || !liveComp) return null;
+    return diffById(original, liveArch, origComp, liveComp).find((d) => (d.b ?? d.a)?.id === item.nodeId && d.kind !== "same") ?? null;
+  }, [original, liveArch, item, origComp, liveComp]);
   if (!arch || !computed || !selectedId || !item) return null;
   const content = item.contentId ? CONTENT.get(item.contentId) : undefined;
   const node = item.nodeId ? arch.nodes.find((n) => n.id === item.nodeId) : undefined;
@@ -62,6 +74,18 @@ export function SidePanel() {
       </header>
 
       <div className="px-4 pb-6">
+        {mode === "lab" && node && !ghost && <ParamEditor nodeId={node.id} />}
+        {change && (
+          <Section title={change.kind === "removed" ? "Removed in the Lab" : change.kind === "added" ? "Added in the Lab" : "What changed"} id="changed">
+            {(change.b ?? change.a)?.modification?.summary && <p><strong>{(change.b ?? change.a)!.modification!.summary}</strong></p>}
+            {change.kind === "removed" && <p>This block was in the original model. It no longer runs; its explanation below describes what it used to do.</p>}
+            {change.kind === "added" && <p>This block is not in the official {arch.version} model.</p>}
+            {change.changes.length > 0 && (
+              <ul className="list-disc pl-5">{change.changes.map((c) => <li key={c} className="font-mono text-xs">{c}</li>)}</ul>
+            )}
+            <p className="text-xs text-muted">Changes are hypotheses until tested: train with and without them (ablation) on your data.</p>
+          </Section>
+        )}
         {issues.length > 0 && (
           <div role="alert" className="mt-3 rounded-lg border border-danger/50 bg-danger/10 p-2 text-sm">
             {issues.map((i, k) => <p key={k}><strong>{i.severity === "error" ? "Problem: " : "Note: "}</strong>{i.message}</p>)}

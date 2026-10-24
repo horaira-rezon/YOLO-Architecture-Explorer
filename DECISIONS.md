@@ -68,3 +68,15 @@ The YAML sets `end2end: True`, so the diagram shows the NMS-free one-to-one path
 
 ## D21 — Content QA covers everything a learner can click
 Besides blocks in shipped YAMLs, QA builds every shipped model and requires content for every sub-block and operation that appears at L2/L3, and for every loss, assigner and training extra.
+
+## D22 — Lab history is a snapshot stack
+Each Lab action applies one or more Operations through the core pipeline and pushes the previous architecture onto the undo stack (max 500). A group of operations (an AI patch, a multi-delete) is one entry, so it undoes as one step. Autosave writes the current Lab model to IndexedDB (debounced); named snapshots live there too.
+
+## D23 — Groups are visual; templates make them reusable
+"Group" draws a named box around blocks without changing the exported YAML (Ultralytics has no notion of user composite modules without code). "Save as template" stores the selected blocks as a reusable snippet in IndexedDB that can be pasted into any model. Generating a real composite nn.Module from an arbitrary subgraph is left out on purpose: it would need custom parse_model rules per group.
+
+## D24 — Lab extras export as stubs + parse_model edits
+Extras not in Ultralytics (SE, ECA, CoordAtt, SimAM, WeightedAdd, DeformConv) export as `custom_blocks.py` (valid nn.Module code, checked in PyTorch) plus the exact `parse_model` lines. Attention extras keep channels, so their YAML rows have no channel argument and the edit prepends `ch[f]`. CBAM exists in Ultralytics and only needs the edit. RepConv is not offered in the palette because Ultralytics cannot build it from a YAML row.
+
+## D25 — Speed is never estimated
+The Lab shows parameters, GFLOPs and weight size (FP32/FP16), with deltas. It never shows FPS or latency: those depend on hardware, runtime and post-processing and must be measured.

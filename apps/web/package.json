@@ -21,6 +21,7 @@
     "@xyflow/react": "12.12.0",
     "@yolo-atlas/core": "workspace:*",
     "elkjs": "0.12.0",
+    "html-to-image": "1.11.11",
     "idb-keyval": "6.3.0",
     "immer": "11.1.18",
     "katex": "0.19.0",

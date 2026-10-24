@@ -31,6 +31,11 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
   const style = STAGE_STYLE[d.stage];
   const Icon = style.icon;
   const training = d.kind === "train";
+  const diffView = useAtlas((s) => s.diffView);
+  const lab = useAtlas((s) => s.mode === "lab");
+  const inSelection = useAtlas((s) => s.selection.includes(id));
+  const ghost = d.origin === "removed-ghost";
+  const badge = diffView && d.origin && d.origin !== "builtin" ? d.origin : null;
   const label = d.kind === "layer"
     ? `Layer ${d.index}: ${d.title}. ${d.subtitle}. Output ${formatShape(d.shape)}. ${STAGE_CONTENT[d.stage].title}.`
     : `${d.title}. ${d.subtitle}. ${STAGE_CONTENT[d.stage].title}.`;
@@ -41,17 +46,23 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
       aria-pressed={isSelected}
       data-testid={`node-${id}`}
       className={`relative flex flex-col justify-between rounded-lg border bg-surface px-2.5 py-1.5 text-left text-fg shadow-sm transition-opacity ${
-        training ? "border-dashed" : ""
-      } ${isSelected ? "ring-2 ring-accent" : ""} ${d.error ? "border-danger" : "border-border"}`}
-      style={{ width: w, height: h, opacity: dim ? 0.22 : 1, borderLeft: `6px solid ${style.color}` }}
+        training || ghost ? "border-dashed" : ""
+      } ${isSelected || inSelection ? "ring-2 ring-accent" : ""} ${d.error ? "border-danger" : badge === "added" ? "border-ok" : badge === "modified" ? "border-warn" : ghost ? "border-danger" : "border-border"}`}
+      style={{ width: w, height: h, opacity: dim ? 0.22 : ghost ? 0.55 : 1, borderLeft: `6px solid ${style.color}` }}
+      data-origin={d.origin}
     >
-      <Handle type="target" position={vertical ? Position.Top : Position.Left} className="!opacity-0" isConnectable={false} />
+      {badge && (
+        <span className={`absolute -top-2 right-2 rounded px-1 text-[9px] font-bold uppercase ${badge === "added" ? "bg-ok text-white" : badge === "modified" ? "bg-warn text-white" : "bg-danger text-white"}`}>
+          {badge === "added" ? "+ new" : badge === "modified" ? "✎ changed" : "− removed"}
+        </span>
+      )}
+      <Handle type="target" position={vertical ? Position.Top : Position.Left} className={lab && !ghost ? "!h-2 !w-2 !bg-accent" : "!opacity-0"} isConnectable={lab && !ghost} />
       <div className="flex items-center gap-1.5 text-[13px] font-semibold leading-tight">
         {d.index != null && <span className="rounded bg-surface-2 px-1 font-mono text-[11px] text-muted">{d.index}</span>}
         <span className="truncate">{d.title}</span>
         {d.error && <AlertTriangle size={14} className="text-danger" aria-label="has a problem" />}
         <Icon size={14} className="ml-auto shrink-0" style={{ color: style.color }} aria-hidden />
-        {d.kind === "layer" && d.nodeId && (
+        {d.kind === "layer" && d.nodeId && !ghost && (
           <button
             type="button"
             className="nodrag shrink-0 rounded p-0.5 text-muted hover:bg-surface-2 hover:text-fg"
@@ -77,7 +88,7 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
       ) : (
         training && <div className="text-[10px] uppercase tracking-wide text-muted">training only</div>
       )}
-      <Handle type="source" position={vertical ? Position.Bottom : Position.Right} className="!opacity-0" isConnectable={false} />
+      <Handle type="source" position={vertical ? Position.Bottom : Position.Right} className={lab && !ghost ? "!h-2 !w-2 !bg-accent" : "!opacity-0"} isConnectable={lab && !ghost} />
     </div>
   );
 }
@@ -123,3 +134,15 @@ function BandNodeImpl({ data }: NodeProps<Node<BandNodeData>>) {
 }
 
 export const BandNode = memo(BandNodeImpl);
+
+export type GroupNodeData = { name: string; w: number; h: number; groupId: string };
+
+function GroupNodeImpl({ data }: NodeProps<Node<GroupNodeData>>) {
+  return (
+    <div className="pointer-events-none rounded-xl border-2 border-dashed border-accent/60" style={{ width: data.w, height: data.h }} data-testid={`group-${data.groupId}`}>
+      <span className="absolute -top-5 left-1 rounded bg-accent px-1.5 text-[11px] font-semibold text-accent-fg">{data.name}</span>
+    </div>
+  );
+}
+
+export const GroupNode = memo(GroupNodeImpl);
