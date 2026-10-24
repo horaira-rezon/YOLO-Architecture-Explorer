@@ -19,3 +19,4 @@ export * from "./ops/apply";
 export * from "./engine/validate";
 export * from "./export/stubs";
 export * from "./export/report";
+export * from "./ai";

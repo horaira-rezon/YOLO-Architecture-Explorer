@@ -1,0 +1,102 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`prompt builders (snapshots) > explain prompt 1`] = `
+"Model: v8 detect, scale n, input 640, 80 classes.
+Goal: Detect tiny weed seedlings in drone images of crop fields. Must run on an NVIDIA Jetson. The dataset has 4 classes.
+Number of classes: 4
+Classes: weed seedling types (4)
+Typical object size: 8–32 px in a 640 px image
+Image resolution: drone frames, often 4K, resized or tiled
+Class imbalance: some weed types are rare
+Dataset notes: crops and weeds look similar when young
+Deployment target: NVIDIA Jetson (edge GPU, TensorRT FP16)
+Budget / latency constraint: stay close to the original model's size; prefer real-time on the Jetson
+Reading level: eli5.
+Explain these nodes (return one entry per node id, same ids):
+- n9: layer 9 SPPF [1024,5] in backbone, output 256×20×20 P5/32; builtin; receives from n8 (C2f, 256×20×20); sends to n10 (Upsample); n20 (Concat).
+- n15: layer 15 C2f [256] in neck, output 64×80×80 P3/8; builtin; receives from n14 (Concat, 192×80×80); sends to n16 (Conv); n22 (Detect head).
+- n22: layer 22 Detect head ["nc"] in head, output 64×8400 ; builtin; receives from n15 (C2f, 64×80×80); n18 (C2f, 128×40×40); n21 (C2f, 256×20×20); sends to the predictions."
+`;
+
+exports[`prompt builders (snapshots) > patch prompt 1`] = `
+"Task: detect. Version: v8. Scale: n (depth 0.33, width 0.25). Input size: 640. Classes (nc): 80.
+Totals: 3157200 parameters, 8.86 GFLOPs. Post-processing: NMS. Losses: BCE, CIoU, DFL. Assigner: TAL.
+
+Architecture (one row per layer):
+id | index | stage | module | args | repeats | from | output | params
+n0 | 0 | backbone | Conv | [64,3,2] | x1 | image | 16×320×320 P1/2 | 464
+n1 | 1 | backbone | Conv | [128,3,2] | x1 | n0 | 32×160×160 P2/4 | 4672
+n2 | 2 | backbone | C2f | [128,true] | x3 | n1 | 32×160×160 P2/4 | 7360
+n3 | 3 | backbone | Conv | [256,3,2] | x1 | n2 | 64×80×80 P3/8 | 18560
+n4 | 4 | backbone | C2f | [256,true] | x6 | n3 | 64×80×80 P3/8 | 49664
+n5 | 5 | backbone | Conv | [512,3,2] | x1 | n4 | 128×40×40 P4/16 | 73984
+n6 | 6 | backbone | C2f | [512,true] | x6 | n5 | 128×40×40 P4/16 | 197632
+n7 | 7 | backbone | Conv | [1024,3,2] | x1 | n6 | 256×20×20 P5/32 | 295424
+n8 | 8 | backbone | C2f | [1024,true] | x3 | n7 | 256×20×20 P5/32 | 460288
+n9 | 9 | backbone | SPPF | [1024,5] | x1 | n8 | 256×20×20 P5/32 | 164608
+n10 | 10 | neck | nn.Upsample | ["None",2,"nearest"] | x1 | n9 | 256×40×40 P4/16 | 0
+n11 | 11 | neck | Concat | [1] | x1 | n10,n6 | 384×40×40 P4/16 | 0
+n12 | 12 | neck | C2f | [512] | x3 | n11 | 128×40×40 P4/16 | 148224
+n13 | 13 | neck | nn.Upsample | ["None",2,"nearest"] | x1 | n12 | 128×80×80 P3/8 | 0
+n14 | 14 | neck | Concat | [1] | x1 | n13,n4 | 192×80×80 P3/8 | 0
+n15 | 15 | neck | C2f | [256] | x3 | n14 | 64×80×80 P3/8 | 37248
+n16 | 16 | neck | Conv | [256,3,2] | x1 | n15 | 64×40×40 P4/16 | 36992
+n17 | 17 | neck | Concat | [1] | x1 | n16,n12 | 192×40×40 P4/16 | 0
+n18 | 18 | neck | C2f | [512] | x3 | n17 | 128×40×40 P4/16 | 123648
+n19 | 19 | neck | Conv | [512,3,2] | x1 | n18 | 128×20×20 P5/32 | 147712
+n20 | 20 | neck | Concat | [1] | x1 | n19,n9 | 384×20×20 P5/32 | 0
+n21 | 21 | neck | C2f | [1024] | x3 | n20 | 256×20×20 P5/32 | 493056
+n22 | 22 | head | Detect | ["nc"] | x1 | n15,n18,n21 | 64×8400 | 897664
+
+Allowed blocks (module name: description; inputs; YAML args in order):
+- Conv: Conv; inputs 1; args [c2, k, s, p, g, d]
+- DWConv: Depthwise Conv; inputs 1; args [c2, k, s]
+- GhostConv: Ghost Conv; inputs 1; args [c2, k, s]
+- C2f: C2f; inputs 1; args [c2, shortcut]
+- C3: C3; inputs 1; args [c2, shortcut]
+- C3Ghost: C3 Ghost; inputs 1; args [c2, shortcut]
+- C3k2: C3k2; inputs 1; args [c2, c3k, e, attn]
+- C3k: C3k; inputs 1; args [c2, n]
+- RepNCSPELAN4: RepNCSPELAN4 (GELAN); inputs 1; args [c2, c3, c4, n]
+- ELAN1: ELAN1; inputs 1; args [c2, c3, c4]
+- C2fCIB: C2fCIB; inputs 1; args [c2, shortcut, lk]
+- A2C2f: A2C2f (area attention); inputs 1; args [c2, a2, area]
+- C2PSA: C2PSA; inputs 1; args [c2]
+- C2fPSA: C2fPSA; inputs 1; args [c2]
+- PSA: PSA; inputs 1; args [c2]
+- SPPF: SPPF; inputs 1; args [c2, k, n, shortcut]
+- SPP: SPP; inputs 1; args [c2, k]
+- SPPELAN: SPPELAN; inputs 1; args [c2, c3, k]
+- ADown: ADown; inputs 1; args [c2]
+- AConv: AConv; inputs 1; args [c2]
+- SCDown: SCDown; inputs 1; args [c2, k, s]
+- nn.Upsample: Upsample; inputs 1; args [size, scale, mode]
+- Concat: Concat; inputs 2-8; args [d]
+- SE: SE attention [custom block: needs code + parse_model edit]; inputs 1; args [r]
+- ECA: ECA attention [custom block: needs code + parse_model edit]; inputs 1; args [k]
+- CBAM: CBAM attention [custom block: needs code + parse_model edit]; inputs 1; args [kernel_size]
+- CoordAtt: Coordinate attention [custom block: needs code + parse_model edit]; inputs 1; args [r]
+- SimAM: SimAM (parameter-free attention) [custom block: needs code + parse_model edit]; inputs 1; args []
+- WeightedAdd: Weighted fusion (BiFPN) [custom block: needs code + parse_model edit]; inputs 2-4; args []
+- DeformConv: Deformable Conv (DCNv2) [custom block: needs code + parse_model edit]; inputs 1; args [c2, k, s]
+- Detect: Detect head; inputs 1-6; args [nc]
+- v10Detect: v10Detect (dual head); inputs 1-6; args [nc]
+- Segment: Segment head; inputs 1-6; args [nc, nm, npr]
+- Segment26: Segment26 head; inputs 1-6; args [nc, nm, npr]
+- Pose26: Pose26 head (RLE); inputs 1-6; args [nc, kpt_shape]
+- OBB26: OBB26 head; inputs 1-6; args [nc, ne]
+- Pose: Pose head; inputs 1-6; args [nc, kpt_shape]
+- OBB: OBB head; inputs 1-6; args [nc, ne]
+- Classify: Classify head; inputs 1-4; args [c2]
+
+Goal: Detect tiny weed seedlings in drone images of crop fields. Must run on an NVIDIA Jetson. The dataset has 4 classes.
+Number of classes: 4
+Classes: weed seedling types (4)
+Typical object size: 8–32 px in a 640 px image
+Image resolution: drone frames, often 4K, resized or tiled
+Class imbalance: some weed types are rare
+Dataset notes: crops and weeds look similar when young
+Deployment target: NVIDIA Jetson (edge GPU, TensorRT FP16)
+Budget / latency constraint: stay close to the original model's size; prefer real-time on the Jetson
+Reading level for the rationale text: simple."
+`;

@@ -1,5 +1,5 @@
 import * as Menu from "@radix-ui/react-dropdown-menu";
-import { BookmarkPlus, ClipboardPaste, Copy, CopyPlus, GitCompare, Group, MousePointerSquareDashed, Redo2, RotateCcw, Scissors, Trash2, Undo2, X } from "lucide-react";
+import { Sparkles, BookmarkPlus, ClipboardPaste, Copy, CopyPlus, GitCompare, Group, MousePointerSquareDashed, Redo2, RotateCcw, Scissors, Trash2, Undo2, X } from "lucide-react";
 import type { Stage } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
 import { applyOps, copySelection, paste, redo, replaceArch, undo } from "../../store/lab";
@@ -75,6 +75,7 @@ export function LabToolbar({ modelKey }: { modelKey: string }) {
       <button type="button" disabled={!past.length} onClick={() => original && window.confirm("Go back to the original model? You can undo this.") && replaceArch(original, "Reset to original")} className="flex items-center gap-1 rounded px-2 py-1 text-xs hover:bg-surface-2 disabled:opacity-30"><RotateCcw size={14} /> Reset</button>
       <ImportDialog />
       <ExportMenu />
+      <button type="button" onClick={() => useAtlas.getState().setAIPanelOpen(!useAtlas.getState().aiPanelOpen)} className="ml-1 flex items-center gap-1 rounded bg-accent/10 px-2 py-1 text-xs font-semibold text-accent hover:bg-accent/20" data-testid="open-ai"><Sparkles size={14} /> AI Architect</button>
       <div className="ml-auto"><ValidationButton /></div>
       {selection.length > 1 && <span className="ml-2 text-xs text-muted">{selection.length} selected (shift-click / shift-drag to change)</span>}
       {labError && (

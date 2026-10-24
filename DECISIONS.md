@@ -80,3 +80,15 @@ Extras not in Ultralytics (SE, ECA, CoordAtt, SimAM, WeightedAdd, DeformConv) ex
 
 ## D25 — Speed is never estimated
 The Lab shows parameters, GFLOPs and weight size (FP32/FP16), with deltas. It never shows FPS or latency: those depend on hardware, runtime and post-processing and must be measured.
+
+## D26 — Flat patch schema
+The AI returns operations in one flat object type (block args as a JSON string, other values in `value`), because structured-output modes reject deep/recursive schemas (Gemini docs: "very large or deeply nested schemas may be rejected"). `toOperation` converts each to a core Operation through the same Zod schema as manual edits, with error messages written so the model can repair them. Loop: Zod → apply to a draft → validate → send problems back, up to 3 repairs; the best partial result stays visible.
+
+## D27 — Gemini default model
+Checked https://ai.google.dev/gemini-api/docs/models and /pricing on 2026-10-24: `gemini-3.5-flash-lite` ("fastest, most cost-effective", free tier) is the default; `gemini-3.8-flash`, `gemini-3.6-flash`, `gemini-3.1-flash-lite`, `gemini-2.5-flash` are offered. The free tier's "Used to improve our products: Yes" is shown in Settings. The SDK (`@google/genai` 2.29, pinned older than the newest) is loaded only when a Gemini request is made; its install scripts are not allowed to run (not needed).
+
+## D28 — Keys never in the bundle
+Keys come only from the Settings form (localStorage, with a warning) or the proxy's `.env`. There is deliberately no `VITE_*` key variable, so a deployed build can never contain a key.
+
+## D29 — MockProvider is honest about being a demo
+The offline provider builds patches from keyword rules (nc from the goal, CBAM + P2 for tiny objects, GhostConv for edge devices) and labels itself "Offline demo (no AI)" everywhere. It powers tests and E2E and lets the whole flow work without a network.

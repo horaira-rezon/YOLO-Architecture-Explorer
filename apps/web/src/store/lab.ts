@@ -1,4 +1,4 @@
-import { OperationError, applyOperations, type Architecture, type Operation } from "@yolo-atlas/core";
+import { OperationError, applyOperation, applyOperations, toOperation, type Architecture, type Operation, type Patch, type PatchOp } from "@yolo-atlas/core";
 import { useAtlas } from "./atlas";
 
 export interface HistoryEntry {
@@ -67,4 +67,27 @@ export function paste(): void {
   const after = st.selectedId ?? st.arch?.nodes[st.arch.nodes.length - 2]?.id;
   if (!st.clipboard.length || !after) return;
   applyOps([{ op: "pasteNodes", nodes: st.clipboard, after }], `Paste ${st.clipboard.length} block(s)`);
+}
+
+/** Apply chosen operations of an AI patch as ONE undoable step; each changed node records "<session>.<index>". */
+export function applyPatch(sessionId: string, patch: Patch, selected: number[]): { error: string | null; notes: Record<string, PatchOp> } {
+  const st = useAtlas.getState();
+  if (!st.arch) return { error: "No model is loaded.", notes: {} };
+  let arch = st.arch;
+  const notes: Record<string, PatchOp> = {};
+  try {
+    for (const i of [...selected].sort((a, b) => a - b)) {
+      const p = patch.operations[i]!;
+      const opId = `${sessionId}.${i}`;
+      arch = applyOperation(arch, toOperation(p), { opId, summary: p.rationaleSimple });
+      notes[opId] = p;
+    }
+  } catch (e) {
+    const msg = `Operation could not be applied: ${(e as Error).message}`;
+    useAtlas.setState({ labError: msg });
+    return { error: msg, notes: {} };
+  }
+  useAtlas.setState({ past: [...st.past, { label: "AI patch", arch: st.arch }].slice(-500), future: [], labError: null });
+  st.setArch(arch);
+  return { error: null, notes };
 }

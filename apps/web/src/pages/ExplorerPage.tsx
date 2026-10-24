@@ -26,6 +26,7 @@ import { LabToolbar } from "../components/lab/LabToolbar";
 import { StatsBar } from "../components/lab/StatsBar";
 import { ModelSettings } from "../components/lab/ModelSettings";
 import { useAutosave } from "../lib/autosave";
+import { ArchitectPanel } from "../components/ai/ArchitectPanel";
 import { computeArchitecture } from "@yolo-atlas/core";
 import { FlaskConical, Telescope } from "lucide-react";
 
@@ -37,6 +38,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   useKeyboardNav();
   const original = useAtlas((s) => s.original);
   const diffView = useAtlas((s) => s.diffView);
+  const aiPanelOpen = useAtlas((s) => s.aiPanelOpen);
   useEffect(() => useAtlas.getState().setMode(mode), [mode]);
   const modelKey = `${version}-${task}-${scale ?? "default"}`;
   const restore = useAutosave(mode === "lab", modelKey);
@@ -193,7 +195,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           {arch && computed && !listView && zoomLevel === 1 && !walk.active && <CanvasLegend arch={arch} comp={computed} />}
           {zoomLevel === 1 && !listView && <Walkthrough />}
         </div>
-        {inside && zoomLevel >= 2 ? (inside.selected ? <InsidePanel /> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active ? <SidePanel /> : mode === "lab" && arch ? (
+        {mode === "lab" && aiPanelOpen ? <ArchitectPanel /> : inside && zoomLevel >= 2 ? (inside.selected ? <InsidePanel /> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active ? <SidePanel /> : mode === "lab" && arch ? (
           <aside className="hidden w-[380px] shrink-0 overflow-y-auto border-l border-border bg-surface md:block" aria-label="Whole-model settings"><ModelSettings /></aside>
         ) : null}
         <CommandPalette />

@@ -17,7 +17,8 @@ async function exportImage(kind: "png" | "svg", base: string) {
 }
 
 export function ExportMenu() {
-  const { arch, original } = useAtlas();
+  const { arch, original, aiSession } = useAtlas();
+  const notes = Object.fromEntries(Object.entries(aiSession?.notes ?? {}).map(([k, o]) => [k, { rationale: `${o.rationaleSimple} ${o.rationaleForGoal}`, tradeoff: `${o.tradeoff} Risk: ${o.risk}` }]));
   if (!arch) return null;
   const base = `yolo-atlas-${arch.version}-${arch.task}-${arch.config.scale ?? "custom"}`;
   const item = "cursor-pointer rounded px-2 py-1.5 text-sm outline-none data-[highlighted]:bg-surface-2";
@@ -31,7 +32,7 @@ export function ExportMenu() {
           <Menu.Item className={item} onSelect={() => void exportImage("png", base)}>Diagram as PNG</Menu.Item>
           <Menu.Item className={item} onSelect={() => void exportImage("svg", base)}>Diagram as SVG</Menu.Item>
           <Menu.Separator className="my-1 h-px bg-border" />
-          <Menu.Item className={item} onSelect={() => original && download(`${base}-changes.md`, changeReport(original, arch), "text/markdown")}>Change report (Markdown)</Menu.Item>
+          <Menu.Item className={item} onSelect={() => original && download(`${base}-changes.md`, changeReport(original, arch, notes, aiSession?.goal.goal), "text/markdown")}>Change report (Markdown)</Menu.Item>
           <Menu.Item className={item} onSelect={() => download("custom_blocks.py", customBlocksPython(arch), "text/x-python")}>Custom blocks + parse_model edits (.py)</Menu.Item>
           <Menu.Item className={item} onSelect={() => download("train.py", trainingScript(arch, `${base}.yaml`), "text/x-python")}>Training script (.py)</Menu.Item>
           <p className="px-2 py-1 text-[11px] text-muted">After structural edits, pretrained weights only partly transfer.</p>

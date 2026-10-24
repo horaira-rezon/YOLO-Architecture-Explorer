@@ -1,6 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import { Link } from "react-router-dom";
-import { ArrowDownLeft, ArrowUpRight, Bot, X } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, X } from "lucide-react";
 import {
   explainPosition, formatCount, formatShape, levelLabel, pythonCall, yamlLine,
   type Leveled,
@@ -12,6 +11,7 @@ import { MathBlock } from "../text/MathBlock";
 import { CodeBlock } from "../text/CodeBlock";
 import { ReadingLevelSwitch } from "../ReadingLevelSwitch";
 import { ParamEditor } from "../lab/ParamEditor";
+import { BlockChat } from "../ai/BlockChat";
 import { computeArchitecture, diffById } from "@yolo-atlas/core";
 
 function Section({ title, children, id }: { title: string; children: ReactNode; id: string }) {
@@ -209,10 +209,13 @@ export function SidePanel() {
         ) : null}
 
         <Section title="Ask about this block" id="ask">
-          <p className="flex items-start gap-2 text-muted">
-            <Bot size={16} className="mt-0.5 shrink-0" aria-hidden />
-            <span>To ask questions, connect an AI provider in <Link to="/settings" className="text-accent underline">Settings</Link>. Only the block description and your question are sent.</span>
-          </p>
+          <BlockChat context={[
+            `Model: ${arch.version} ${arch.task} (scale ${arch.config.scale ?? "fixed"}, input ${arch.inputSize}).`,
+            `Item: ${item.title}${c ? `, layer ${c.index}, ${node?.stage}, output ${formatShape(c.outShape)}, ${c.params} parameters` : ""}.`,
+            node ? `YAML: ${yamlLine(arch, node.id)}` : "",
+            pos ? `Inputs: ${pos.comesFrom.map((x) => x.story).join(" ")} Outputs: ${pos.goesTo.map((x) => x.story).join(" ")}` : "",
+            content ? `About this block: ${content.whatIsIt.engineer}` : "",
+          ].filter(Boolean).join("\n")} />
         </Section>
       </div>
     </aside>

@@ -1,6 +1,18 @@
 import { create } from "zustand";
 import { computeArchitecture, type Architecture, type ComputeResult, type Stage, type YamlValue } from "@yolo-atlas/core";
 import type { HistoryEntry } from "./lab";
+import type { GoalSpec, Patch, PatchOp } from "@yolo-atlas/core";
+
+export interface AISession {
+  id: string;
+  goal: GoalSpec;
+  patch: Patch;
+  providerLabel: string;
+  /** Patch op indices that were applied (null = not applied yet). */
+  applied: number[] | null;
+  /** Patch op by the opId recorded on changed nodes ("<session>.<index>"). */
+  notes: Record<string, PatchOp>;
+}
 
 export interface ClipNode {
   id: string;
@@ -60,6 +72,12 @@ export interface AtlasState {
   clipboard: ClipNode[];
   diffView: boolean;
   labError: string | null;
+  aiPanelOpen: boolean;
+  aiSession: AISession | null;
+  goal: GoalSpec | null;
+  setAIPanelOpen(v: boolean): void;
+  setAISession(s: AISession | null): void;
+  setGoal(g: GoalSpec | null): void;
   setMode(m: "explore" | "lab"): void;
   setSelection(ids: string[]): void;
   setDiffView(v: boolean): void;
@@ -125,6 +143,12 @@ export const useAtlas = create<AtlasState>((set) => ({
   clipboard: [],
   diffView: false,
   labError: null,
+  aiPanelOpen: false,
+  aiSession: null,
+  goal: null,
+  setAIPanelOpen: (aiPanelOpen) => set({ aiPanelOpen }),
+  setAISession: (aiSession) => set({ aiSession }),
+  setGoal: (goal) => set({ goal }),
   setMode: (mode) => set({ mode }),
   setSelection: (selection) => set({ selection }),
   setDiffView: (diffView) => set({ diffView }),
