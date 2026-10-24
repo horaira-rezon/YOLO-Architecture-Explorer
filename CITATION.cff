@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Rezon"
+  given-names: "Md. Abu Horaira Al"
+  orcid: "https://orcid.org/0009-0008-6732-8891"
+title: "YOLO-Atlas"
+version: 1.0.0
+date-released: 2026-10-24
+url: "https://github.com/horaira-rezon/YOLO-Architecture-Explorer"
