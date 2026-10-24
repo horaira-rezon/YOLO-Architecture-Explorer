@@ -265,9 +265,9 @@ export function getVersion(id: string): VersionInfo | undefined {
 }
 
 export const TASKS: { id: Task; label: string; short: string }[] = [
-  { id: "detect", label: "Object detection", short: "Draw a box around each thing and name it." },
-  { id: "segment", label: "Instance segmentation", short: "Colour the exact pixels of each thing." },
-  { id: "pose", label: "Pose / keypoints", short: "Find body points like elbows and knees." },
-  { id: "classify", label: "Image classification", short: "Say what the whole picture shows." },
-  { id: "obb", label: "Oriented boxes (OBB)", short: "Boxes that can turn, for things seen from above." },
+  { id: "detect", label: "Object Detection", short: "Draw a box around each thing and name it." },
+  { id: "segment", label: "Instance Segmentation", short: "Colour the exact pixels of each thing." },
+  { id: "pose", label: "Pose / Keypoints", short: "Find body points like elbows and knees." },
+  { id: "classify", label: "Image Classification", short: "Say what the whole picture shows." },
+  { id: "obb", label: "Oriented Boxes (OBB)", short: "Boxes that can turn, for things seen from above." },
 ];

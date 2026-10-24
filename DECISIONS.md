@@ -110,3 +110,6 @@ A real Gemini call returned 400 INVALID_ARGUMENT. The schema sent as `responseJs
 
 ## D35 — GitHub Pages as a second address
 Some networks cannot reach the Vercel server range that `*.vercel.app` currently resolves to (64.29.17.x / 216.198.79.x), while GitHub Pages is reachable. The app therefore also deploys to GitHub Pages from a workflow. Because Pages serves it under `/<repo>/`, the base path is configurable (`BASE_PATH` → Vite `base`, router `basename`, favicon via `%BASE_URL%`); `404.html` is a copy of `index.html` so deep links open the app.
+
+## D36 — Always open in the light theme
+At the user's request the site starts in the light theme on every visit, regardless of the operating-system preference. The header toggle switches to dark for the current visit only (nothing is stored).

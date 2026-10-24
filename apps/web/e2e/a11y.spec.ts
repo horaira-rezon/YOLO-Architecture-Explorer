@@ -27,8 +27,8 @@ for (const [name, url, wait] of pages) {
 
 for (const theme of ["light", "dark"] as const) {
   test(`a11y contrast in ${theme} theme`, async ({ page }) => {
-    await page.addInitScript((t) => localStorage.setItem("atlas-theme", t), theme);
     await page.goto("/explore/v8/detect/n?node=n6");
+    if (theme === "dark") await page.getByRole("button", { name: "Switch to dark theme" }).click();
     await page.getByTestId("side-panel").waitFor();
     const results = await new AxeBuilder({ page }).withRules(["color-contrast"]).exclude(".react-flow__minimap").analyze();
     expect(results.violations.flatMap((v) => v.nodes.map((n) => `${n.target.join(" ")}: ${n.failureSummary?.split("\n")[1] ?? ""}`)).slice(0, 15)).toEqual([]);

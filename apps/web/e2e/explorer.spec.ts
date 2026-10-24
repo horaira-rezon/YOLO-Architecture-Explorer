@@ -110,3 +110,14 @@ test("shareable URL restores the selected node and zoom level", async ({ page })
   await expect(page.getByTestId("breadcrumbs")).toContainText("Layer 2 C2f");
   await expect(page).toHaveURL(/zoom=3/);
 });
+
+test("always opens in the light theme, even when the system prefers dark", async ({ page }) => {
+  await page.emulateMedia({ colorScheme: "dark" });
+  await page.goto("/");
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await page.getByRole("button", { name: "Switch to dark theme" }).click();
+  await expect(page.locator("html")).toHaveClass(/dark/);
+  await page.reload();
+  await expect(page.locator("html")).not.toHaveClass(/dark/);
+  await expect(page.getByTestId("task-detect")).toHaveText("Object Detection");
+});
