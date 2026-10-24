@@ -90,7 +90,7 @@ Settings → AI provider: *Offline demo* (default, rule-based, no network), **Go
 The web app is static. Build with `pnpm build` and serve `apps/web/dist` with a single-page-app fallback to `index.html`:
 
 - **Netlify**: `netlify.toml` is included.
-- **Vercel**: `vercel.json` is included.
+- **Vercel**: import the repository, keep the root directory `./`, choose the **Vite** preset (`vercel.json` sets the build command and output folder), and add the environment variable `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel uses the pnpm version pinned in `package.json`.
 - **GitHub Pages / any static host**: copy `dist/index.html` to `dist/404.html` after the build (the router handles the URL).
 
 The optional proxy is a small Node server (`apps/proxy`); run it next to the site and set `PROXY_ALLOWED_ORIGINS` to the site's origin.
