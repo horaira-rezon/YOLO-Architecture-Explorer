@@ -38,16 +38,16 @@ export class MockProvider implements AIProvider {
     const lighter = /lighter|smaller|faster/.test(ctx.followUp?.request ?? "");
     const ins = headInputs(arch, comp);
     const p3 = ins.find((i) => i.stride === 8);
-    if (/tiny|small|seedling|drone|aerial/.test(text) && p3 && !lighter) {
+    if (/tiny|small|crack|defect|seedling|drone|aerial|distant/.test(text) && p3 && !lighter) {
       ops.push({ ...base, op: "insertNode", after: p3.id, newId: "ai1", module: "CBAM", args: "[7]", breaksPretrained: false,
         rationaleSimple: "Adds a 'where to look' step on the most detailed map the head uses.",
-        rationaleForGoal: "Tiny seedlings cover few pixels; spatial attention is designed to highlight small, important regions and quiet the soil background.",
+        rationaleForGoal: "Your objects cover few pixels; spatial attention is designed to highlight small, important regions and quiet the busy background.",
         tradeoff: "Small extra cost; benefit must be measured.", risk: "May not help if objects are already well separated.", confidence: "medium" });
       if (!ins.some((i) => i.stride === 4) && !/keep.*(only|p3)/.test(text))
         ops.push({ ...base, op: "addHeadLevel", level: "P2", breaksPretrained: true,
           rationaleSimple: "Adds a fourth, very detailed map (stride 4) where the model looks for very small things.",
-          rationaleForGoal: "Weeds of 8–32 px are only 1–4 cells wide at stride 8; a stride-4 level gives them more cells to be found in.",
-          tradeoff: "Clearly more compute (the P2 map has 4× the cells of P3), more memory, slower on the Jetson.", risk: "Can raise false positives on soil texture; check speed on the device.", confidence: "high" });
+          rationaleForGoal: "Objects of 10–40 px are only 1–5 cells wide at stride 8; a stride-4 level gives them more cells to be found in.",
+          tradeoff: "Clearly more compute (the P2 map has 4× the cells of P3), more memory, slower on a small device.", risk: "Can raise false positives on fine background texture; check speed on the device.", confidence: "high" });
     }
     if (/jetson|edge|raspberry|mobile|real-?time|light/.test(text) || lighter) {
       const conv = arch.nodes.find((n, i) => n.module === "Conv" && n.stage === "neck" && i > 0 && typeof n.args[2] === "number" && n.args[2] === 2);

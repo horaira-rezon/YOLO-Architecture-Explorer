@@ -1,14 +1,61 @@
+# Dependencies (installed packages are never committed)
 node_modules/
+.pnp/
+.pnpm-store/
+
+# Build outputs
 dist/
+build/
+*.tsbuildinfo
 coverage/
-.cache-tools/
-*.log
+playwright-report/
+test-results/
+.next/
+
+# Deployment / host directories
+.vercel/
+.netlify/
+
+# Environment & secrets
 .env
 .env.*
 !.env.example
-playwright-report/
-test-results/
-.vite/
+.envrc
+.env.local
+.env.development
+.env.production
+
+# Python
 __pycache__/
-*.pt
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+ENV/
+.pyvenv/
+.mypy_cache/
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# OS & editor
 .DS_Store
+Thumbs.db
+*.swp
+*~
+.*.swp
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Agent / IDE instruction files (local, not for the repo)
+CLAUDE.md
+agent.md
+AGENTS.md
+
+# Scratch
+.husky/

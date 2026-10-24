@@ -2,15 +2,15 @@
 
 exports[`prompt builders (snapshots) > explain prompt 1`] = `
 "Model: v8 detect, scale n, input 640, 80 classes.
-Goal: Detect tiny weed seedlings in drone images of crop fields. Must run on an NVIDIA Jetson. The dataset has 4 classes.
-Number of classes: 4
-Classes: weed seedling types (4)
-Typical object size: 8–32 px in a 640 px image
-Image resolution: drone frames, often 4K, resized or tiled
-Class imbalance: some weed types are rare
-Dataset notes: crops and weeds look similar when young
-Deployment target: NVIDIA Jetson (edge GPU, TensorRT FP16)
-Budget / latency constraint: stay close to the original model's size; prefer real-time on the Jetson
+Goal: Detect small road damage (cracks and potholes) in dashcam video frames. Must run on a Raspberry Pi 5 (CPU only). The dataset has 3 classes.
+Number of classes: 3
+Classes: longitudinal crack, transverse crack, pothole
+Typical object size: 10–40 px wide in a 640 px frame (thin cracks)
+Image resolution: 1920×1080 dashcam frames, resized to 640
+Class imbalance: potholes are rare compared with cracks
+Dataset notes: shadows, tar patches and road markings look similar to cracks
+Deployment target: Raspberry Pi 5 (4-core ARM CPU, no GPU), ONNX Runtime
+Budget / latency constraint: keep the model small; aim for a few frames per second on the Pi
 Reading level: eli5.
 Explain these nodes (return one entry per node id, same ids):
 - n9: layer 9 SPPF [1024,5] in backbone, output 256×20×20 P5/32; builtin; receives from n8 (C2f, 256×20×20); sends to n10 (Upsample); n20 (Concat).
@@ -89,14 +89,14 @@ Allowed blocks (module name: description; inputs; YAML args in order):
 - OBB: OBB head; inputs 1-6; args [nc, ne]
 - Classify: Classify head; inputs 1-4; args [c2]
 
-Goal: Detect tiny weed seedlings in drone images of crop fields. Must run on an NVIDIA Jetson. The dataset has 4 classes.
-Number of classes: 4
-Classes: weed seedling types (4)
-Typical object size: 8–32 px in a 640 px image
-Image resolution: drone frames, often 4K, resized or tiled
-Class imbalance: some weed types are rare
-Dataset notes: crops and weeds look similar when young
-Deployment target: NVIDIA Jetson (edge GPU, TensorRT FP16)
-Budget / latency constraint: stay close to the original model's size; prefer real-time on the Jetson
+Goal: Detect small road damage (cracks and potholes) in dashcam video frames. Must run on a Raspberry Pi 5 (CPU only). The dataset has 3 classes.
+Number of classes: 3
+Classes: longitudinal crack, transverse crack, pothole
+Typical object size: 10–40 px wide in a 640 px frame (thin cracks)
+Image resolution: 1920×1080 dashcam frames, resized to 640
+Class imbalance: potholes are rare compared with cracks
+Dataset notes: shadows, tar patches and road markings look similar to cracks
+Deployment target: Raspberry Pi 5 (4-core ARM CPU, no GPU), ONNX Runtime
+Budget / latency constraint: keep the model small; aim for a few frames per second on the Pi
 Reading level for the rationale text: simple."
 `;

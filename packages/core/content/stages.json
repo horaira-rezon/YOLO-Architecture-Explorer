@@ -5,7 +5,8 @@
       "eli5": "The photo you give the model.",
       "simple": "The image, resized to a square and stored as 3 colour channels (red, green, blue).",
       "engineer": "Letterboxed RGB tensor (3×H×W), normalised to [0, 1]."
-    }
+    },
+    "short": "Input"
   },
   "backbone": {
     "title": "Backbone",
@@ -13,7 +14,8 @@
       "eli5": "Looks at the picture again and again, each time seeing bigger shapes but in less detail.",
       "simple": "Turns the image into feature maps. Each stride-2 step halves the width and height and adds channels, so the map holds more meaning and less pixel detail.",
       "engineer": "Hierarchical feature extractor producing P3/8, P4/16 and P5/32 maps through strided convs and CSP-style blocks."
-    }
+    },
+    "short": "Backbone"
   },
   "neck": {
     "title": "Neck",
@@ -21,7 +23,8 @@
       "eli5": "Mixes what the small, detailed maps saw with what the big-picture maps understood.",
       "simple": "Passes information up and down between the feature maps (top-down, then bottom-up) so every map knows about both fine details and the bigger context.",
       "engineer": "PAN-FPN style multi-scale fusion: top-down upsample + concat, then bottom-up strided conv + concat."
-    }
+    },
+    "short": "Neck"
   },
   "head": {
     "title": "Head",
@@ -29,7 +32,8 @@
       "eli5": "Makes the final guesses: where things are and what they are.",
       "simple": "Looks at every cell of each feature map and predicts box sides and class scores (plus masks, keypoints or angles for other tasks).",
       "engineer": "Decoupled per-level prediction branches (box regression, classification, task-specific outputs) on P3–P5."
-    }
+    },
+    "short": "Head"
   },
   "postprocess": {
     "title": "After the model (inference only)",
@@ -37,7 +41,8 @@
       "eli5": "Cleans up the guesses before showing them to you.",
       "simple": "Steps that run only when using the model: drop weak guesses and, for many versions, remove duplicate boxes with NMS.",
       "engineer": "Confidence filtering, box decoding and (unless end-to-end) non-maximum suppression."
-    }
+    },
+    "short": "Inference only"
   },
   "loss": {
     "title": "Training only",
@@ -45,6 +50,7 @@
       "eli5": "How the model is graded while it learns. Not used when it is finished.",
       "simple": "Parts used only during training: which predictions should match which real objects (the assigner) and how wrong they are (the losses).",
       "engineer": "Label assignment and loss terms; absent from the exported inference graph."
-    }
+    },
+    "short": "Training only"
   }
 }

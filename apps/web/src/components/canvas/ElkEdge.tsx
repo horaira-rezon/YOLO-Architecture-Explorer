@@ -6,7 +6,7 @@ import { useWalkEdges } from "../../store/walk";
 
 const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-export type ElkEdgeData = { points: Point[]; label: string; skip: boolean; kind: "data" | "train" };
+export type ElkEdgeData = { points: Point[]; label: string; skip: boolean; kind: "data" | "train"; labelAt?: Point };
 
 /** Orthogonal path through ELK's bend points, with rounded corners. */
 function roundedPath(pts: Point[], r = 8): string {
@@ -43,7 +43,9 @@ function ElkEdgeImpl({ id, data, sourceX, sourceY, targetX, targetY, markerEnd }
   const hl = useHighlight((s) => s.set);
   const dim = hl ? !hl.has(id) : false;
   const strong = hl ? hl.has(id) : false;
-  const lp = labelPoint(pts);
+  // labels without a free spot (data.labelAt missing) only appear while the edge is highlighted
+  const lp = data?.labelAt ?? labelPoint(pts);
+  const showLabel = !!data?.label && !dim && (!!data.labelAt || strong || !data.points?.length);
   const walking = useWalkEdges((s) => s.ids.has(id));
   const seconds = useWalkEdges((s) => s.seconds);
   const path = roundedPath(pts);
@@ -65,10 +67,10 @@ function ElkEdgeImpl({ id, data, sourceX, sourceY, targetX, targetY, markerEnd }
           <animateMotion dur={`${Math.max(seconds * 0.8, 0.4)}s`} repeatCount="indefinite" path={path} />
         </circle>
       )}
-      {data?.label && !dim && (
+      {showLabel && (
         <EdgeLabelRenderer>
           <div
-            className="pointer-events-none absolute rounded bg-bg/90 px-1 font-mono text-[10px] text-muted"
+            className={`pointer-events-none absolute rounded px-1 font-mono text-[10px] ${data?.labelAt ? "bg-bg/90 text-muted" : "z-10 bg-surface text-fg shadow"}`}
             style={{ transform: `translate(-50%, -50%) translate(${lp.x}px, ${lp.y}px)` }}
           >
             {data.label}

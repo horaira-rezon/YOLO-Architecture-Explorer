@@ -18,6 +18,6 @@ export const STAGE_STYLE: Record<Stage, StageStyle> = {
   loss: { color: "var(--stage-loss)", icon: GraduationCap, pattern: "dash" },
 };
 
-export type StageContent = { title: string; summary: { eli5: string; simple: string; engineer: string } };
+export type StageContent = { title: string; short: string; summary: { eli5: string; simple: string; engineer: string } };
 export const STAGE_CONTENT = stagesContent as Record<Stage, StageContent>;
 

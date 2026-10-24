@@ -67,7 +67,7 @@ function Canvas({ graph, layout, fitKey }: Props) {
   const edges = useMemo<Edge<ElkEdgeData>[]>(
     () => graph.edges.map((e) => ({
       id: e.id, source: e.source, target: e.target, type: "elk",
-      data: { points: layout.edges[e.id] ?? [], label: e.label, skip: e.skip, kind: e.kind },
+      data: { points: layout.edges[e.id] ?? [], label: e.label, skip: e.skip, kind: e.kind, labelAt: layout.labels[e.id] },
       markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color: "var(--muted)" },
       focusable: false,
       interactionWidth: lab ? 14 : 0,

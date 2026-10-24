@@ -1,6 +1,6 @@
 import type { Stage } from "@yolo-atlas/core";
 import type { DisplayGraph, DisplayNode } from "./displayGraph";
-import { NODE_SIZE, type Band, type Box, type LayoutResult, type Point } from "./layout";
+import { BAND_TITLE, NODE_SIZE, labelsFor, type Band, type Box, type LayoutResult, type Point } from "./layout";
 
 /**
  * "Classic" YOLO layout: one row per feature-map size.
@@ -20,6 +20,9 @@ export function layoutClassic(g: DisplayGraph, direction: "DOWN" | "RIGHT"): Lay
   const GX = down ? 56 : 40, GY = down ? 34 : 48;
   const colW = W + GX, rowH = H + GY;
   const PAD = 56;
+  // rows after the input row are pushed down so the input band and the backbone band (with its title strip) never touch
+  const STAGE_GAP = down ? BAND_TITLE + 30 : 0;
+  const yOf = (r: number) => PAD + r * rowH + (r >= 1 ? STAGE_GAP : 0);
 
   const boxes: Record<string, Box> = {};
   const place = (n: DisplayNode, x: number, y: number) => {
@@ -33,10 +36,10 @@ export function layoutClassic(g: DisplayGraph, direction: "DOWN" | "RIGHT"): Lay
   const input = g.nodes.find((n) => n.kind === "input");
   const backbone = layers.filter((n) => n.stage === "backbone").sort(byIndex);
   let row = 0;
-  if (input) place(input, PAD, PAD + row++ * rowH);
+  if (input) place(input, PAD, yOf(row++));
   const rowOfStride = new Map<number, number>([[1, 0]]);
   for (const n of backbone) {
-    place(n, PAD, PAD + row * rowH);
+    place(n, PAD, yOf(row));
     if (n.stride) rowOfStride.set(n.stride, row);
     row++;
   }
@@ -80,7 +83,7 @@ export function layoutClassic(g: DisplayGraph, direction: "DOWN" | "RIGHT"): Lay
   }
   for (const [key, list] of cells) {
     const [p, r] = key.split("|").map(Number) as [number, number];
-    list.forEach((n, k) => place(n, phaseX[p]! + k * colW, PAD + r * rowH));
+    list.forEach((n, k) => place(n, phaseX[p]! + k * colW, yOf(r)));
   }
 
   // --- heads: right of the neck, vertically centred on their inputs
@@ -91,7 +94,7 @@ export function layoutClassic(g: DisplayGraph, direction: "DOWN" | "RIGHT"): Lay
   let headBottom = PAD;
   heads.forEach((n, k) => {
     const ys = (incoming.get(n.id) ?? []).map((s) => boxes[s]).filter(Boolean).map((b) => b!.y + b!.h / 2);
-    const cy = ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : PAD + lastRow * rowH + H / 2;
+    const cy = ys.length ? ys.reduce((a, b) => a + b, 0) / ys.length : yOf(lastRow) + H / 2;
     place(n, headX, Math.max(cy - H / 2, headBottom) + k * 0);
     headBottom = boxes[n.id]!.y + rowH;
   });
@@ -106,20 +109,16 @@ export function layoutClassic(g: DisplayGraph, direction: "DOWN" | "RIGHT"): Lay
 
   // anything not placed (unknown stage) goes under the backbone
   let spare = row + 1;
-  for (const n of g.nodes) if (!boxes[n.id]) place(n, PAD, PAD + spare++ * rowH);
+  for (const n of g.nodes) if (!boxes[n.id]) place(n, PAD, yOf(spare++));
 
-  const edges = routeEdges(g, boxes);
-  const bands = stageBands(g, boxes);
-  let result: LayoutResult = { boxes, edges, bands, ...extent(boxes, PAD) };
-  if (!down) result = transpose(result);
-  return result;
-}
-
-function extent(boxes: Record<string, Box>, pad: number) {
-  const all = Object.values(boxes);
+  // route in the abstract frame, then transpose; bands and labels are computed in the real frame
+  let routed = { boxes, edges: routeEdges(g, boxes) };
+  if (!down) routed = transposeBoxes(routed);
+  const bands = stageBands(g, routed.boxes);
+  const all = [...Object.values(routed.boxes), ...bands];
   return {
-    width: Math.max(0, ...all.map((b) => b.x + b.w)) + pad,
-    height: Math.max(0, ...all.map((b) => b.y + b.h)) + pad,
+    boxes: routed.boxes, edges: routed.edges, bands, labels: labelsFor(g, routed.boxes, routed.edges, bands),
+    width: Math.max(...all.map((b) => b.x + b.w)) + PAD, height: Math.max(...all.map((b) => b.y + b.h)) + PAD,
   };
 }
 
@@ -151,7 +150,7 @@ function routeEdges(g: DisplayGraph, boxes: Record<string, Box>): Record<string,
         const laneKey = Math.round(t.y);
         const used = laneUse.get(laneKey) ?? 0;
         laneUse.set(laneKey, used + 1);
-        const ly = t.y - 12 - (used % 3) * 6;
+        const ly = t.y - 10 - (used % 3) * 5;
         const d = right ? 1 : -1;
         out[e.id] = [
           { x: sx, y: scy }, { x: sx + d * (14 + used * 4), y: scy }, { x: sx + d * (14 + used * 4), y: ly },
@@ -176,18 +175,15 @@ function stageBands(g: DisplayGraph, boxes: Record<string, Box>): Band[] {
   }
   return [...by.entries()].map(([stage, bs]) => {
     const x0 = Math.min(...bs.map((b) => b.x)) - pad, x1 = Math.max(...bs.map((b) => b.x + b.w)) + pad;
-    const y0 = Math.min(...bs.map((b) => b.y)) - pad - 22, y1 = Math.max(...bs.map((b) => b.y + b.h)) + pad;
+    const y0 = Math.min(...bs.map((b) => b.y)) - pad - BAND_TITLE, y1 = Math.max(...bs.map((b) => b.y + b.h)) + pad;
     return { stage, x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
   });
 }
 
-function transpose(r: LayoutResult): LayoutResult {
+function transposeBoxes(r: { boxes: Record<string, Box>; edges: Record<string, Point[]> }) {
   const tb = (b: Box): Box => ({ x: b.y, y: b.x, w: b.h, h: b.w });
   return {
     boxes: Object.fromEntries(Object.entries(r.boxes).map(([k, b]) => [k, tb(b)])),
     edges: Object.fromEntries(Object.entries(r.edges).map(([k, ps]) => [k, ps.map((p) => ({ x: p.y, y: p.x }))])),
-    bands: r.bands.map((b) => ({ ...tb(b), stage: b.stage })),
-    width: r.height,
-    height: r.width,
   };
 }

@@ -1,5 +1,6 @@
 import { useMemo, type ReactNode } from "react";
 import { ArrowDownLeft, ArrowUpRight, X } from "lucide-react";
+import { ExpandButton, ResizableAside } from "./ResizableAside";
 import {
   explainPosition, formatCount, formatShape, levelLabel, pythonCall, yamlLine,
   type Leveled,
@@ -29,6 +30,7 @@ function Badge({ children, tone = "muted" }: { children: ReactNode; tone?: "mute
   return <span className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${cls}`}>{children}</span>;
 }
 
+
 export function SidePanel() {
   useContentReady((s) => s.ready);
   void loadContent();
@@ -55,11 +57,7 @@ export function SidePanel() {
   const share = c && computed.totals.params ? c.params / computed.totals.params : 0;
 
   return (
-    <aside
-      className="fixed inset-x-0 bottom-0 z-30 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface shadow-2xl md:static md:z-auto md:max-h-none md:w-[420px] md:shrink-0 md:rounded-none md:border-l md:border-t-0 md:shadow-none"
-      aria-label={`Details: ${item.title}`}
-      data-testid="side-panel"
-    >
+    <ResizableAside label={`Details: ${item.title}`} testId="side-panel">
       <header className="sticky top-0 z-10 border-b border-border bg-surface px-4 pb-2 pt-3">
         <div className="mx-auto mb-2 h-1 w-10 rounded-full bg-border md:hidden" aria-hidden />
         <div className="flex items-start gap-2">
@@ -71,6 +69,7 @@ export function SidePanel() {
             </p>
             <h2 className="truncate text-lg font-semibold" data-testid="panel-title">{item.title}</h2>
           </div>
+          <ExpandButton />
           <button type="button" onClick={() => select(null)} className="rounded p-1 hover:bg-surface-2" aria-label="Close details"><X size={18} /></button>
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -232,6 +231,6 @@ export function SidePanel() {
           ].filter(Boolean).join("\n")} />
         </Section>
       </div>
-    </aside>
+    </ResizableAside>
   );
 }

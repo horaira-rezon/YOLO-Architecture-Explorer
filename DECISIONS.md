@@ -95,3 +95,12 @@ The offline provider builds patches from keyword rules (nc from the goal, CBAM +
 
 ## D30 — Goal explanations: three layers, cached, with staleness
 The panel stacks (1) authored block content, (2) computed positional text and (3) AI goal context, and labels (3) "AI-generated · not verified". Goal context is cached in IndexedDB under hash(goal, reading level, provider/model, prompt version) per node, together with a signature of the node and its inputs/consumers (module, args, shapes). When the signature changes the explanation shows "out of date" with an Update button. Generation is lazy on click (node + up to 5 neighbours, so neighbours also get refreshed) or a background job over all layers in batches of 12 with progress and cancel; fresh entries are skipped.
+
+## D31 — Band titles and edge labels never cover each other
+Every stage band reserves a title strip at its top (no node sits in it, side lanes route below it), shows a short title on an opaque chip ("Inference only", "Training only"; full name in the tooltip and legend), and the input band is spaced away from the backbone band. Edge size labels are placed by a small search (beside vertical segments, above horizontal ones, several spots along the longest segments) that avoids nodes, titles and other labels. A link too short for any free spot gets no permanent label; it appears while the edge is highlighted, and the source card shows the same shape.
+
+## D32 — AI Architect example preset
+At the user's request the one-click example is "small road cracks and potholes in dashcam frames on a CPU-only Raspberry Pi 5, 3 classes" instead of weed detection from drones. It still exercises the same ideas (small objects, a low-power device, a custom class count).
+
+## D33 — Logo
+One SVG (`apps/web/public/favicon.svg`) is both the favicon and the header logo: detection-box corner brackets around a three-level feature pyramid, on the app's blue. It stays legible at 16 px.

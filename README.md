@@ -4,7 +4,7 @@ An interactive website to **learn, edit and AI-modify YOLO architectures** — Y
 
 - **Explore** any version and task as a diagram: stages, numbered layers (same numbers as the Ultralytics YAML), feature-map sizes on every arrow. Zoom from stages (L0) to layers (L1), block parts (L2), single operations (L3) and code/math (L4). Click anything for an explanation at three reading levels: *Like I'm 5*, *Simple*, *Engineer*.
 - **Lab**: add, delete, rewire and replace blocks, add a P2 small-object level, change the head, losses or post-processing — with live validation, parameter/GFLOP counts, undo, snapshots, a change view, YAML import and export (YAML, JSON, PNG/SVG, Markdown change report, PyTorch stubs, training script).
-- **AI Architect**: describe your goal ("detect tiny weed seedlings in drone images, must run on a Jetson, 4 classes") and get a *patch* — a short list of changes, each with a plain-language reason, the trade-off and the risk. Accept or reject each change. Afterwards every block explains how it helps your goal.
+- **AI Architect**: describe your goal (for example "detect small road cracks in dashcam frames, must run on a Raspberry Pi, 3 classes") and get a *patch* — a short list of changes, each with a plain-language reason, the trade-off and the risk. Accept or reject each change. Afterwards every block explains how it helps your goal.
 
 Nothing about the architectures is written from memory: every model comes from the official config files and is checked layer by layer against the real PyTorch model (see [Ground truth](#ground-truth)).
 

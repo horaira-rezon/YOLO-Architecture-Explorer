@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
-  AIError, MockProvider, PatchSchema, ReliableClient, WEED_PRESET, applyPatchDraft, buildExplainUser, buildPatchUser,
+  AIError, MockProvider, PatchSchema, ReliableClient, EXAMPLE_PRESET, applyPatchDraft, buildExplainUser, buildPatchUser,
   compileYaml, computeArchitecture, extractJson, runPatchLoop, toJsonSchema, toOperation, withRetry,
   type LLMClient, type ModelData,
 } from "../src";
@@ -14,13 +14,13 @@ const load = (v = "v8") => {
 };
 
 describe("AI patch loop (MockProvider)", () => {
-  it("weed preset gives a valid, validated patch on v8 and YOLO26", async () => {
+  it("example preset gives a valid, validated patch on v8 and YOLO26", async () => {
     for (const v of ["v8", "26"]) {
       const arch = load(v);
-      const r = await runPatchLoop(new MockProvider(), { arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "simple" });
+      const r = await runPatchLoop(new MockProvider(), { arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "simple" });
       expect(r.ok, r.problems.join("; ")).toBe(true);
       expect(r.patch!.operations.map((o) => o.op)).toEqual(["changeNc", "insertNode", "addHeadLevel", "replaceNode"]);
-      expect(r.result!.draft.config.nc).toBe(4);
+      expect(r.result!.draft.config.nc).toBe(3);
       expect(r.patch!.operations.every((o) => o.isHypothesis && o.rationaleForGoal.length > 10)).toBe(true);
     }
   });
@@ -28,7 +28,7 @@ describe("AI patch loop (MockProvider)", () => {
   it("repairs an invalid first answer", async () => {
     const arch = load();
     const attempts: number[] = [];
-    const r = await runPatchLoop(new MockProvider({ breakFirst: true }), { arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "simple" }, { onAttempt: (n) => attempts.push(n) });
+    const r = await runPatchLoop(new MockProvider({ breakFirst: true }), { arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "simple" }, { onAttempt: (n) => attempts.push(n) });
     expect(r.ok).toBe(true);
     expect(attempts).toEqual([1, 2]);
   });
@@ -40,7 +40,7 @@ describe("AI patch loop (MockProvider)", () => {
 
   it("applies only the selected operations", async () => {
     const arch = load();
-    const patch = PatchSchema.parse(await new MockProvider().generatePatch({ arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "simple" }));
+    const patch = PatchSchema.parse(await new MockProvider().generatePatch({ arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "simple" }));
     const r = applyPatchDraft(arch, patch, new Set([0, 1]));
     expect(r.errors).toEqual([]);
     expect(r.draft.nodes.length).toBe(arch.nodes.length + 1);
@@ -77,16 +77,16 @@ describe("AI plumbing", () => {
 describe("prompt builders (snapshots)", () => {
   it("patch prompt", () => {
     const arch = load();
-    expect(buildPatchUser({ arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "simple" })).toMatchSnapshot();
+    expect(buildPatchUser({ arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "simple" })).toMatchSnapshot();
   });
   it("explain prompt", () => {
     const arch = load();
-    expect(buildExplainUser({ arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "eli5", nodeIds: ["n9", "n15", "n22"], rationales: {} })).toMatchSnapshot();
+    expect(buildExplainUser({ arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "eli5", nodeIds: ["n9", "n15", "n22"], rationales: {} })).toMatchSnapshot();
   });
   it("token budget drops the params column first", () => {
     const arch = load();
-    const full = buildPatchUser({ arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "simple" });
-    const small = buildPatchUser({ arch, comp: computeArchitecture(arch), goal: WEED_PRESET, level: "simple", tokenBudget: 100 });
+    const full = buildPatchUser({ arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "simple" });
+    const small = buildPatchUser({ arch, comp: computeArchitecture(arch), goal: EXAMPLE_PRESET, level: "simple", tokenBudget: 100 });
     expect(small.length).toBeLessThan(full.length);
   });
 });

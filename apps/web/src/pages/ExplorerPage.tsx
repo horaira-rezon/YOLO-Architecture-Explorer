@@ -28,6 +28,7 @@ import { Provenance } from "../components/Provenance";
 import { useAutosave } from "../lib/autosave";
 
 import { Tour } from "../components/Tour";
+import { ExpandButton, ResizableAside } from "../components/panel/ResizableAside";
 import { loadContent } from "../lib/content";
 import { computeArchitecture } from "@yolo-atlas/core";
 import { FlaskConical, Telescope } from "lucide-react";
@@ -224,7 +225,7 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           {zoomLevel === 1 && !listView && walk.active && <Lazy><Walkthrough /></Lazy>}
         </div>
         {mode === "lab" && aiPanelOpen ? <Lazy><ArchitectPanel /></Lazy> : inside && zoomLevel >= 2 ? (inside.selected ? <Lazy><InsidePanel /></Lazy> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active ? <SidePanel /> : mode === "lab" && arch ? (
-          <aside className="hidden w-[380px] shrink-0 overflow-y-auto border-l border-border bg-surface md:block" aria-label="Whole-model settings"><Lazy><ModelSettings /></Lazy></aside>
+          <div className="hidden md:contents"><ResizableAside label="Whole-model settings" defaultWidth={380}><div className="flex justify-end px-2 pt-2"><ExpandButton /></div><Lazy><ModelSettings /></Lazy></ResizableAside></div>
         ) : null}
         <Lazy><CommandPalette /></Lazy>
       </div>

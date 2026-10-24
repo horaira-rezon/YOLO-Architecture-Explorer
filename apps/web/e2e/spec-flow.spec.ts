@@ -33,7 +33,7 @@ test("task → version → expand → panel → level → Lab → delete → AI 
 
   // AI patch with the offline MockProvider, accept some ops
   await page.getByTestId("open-ai").click();
-  await page.getByTestId("weed-preset").click();
+  await page.getByTestId("example-preset").click();
   await page.getByTestId("generate").click();
   await page.getByTestId("patch-op-3").getByRole("checkbox").uncheck();
   await page.getByTestId("apply-patch").click();
@@ -49,6 +49,6 @@ test("task → version → expand → panel → level → Lab → delete → AI 
   await page.getByTestId("export-menu").click();
   const [dl] = await Promise.all([page.waitForEvent("download"), page.getByTestId("export-yaml").click()]);
   const text = Buffer.concat(await (await dl.createReadStream()).toArray()).toString("utf8");
-  expect(text).toMatch(/^nc: 4/m);
+  expect(text).toMatch(/^nc: 3/m);
   expect(text).toContain("CBAM");
 });

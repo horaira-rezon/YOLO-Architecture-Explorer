@@ -6,7 +6,7 @@ test.beforeEach(async ({ page }) => { await page.addInitScript(() => localStorag
 test("AI Architect with the offline MockProvider: preset → generate → accept some → apply", async ({ page }) => {
   await page.goto("/lab/v8/detect/n");
   await page.getByTestId("open-ai").click();
-  await page.getByTestId("weed-preset").click();
+  await page.getByTestId("example-preset").click();
   await page.getByTestId("generate").click();
   await expect(page.getByTestId("patch-preview")).toBeVisible();
   await expect(page.getByTestId("patch-op-3")).toBeVisible();
@@ -30,10 +30,10 @@ test("Gemini provider: structured-output request is well formed (network interce
     body = route.request().postDataJSON() as Record<string, unknown>;
     key = route.request().headers()["x-goog-api-key"] ?? "";
     const patch = {
-      summary: "Add a P2 level for tiny weeds.",
-      assumptions: ["Weeds are 8–32 px."],
+      summary: "Add a P2 level for small cracks.",
+      assumptions: ["Cracks are 10–40 px."],
       suggestedExperiments: ["Baseline", "Add P2"],
-      operations: [{ op: "addHeadLevel", level: "P2", rationaleSimple: "More detailed map.", rationaleForGoal: "Tiny weeds get more cells.", tradeoff: "More compute.", risk: "Slower.", confidence: "high", isHypothesis: true, breaksPretrained: true }],
+      operations: [{ op: "addHeadLevel", level: "P2", rationaleSimple: "More detailed map.", rationaleForGoal: "Small cracks get more cells.", tradeoff: "More compute.", risk: "Slower.", confidence: "high", isHypothesis: true, breaksPretrained: true }],
     };
     await route.fulfill({ json: { candidates: [{ content: { role: "model", parts: [{ text: JSON.stringify(patch) }] }, finishReason: "STOP" }] } });
   });
@@ -43,7 +43,7 @@ test("Gemini provider: structured-output request is well formed (network interce
   await page.getByTestId("save-ai").click();
   await page.goto("/lab/v8/detect/n");
   await page.getByTestId("open-ai").click();
-  await page.getByTestId("goal-input").fill("detect tiny weeds on a Jetson");
+  await page.getByTestId("goal-input").fill("detect small road cracks on a Raspberry Pi");
   await page.getByTestId("generate").click();
   await expect(page.getByTestId("patch-preview")).toContainText("Add a P2 level");
   expect(key).toBe("test-key-not-real");
@@ -56,7 +56,7 @@ test("Gemini provider: structured-output request is well formed (network interce
 test("after an AI patch every node (changed or not) explains itself for the goal", async ({ page }) => {
   await page.goto("/lab/v8/detect/n");
   await page.getByTestId("open-ai").click();
-  await page.getByTestId("weed-preset").click();
+  await page.getByTestId("example-preset").click();
   await page.getByTestId("generate").click();
   await page.getByTestId("apply-patch").click();
   await expect(page.getByTestId("change-story")).toContainText("The problem");

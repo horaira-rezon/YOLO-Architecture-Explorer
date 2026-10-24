@@ -1,14 +1,16 @@
 import { useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { AlertTriangle, Bot, Loader2, Sparkles, X } from "lucide-react";
-import { WEED_PRESET, applyPatchDraft, computeArchitecture, formatCount, runPatchLoop, type GoalSpec, type LoopResult } from "@yolo-atlas/core";
+import { EXAMPLE_PRESET, applyPatchDraft, computeArchitecture, formatCount, runPatchLoop, type GoalSpec, type LoopResult } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
 import { applyPatch } from "../../store/lab";
 import { getProvider, isMock } from "../../lib/ai";
 import { describeOp } from "./describeOp";
 import { ChangeStory } from "./ChangeStory";
+import { ExpandButton, ResizableAside } from "../panel/ResizableAside";
 
 const EMPTY: GoalSpec = { goal: "", dataset: {}, deploymentTarget: "", budget: "", alreadyTried: "" };
+
 
 export function ArchitectPanel() {
   const { arch, computed, readingLevel, setAIPanelOpen, setAISession, goal: savedGoal, setGoal, setDiffView } = useAtlas();
@@ -71,11 +73,12 @@ export function ArchitectPanel() {
 
   const field = "mt-0.5 w-full rounded border border-border bg-bg px-2 py-1";
   return (
-    <aside className="fixed inset-x-0 bottom-0 z-30 max-h-[80vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface shadow-2xl md:static md:z-auto md:max-h-none md:w-[440px] md:shrink-0 md:rounded-none md:border-l md:border-t-0 md:shadow-none" aria-label="AI Architect" data-testid="ai-panel">
+    <ResizableAside label="AI Architect" testId="ai-panel">
       <header className="sticky top-0 z-10 flex items-center gap-2 border-b border-border bg-surface px-4 py-3">
         <Sparkles size={18} className="text-accent" aria-hidden />
         <h2 className="flex-1 text-lg font-semibold">AI Architect</h2>
-        <button type="button" onClick={() => setAIPanelOpen(false)} aria-label="Close AI Architect" className="rounded p-1 hover:bg-surface-2"><X size={18} /></button>
+        <ExpandButton />
+          <button type="button" onClick={() => setAIPanelOpen(false)} aria-label="Close AI Architect" className="rounded p-1 hover:bg-surface-2"><X size={18} /></button>
       </header>
       <div role="tablist" className="flex gap-1 border-b border-border px-4 pt-2 text-sm">
         {(["suggest", "story"] as const).map((t) => (
@@ -89,9 +92,9 @@ export function ArchitectPanel() {
         <p className="flex items-center gap-1 text-xs text-muted"><Bot size={14} aria-hidden /> Using: <strong>{provider.label}</strong> · <Link to="/settings" className="underline">change</Link></p>
         {isMock(provider) && <p className="rounded border border-warn/50 bg-warn/10 p-2 text-xs">Offline demo: suggestions come from simple keyword rules, not an AI. Connect a provider in Settings for real suggestions.</p>}
 
-        <button type="button" onClick={() => setG(WEED_PRESET)} className="rounded border border-border px-2 py-1 text-xs hover:bg-surface-2" data-testid="weed-preset">Preset: small weed detection on drones</button>
+        <button type="button" onClick={() => setG(EXAMPLE_PRESET)} className="rounded border border-border px-2 py-1 text-xs hover:bg-surface-2" data-testid="example-preset">Example: road cracks on a Raspberry Pi</button>
         <label className="block">Your goal
-          <textarea value={goal.goal} onChange={(e) => setG({ ...goal, goal: e.target.value })} rows={3} className={field} placeholder="e.g. detect tiny weed seedlings in drone images, must run on a Jetson, 4 classes" data-testid="goal-input" />
+          <textarea value={goal.goal} onChange={(e) => setG({ ...goal, goal: e.target.value })} rows={3} className={field} placeholder="e.g. detect small road cracks in dashcam frames, must run on a Raspberry Pi, 3 classes" data-testid="goal-input" />
         </label>
         <details>
           <summary className="cursor-pointer text-muted">Dataset and constraints (optional, text only — no data is uploaded)</summary>
@@ -100,7 +103,7 @@ export function ArchitectPanel() {
             <label>Object size (px) <input value={d.typicalObjectSizePx ?? ""} onChange={(e) => setD({ typicalObjectSizePx: e.target.value })} className={field} placeholder="8–32 px" /></label>
             <label>Image resolution <input value={d.imageResolution ?? ""} onChange={(e) => setD({ imageResolution: e.target.value })} className={field} /></label>
             <label>Class imbalance <input value={d.classImbalance ?? ""} onChange={(e) => setD({ classImbalance: e.target.value })} className={field} /></label>
-            <label className="col-span-2">Deployment target <input value={goal.deploymentTarget ?? ""} onChange={(e) => setG({ ...goal, deploymentTarget: e.target.value })} className={field} placeholder="Jetson Orin Nano, CPU, phone…" /></label>
+            <label className="col-span-2">Deployment target <input value={goal.deploymentTarget ?? ""} onChange={(e) => setG({ ...goal, deploymentTarget: e.target.value })} className={field} placeholder="Raspberry Pi 5, Jetson, phone, server GPU…" /></label>
             <label className="col-span-2">Budget <input value={goal.budget ?? ""} onChange={(e) => setG({ ...goal, budget: e.target.value })} className={field} placeholder="under 5 M parameters, 30 FPS…" /></label>
             <label className="col-span-2">Already tried <input value={goal.alreadyTried ?? ""} onChange={(e) => setG({ ...goal, alreadyTried: e.target.value })} className={field} /></label>
           </div>
@@ -167,6 +170,6 @@ export function ArchitectPanel() {
         )}
       </div>
       )}
-    </aside>
+    </ResizableAside>
   );
 }

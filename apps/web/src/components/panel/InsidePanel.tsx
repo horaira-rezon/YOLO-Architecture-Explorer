@@ -6,6 +6,7 @@ import { RichText } from "../text/RichText";
 import { MathBlock } from "../text/MathBlock";
 import { CodeBlock } from "../text/CodeBlock";
 import { ReadingLevelSwitch } from "../ReadingLevelSwitch";
+import { ExpandButton, ResizableAside } from "./ResizableAside";
 
 function findAt(nodes: IRNode[], path: string): IRNode | null {
   const segs = path.split(".");
@@ -58,6 +59,7 @@ function primitiveCode(n: IRNode): string | null {
   }
 }
 
+
 export function InsidePanel() {
   useContentReady((s) => s.ready);
   void loadContent();
@@ -72,13 +74,14 @@ export function InsidePanel() {
   const showCode = zoomLevel >= 4 || level === "engineer";
   const seen = new Set<string>();
   return (
-    <aside className="fixed inset-x-0 bottom-0 z-30 max-h-[70vh] overflow-y-auto rounded-t-2xl border-t border-border bg-surface p-4 shadow-2xl md:static md:max-h-none md:w-[400px] md:shrink-0 md:rounded-none md:border-l md:border-t-0 md:shadow-none" aria-label={`Details: ${n.name}`} data-testid="inside-panel">
+    <ResizableAside label={`Details: ${n.name}`} testId="inside-panel">
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <p className="truncate font-mono text-xs text-muted">{inside.selected}</p>
           <h2 className="text-lg font-semibold">{content?.name ?? n.type}</h2>
         </div>
-        <button type="button" onClick={() => insideSelect(null)} className="rounded p-1 hover:bg-surface-2" aria-label="Close details"><X size={18} /></button>
+        <ExpandButton />
+          <button type="button" onClick={() => insideSelect(null)} className="rounded p-1 hover:bg-surface-2" aria-label="Close details"><X size={18} /></button>
       </div>
       <div className="my-2"><ReadingLevelSwitch /></div>
       {content ? (
@@ -107,6 +110,6 @@ export function InsidePanel() {
         </div>
       )}
       {!showCode && <p className="mt-3 text-xs text-muted">Move the zoom slider to L4 (or pick the Engineer level) to see the code and the math.</p>}
-    </aside>
+    </ResizableAside>
   );
 }

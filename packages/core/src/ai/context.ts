@@ -21,11 +21,12 @@ export interface GoalSpec {
   alreadyTried?: string;
 }
 
-export const WEED_PRESET: GoalSpec = {
-  goal: "Detect tiny weed seedlings in drone images of crop fields. Must run on an NVIDIA Jetson. The dataset has 4 classes.",
-  dataset: { numClasses: 4, classNames: "weed seedling types (4)", typicalObjectSizePx: "8–32 px in a 640 px image", imageResolution: "drone frames, often 4K, resized or tiled", classImbalance: "some weed types are rare", notes: "crops and weeds look similar when young" },
-  deploymentTarget: "NVIDIA Jetson (edge GPU, TensorRT FP16)",
-  budget: "stay close to the original model's size; prefer real-time on the Jetson",
+/** Example goal shown as a one-click preset in the AI Architect: small objects + a CPU-only edge device. */
+export const EXAMPLE_PRESET: GoalSpec = {
+  goal: "Detect small road damage (cracks and potholes) in dashcam video frames. Must run on a Raspberry Pi 5 (CPU only). The dataset has 3 classes.",
+  dataset: { numClasses: 3, classNames: "longitudinal crack, transverse crack, pothole", typicalObjectSizePx: "10–40 px wide in a 640 px frame (thin cracks)", imageResolution: "1920×1080 dashcam frames, resized to 640", classImbalance: "potholes are rare compared with cracks", notes: "shadows, tar patches and road markings look similar to cracks" },
+  deploymentTarget: "Raspberry Pi 5 (4-core ARM CPU, no GPU), ONNX Runtime",
+  budget: "keep the model small; aim for a few frames per second on the Pi",
   alreadyTried: "",
 };
 

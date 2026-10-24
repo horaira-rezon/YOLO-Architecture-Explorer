@@ -2,6 +2,8 @@ import ELK, { type ElkNode, type ElkExtendedEdge } from "elkjs/lib/elk-api.js";
 import elkWorkerUrl from "elkjs/lib/elk-worker.min.js?url";
 import type { Stage } from "@yolo-atlas/core";
 import type { DisplayGraph, DisplayKind } from "./displayGraph";
+import { placeLabels, titleRect } from "./labels";
+import { STAGE_CONTENT } from "../lib/stages";
 
 export interface Point {
   x: number;
@@ -22,6 +24,8 @@ export interface Band extends Box {
 export interface LayoutResult {
   boxes: Record<string, Box>;
   edges: Record<string, Point[]>;
+  /** Where each edge's size label goes (chosen to avoid nodes, titles and other labels). */
+  labels: Record<string, Point>;
   bands: Band[];
   width: number;
   height: number;
@@ -29,9 +33,9 @@ export interface LayoutResult {
 
 export const NODE_SIZE: Record<DisplayKind, { w: number; h: number }> = {
   layer: { w: 220, h: 72 },
-  input: { w: 200, h: 60 },
-  post: { w: 190, h: 56 },
-  train: { w: 190, h: 56 },
+  input: { w: 200, h: 72 },
+  post: { w: 190, h: 60 },
+  train: { w: 190, h: 72 },
 };
 
 const PARTITION: Record<Stage, number> = { input: 0, backbone: 1, neck: 2, head: 3, postprocess: 4, loss: 4 };
@@ -77,7 +81,16 @@ export async function layoutGraph(g: DisplayGraph, direction: "DOWN" | "RIGHT"):
     const s = e.sections?.[0];
     if (s) edgePts[e.id] = [s.startPoint, ...(s.bendPoints ?? []), s.endPoint];
   }
-  return { boxes, edges: edgePts, bands: computeBands(g, boxes, direction), width: root.width ?? 0, height: root.height ?? 0 };
+  const bands = computeBands(g, boxes, direction);
+  return { boxes, edges: edgePts, bands, labels: labelsFor(g, boxes, edgePts, bands), width: root.width ?? 0, height: root.height ?? 0 };
+}
+
+/** Title strip reserved at the top of every stage band (no node sits in it). */
+export const BAND_TITLE = 34;
+
+export function labelsFor(g: DisplayGraph, boxes: Record<string, Box>, edges: Record<string, Point[]>, bands: Band[]): Record<string, Point> {
+  const texts = Object.fromEntries(g.edges.map((e) => [e.id, e.label]));
+  return placeLabels(edges, texts, Object.values(boxes), bands.map((b) => titleRect(b, STAGE_CONTENT[b.stage].short)));
 }
 
 function computeBands(g: DisplayGraph, boxes: Record<string, Box>, direction: "DOWN" | "RIGHT"): Band[] {
@@ -97,7 +110,7 @@ function computeBands(g: DisplayGraph, boxes: Record<string, Box>, direction: "D
   const bands: Band[] = [];
   for (const [stage, bs] of byStage) {
     const x0 = Math.min(...bs.map((b) => b.x)) - pad, x1 = Math.max(...bs.map((b) => b.x + b.w)) + pad;
-    const y0 = Math.min(...bs.map((b) => b.y)) - pad - 18, y1 = Math.max(...bs.map((b) => b.y + b.h)) + pad;
+    const y0 = Math.min(...bs.map((b) => b.y)) - pad - BAND_TITLE, y1 = Math.max(...bs.map((b) => b.y + b.h)) + pad;
     const shared = stage === "postprocess" || stage === "loss";
     if (shared) bands.push({ stage, x: x0, y: y0, w: x1 - x0, h: y1 - y0 });
     else if (direction === "DOWN") bands.push({ stage, x: minX, y: y0, w: maxX - minX, h: y1 - y0 });

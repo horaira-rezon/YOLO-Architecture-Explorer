@@ -58,7 +58,7 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
         </span>
       )}
       <Handle type="target" position={vertical ? Position.Top : Position.Left} className={lab && !ghost ? "!h-2 !w-2 !bg-accent" : "!opacity-0"} isConnectable={lab && !ghost} />
-      <div className="flex items-center gap-1.5 text-[13px] font-semibold leading-tight">
+      <div className="flex min-w-0 items-center gap-1.5 text-[13px] font-semibold leading-5">
         {d.index != null && <span className="rounded bg-surface-2 px-1 font-mono text-[11px] text-muted">{d.index}</span>}
         <span className="truncate">{d.title}</span>
         {d.error && <AlertTriangle size={14} className="text-danger" aria-label="has a problem" />}
@@ -80,7 +80,7 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
           </button>
         )}
       </div>
-      {d.subtitle && <div className="truncate text-[11px] text-muted">{d.subtitle}</div>}
+      {d.subtitle && <div className="truncate text-[11px] leading-4 text-muted">{d.subtitle}</div>}
       {d.kind === "layer" || d.kind === "input" ? (
         <div className="flex items-center gap-1.5 font-mono text-[11px]">
           <MapSquare shape={d.shape} />
@@ -88,7 +88,7 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
           {d.level && <span className="ml-auto rounded-full border border-border px-1.5 text-[10px] text-muted">{d.level}</span>}
         </div>
       ) : (
-        training && <div className="text-[10px] uppercase tracking-wide text-muted">training only</div>
+        training && <div className="text-[10px] font-semibold uppercase leading-4 tracking-wide text-muted">training only</div>
       )}
       <Handle type="source" position={vertical ? Position.Bottom : Position.Right} className={lab && !ghost ? "!h-2 !w-2 !bg-accent" : "!opacity-0"} isConnectable={lab && !ghost} />
     </div>
@@ -112,7 +112,7 @@ function BandNodeImpl({ data }: NodeProps<Node<BandNodeData>>) {
   const select = useAtlas((s) => s.select);
   return (
     <div
-      className={`pointer-events-none h-full w-full rounded-xl border ${band.stage === "loss" ? "border-dashed" : ""}`}
+      className={`pointer-events-none relative h-full w-full rounded-xl border ${band.stage === "loss" ? "border-dashed" : ""}`}
       style={{
         ["--c" as string]: st.color,
         background: `${PATTERNS[st.pattern]}, color-mix(in srgb, ${st.color} 6%, transparent)`,
@@ -125,12 +125,13 @@ function BandNodeImpl({ data }: NodeProps<Node<BandNodeData>>) {
       {/* mouse shortcut only: the stage legend (outside the zoomed canvas) is the accessible way in */}
       <span
         aria-hidden
-        className="pointer-events-auto m-1.5 inline-flex min-h-6 cursor-pointer items-center gap-1 rounded px-2 py-1 text-xs font-semibold uppercase tracking-wide hover:bg-surface"
-        style={{ color: st.color }}
+        className="pointer-events-auto absolute left-1.5 top-1.5 inline-flex h-6 cursor-pointer items-center gap-1 whitespace-nowrap rounded-md border border-l-4 bg-surface px-2 text-xs font-semibold uppercase tracking-wide text-fg shadow-sm"
+        style={{ borderColor: `color-mix(in srgb, ${st.color} 45%, transparent)`, borderLeftColor: st.color }}
         onClick={() => select(`stage:${band.stage}`)}
+        title={STAGE_CONTENT[band.stage].title}
         data-testid={`band-${band.stage}`}
       >
-        <Icon size={13} aria-hidden /> {STAGE_CONTENT[band.stage].title}
+        <Icon size={13} aria-hidden style={{ color: st.color }} /> {STAGE_CONTENT[band.stage].short}
       </span>
     </div>
   );
