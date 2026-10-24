@@ -13,7 +13,8 @@
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json",
     "content:qa": "tsx scripts/content-qa.ts",
-    "data:build": "tsx scripts/build-model-data.ts"
+    "data:build": "tsx scripts/build-model-data.ts",
+    "links:check": "tsx scripts/check-links.ts"
   },
   "dependencies": {
     "@google/genai": "2.29.0",

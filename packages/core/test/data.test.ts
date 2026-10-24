@@ -27,3 +27,24 @@ describe("generated model data", () => {
     }
   });
 });
+
+describe("provenance", () => {
+  it("every model variant names its repo, file, package version and YAML hash", () => {
+    for (const f of readdirSync(join(ROOT, "data", "models"))) {
+      const data = JSON.parse(readFileSync(join(ROOT, "data", "models", f), "utf8")) as ModelData;
+      for (const t of Object.values(data.tasks)) for (const v of Object.values(t!.variants)) {
+        expect(v.source.repo).toMatch(/^https:\/\/github\.com\//);
+        expect(v.source.file).toMatch(/\.yaml$/);
+        expect(v.source.packageVersion).toMatch(/^\d+\.\d+\.\d+/);
+        expect(v.yamlSha256).toMatch(/^[0-9a-f]{64}$/);
+        expect(v.retrievedAt).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+      }
+    }
+  });
+  it("every released version cites at least one official source; drafts say why", () => {
+    for (const v of VERSIONS) {
+      expect(v.sources.length, v.id).toBeGreaterThan(0);
+      if (v.confidence === "draft") expect(v.notes.length, v.id).toBeGreaterThan(0);
+    }
+  });
+});
