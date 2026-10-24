@@ -82,6 +82,33 @@ function Canvas({ graph, layout }: Props) {
     return () => clearTimeout(t);
   }, [layout, rf]);
 
+  // keyboard / search / walkthrough ask to bring a node into view
+  const centerReq = useAtlas((s) => s.centerReq);
+  useEffect(() => {
+    if (!centerReq) return;
+    const b = layout.boxes[centerReq.id];
+    if (b) rf.setCenter(b.x + b.w / 2, b.y + b.h / 2, { zoom: Math.max(rf.getZoom(), 0.7), duration: 350 });
+  }, [centerReq, layout, rf]);
+
+  const autoZoom = useAtlas((s) => s.autoZoom);
+  const onMoveEnd = useCallback((event: MouseEvent | TouchEvent | null, vp: { x: number; y: number; zoom: number }) => {
+    // semantic zoom only reacts to the user's own wheel/pinch, not to programmatic fits
+    if (!autoZoom || !event || !("deltaY" in event || "touches" in event)) return;
+    const st = useAtlas.getState();
+    if (vp.zoom < 0.16) st.setZoomLevel(0);
+    else if (vp.zoom > 2.2) {
+      const el = document.querySelector(".react-flow");
+      const r = el?.getBoundingClientRect();
+      if (!r) return;
+      const cx = (r.width / 2 - vp.x) / vp.zoom, cy = (r.height / 2 - vp.y) / vp.zoom;
+      const hit = graph.nodes.find((n) => {
+        const b = layout.boxes[n.id];
+        return n.kind === "layer" && b && cx >= b.x - 20 && cx <= b.x + b.w + 20 && cy >= b.y - 20 && cy <= b.y + b.h + 20;
+      });
+      if (hit?.nodeId) st.enter(hit.nodeId);
+    }
+  }, [autoZoom, graph, layout]);
+
   return (
     <ReactFlow
       nodes={nodes}
@@ -92,6 +119,11 @@ function Canvas({ graph, layout }: Props) {
       onNodeMouseLeave={onLeave}
       onNodeClick={onClick}
       onPaneClick={() => select(null)}
+      onNodeDoubleClick={(_, n) => {
+        const d = n.data as LayerNodeData;
+        if (n.type === "layer" && d.d.nodeId) useAtlas.getState().enter(d.d.nodeId);
+      }}
+      onMoveEnd={onMoveEnd}
       nodesDraggable={false}
       nodesConnectable={false}
       elementsSelectable

@@ -50,3 +50,9 @@ Ultralytics announced YOLO27 (2026) but has not published configs, weights or co
 
 ## D15 — YOLO26 extra tasks
 YOLO26 also ships semantic-segmentation and depth configs. The brief covers five tasks, so these are mentioned in the catalogue but not modelled.
+
+## D16 — Block internals open as a drill-down view
+L2/L3 (block parts, primitive operations) open as a separate canvas for the chosen layer, with breadcrumbs, instead of growing the block in place. Growing a block in the classic layout would push every row apart; a drill-down keeps both views readable and is how map apps handle "zoom into a place". Automatic semantic zoom: wheel/pinch far out → L0 stages; far in on a block → L2; far out of a block → L1. It only reacts to the user's own wheel/pinch and can be switched off ("auto").
+
+## D17 — Playwright runs its own Vite server on port 5174
+So E2E runs never collide with a dev server the user has open on 5173.

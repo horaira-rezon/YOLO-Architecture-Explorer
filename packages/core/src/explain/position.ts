@@ -98,7 +98,7 @@ export function explainPosition(arch: Architecture, comp: ComputeResult, nodeId:
   }
 
   // repeats
-  if (node.repeats > 1) parts.push(sentence("repeats", { n: c.nEff, yamlN: node.repeats, depth: comp.scaleRow.depth }));
+  if (node.repeats > 1) parts.push(sentence("repeats", { n: c.nEff, times: c.nEff === 1 ? "once" : `${c.nEff} times`, yamlN: node.repeats, depth: comp.scaleRow.depth }));
 
   // consumers: head input, skip links
   const consumers = comp.consumers[nodeId] ?? [];

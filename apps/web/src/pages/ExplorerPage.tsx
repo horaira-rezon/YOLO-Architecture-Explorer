@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { ArrowDownUp, ArrowLeftRight, LayoutGrid, List, Network, Workflow } from "lucide-react";
+import { ArrowDownUp, ArrowLeftRight, Footprints, LayoutGrid, List, Network, Search, Workflow } from "lucide-react";
 import { TASKS, VERSIONS, formatCount, getVersion, type Task } from "@yolo-atlas/core";
 import { loadArchitecture } from "../lib/modelData";
 import { buildDisplayGraph } from "../graph/displayGraph";
@@ -13,12 +13,20 @@ import { SizeRuler } from "../components/SizeRuler";
 import type { Architecture, ComputeResult } from "@yolo-atlas/core";
 import { ListView } from "../components/ListView";
 import { SidePanel } from "../components/panel/SidePanel";
+import { InsidePanel } from "../components/panel/InsidePanel";
+import { InsideView, Breadcrumbs } from "../components/canvas/InsideView";
+import { OverviewCanvas } from "../components/canvas/OverviewCanvas";
+import { ZoomBar } from "../components/ZoomBar";
+import { CommandPalette } from "../components/CommandPalette";
+import { Walkthrough } from "../components/Walkthrough";
+import { useKeyboardNav } from "../lib/keyboard";
 
 export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   const { version = "v8", task = "detect", scale } = useParams();
   const [params, setParams] = useSearchParams();
   const navigate = useNavigate();
-  const { arch, computed, scales, direction, listView, layoutMode, selectedId, setLoaded, setDirection, setListView, setLayoutMode, select } = useAtlas();
+  const { arch, computed, scales, direction, listView, layoutMode, selectedId, setLoaded, setDirection, setListView, setLayoutMode, select, zoomLevel, inside, walk, setWalk, setPaletteOpen } = useAtlas();
+  useKeyboardNav();
   const [error, setError] = useState<string | null>(null);
   const [layout, setLayout] = useState<LayoutResult | null>(null);
   const info = getVersion(version);
@@ -101,12 +109,21 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
         {info?.confidence === "verified"
           ? <span className="rounded-full bg-ok/15 px-2 py-0.5 text-xs font-medium text-ok">verified from official files</span>
           : <span className="rounded-full bg-warn/15 px-2 py-0.5 text-xs font-medium text-warn">unverified</span>}
+        <ZoomBar />
         <div className="ml-auto flex items-center gap-1">
           {computed && (
             <span className="mr-2 hidden text-xs text-muted md:inline" data-testid="stats">
               {formatCount(computed.totals.params)} parameters · {computed.totals.gflops.toFixed(1)} GFLOPs · {computed.totals.layers} layers
             </span>
           )}
+          <button type="button" className={`flex items-center gap-1 rounded px-1.5 py-1 hover:bg-surface-2 ${walk.active ? "bg-surface-2" : ""}`}
+            onClick={() => { setWalk({ active: !walk.active, playing: !walk.active, step: 0 }); if (inside) useAtlas.getState().exitInside(); setListView(false); }}
+            aria-pressed={walk.active} title="Follow the image through the network" data-testid="walk-toggle">
+            <Footprints size={16} /> <span className="hidden text-xs lg:inline">Follow the image</span>
+          </button>
+          <button type="button" className="rounded p-1.5 hover:bg-surface-2" onClick={() => setPaletteOpen(true)} aria-label="Search (Ctrl+K or /)" title="Search (Ctrl+K or /)">
+            <Search size={16} />
+          </button>
           <button type="button" className="rounded p-1.5 hover:bg-surface-2" onClick={() => setDirection(direction === "DOWN" ? "RIGHT" : "DOWN")}
             aria-label={direction === "DOWN" ? "Lay out left to right" : "Lay out top to bottom"} title="Change direction">
             {direction === "DOWN" ? <ArrowLeftRight size={16} /> : <ArrowDownUp size={16} />}
@@ -121,10 +138,17 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           </button>
         </div>
       </div>
+      {arch && computed && (zoomLevel !== 1 || inside || selectedId) && (
+        <div className="border-b border-border bg-surface px-3 py-1"><Breadcrumbs /></div>
+      )}
       <div className="flex min-h-0 flex-1">
         <div className="relative min-w-0 flex-1">
           {!arch || !computed ? (
             <div className="flex h-full items-center justify-center text-muted" role="status">Loading the model…</div>
+          ) : inside && zoomLevel >= 2 ? (
+            <InsideView />
+          ) : zoomLevel === 0 && !listView ? (
+            <OverviewCanvas arch={arch} comp={computed} />
           ) : listView ? (
             <div className="h-full overflow-auto"><ListView arch={arch} comp={computed} /></div>
           ) : !layout || !graph ? (
@@ -132,9 +156,11 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           ) : (
             <GraphCanvas graph={graph} layout={layout} />
           )}
-          {arch && computed && !listView && <CanvasLegend arch={arch} comp={computed} />}
+          {arch && computed && !listView && zoomLevel === 1 && !walk.active && <CanvasLegend arch={arch} comp={computed} />}
+          {zoomLevel === 1 && !listView && <Walkthrough />}
         </div>
-        {selectedId && arch && computed && <SidePanel />}
+        {inside && zoomLevel >= 2 ? (inside.selected ? <InsidePanel /> : selectedId && <SidePanel />) : selectedId && arch && computed && !walk.active && <SidePanel />}
+        <CommandPalette />
       </div>
     </div>
   );

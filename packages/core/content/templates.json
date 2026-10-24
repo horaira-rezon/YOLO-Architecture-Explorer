@@ -60,8 +60,8 @@
     "engineer": "{count} levels: {levels}."
   },
   "repeats": {
-    "eli5": "Inside, a small helper is repeated {n} times in this model size.",
-    "simple": "In this model size the inner unit is repeated {n} times (the YAML says {yamlN}, times the depth multiple {depth}).",
+    "eli5": "Inside, a small helper is used {times} in this model size.",
+    "simple": "In this model size the inner unit is used {times} (the YAML says {yamlN}, times the depth multiple {depth}).",
     "engineer": "n = max(round({yamlN}·{depth}), 1) = {n}."
   },
   "share": {
@@ -69,7 +69,13 @@
     "simple": "It holds {params} parameters ({pct} of the model) and needs {flops} GFLOPs.",
     "engineer": "{params} params ({pct}), {flops} GFLOPs."
   },
-  "objects": { "4": "tiny", "8": "small", "16": "medium", "32": "large", "64": "very large" },
+  "objects": {
+    "4": "tiny",
+    "8": "small",
+    "16": "medium",
+    "32": "large",
+    "64": "very large"
+  },
   "consumerVerbs": {
     "Concat": "joins it with another map",
     "Upsample": "makes it twice as big",

@@ -2,6 +2,9 @@ import { memo } from "react";
 import { BaseEdge, EdgeLabelRenderer, type Edge, type EdgeProps } from "@xyflow/react";
 import type { Point } from "../../graph/layout";
 import { useHighlight } from "../../store/highlight";
+import { useWalkEdges } from "../../store/walk";
+
+const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
 export type ElkEdgeData = { points: Point[]; label: string; skip: boolean; kind: "data" | "train" };
 
@@ -41,11 +44,14 @@ function ElkEdgeImpl({ id, data, sourceX, sourceY, targetX, targetY, markerEnd }
   const dim = hl ? !hl.has(id) : false;
   const strong = hl ? hl.has(id) : false;
   const lp = labelPoint(pts);
+  const walking = useWalkEdges((s) => s.ids.has(id));
+  const seconds = useWalkEdges((s) => s.seconds);
+  const path = roundedPath(pts);
   return (
     <>
       <BaseEdge
         id={id}
-        path={roundedPath(pts)}
+        path={path}
         markerEnd={markerEnd}
         style={{
           stroke: data?.kind === "train" ? "var(--stage-loss)" : strong ? "var(--accent)" : "var(--muted)",
@@ -54,6 +60,11 @@ function ElkEdgeImpl({ id, data, sourceX, sourceY, targetX, targetY, markerEnd }
           opacity: dim ? 0.15 : 0.9,
         }}
       />
+      {walking && !reduceMotion && (
+        <circle r="6" fill="var(--accent)" aria-hidden>
+          <animateMotion dur={`${Math.max(seconds * 0.8, 0.4)}s`} repeatCount="indefinite" path={path} />
+        </circle>
+      )}
       {data?.label && !dim && (
         <EdgeLabelRenderer>
           <div

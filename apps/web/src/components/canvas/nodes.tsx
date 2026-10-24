@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { Handle, Position, type Node, type NodeProps } from "@xyflow/react";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, LogIn } from "lucide-react";
 import { formatShape } from "@yolo-atlas/core";
 import type { DisplayNode } from "../../graph/displayGraph";
 import type { Band } from "../../graph/layout";
@@ -51,6 +51,21 @@ function LayerNodeImpl({ id, data, selected }: NodeProps<Node<LayerNodeData>>) {
         <span className="truncate">{d.title}</span>
         {d.error && <AlertTriangle size={14} className="text-danger" aria-label="has a problem" />}
         <Icon size={14} className="ml-auto shrink-0" style={{ color: style.color }} aria-hidden />
+        {d.kind === "layer" && d.nodeId && (
+          <button
+            type="button"
+            className="nodrag shrink-0 rounded p-0.5 text-muted hover:bg-surface-2 hover:text-fg"
+            aria-label={`Look inside layer ${d.index}`}
+            title="Look inside (Enter)"
+            data-testid={`enter-${id}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              useAtlas.getState().enter(d.nodeId!);
+            }}
+          >
+            <LogIn size={13} />
+          </button>
+        )}
       </div>
       {d.subtitle && <div className="truncate text-[11px] text-muted">{d.subtitle}</div>}
       {d.kind === "layer" || d.kind === "input" ? (
