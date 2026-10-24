@@ -28,4 +28,7 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFoundPage /> },
     ],
   },
-]);
+], {
+  // the app can live under a sub-path (GitHub Pages serves it at /<repo>/)
+  basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/",
+});

@@ -91,7 +91,8 @@ The web app is static. Build with `pnpm build` and serve `apps/web/dist` with a 
 
 - **Netlify**: `netlify.toml` is included.
 - **Vercel**: import the repository and pick the `apps/web` project (Vite); `apps/web/vercel.json` sets the build and the single-page-app fallback. (Importing with root `./` also works through the root `vercel.json`.) Add the environment variable `ENABLE_EXPERIMENTAL_COREPACK=1` so Vercel uses the pnpm version pinned in `package.json`.
-- **GitHub Pages / any static host**: copy `dist/index.html` to `dist/404.html` after the build (the router handles the URL).
+- **GitHub Pages**: `.github/workflows/pages.yml` builds with `BASE_PATH=/<repo>/` and deploys on every push to `main`. One-time setup: repository **Settings → Pages → Build and deployment → Source: GitHub Actions**. The site is then at `https://<user>.github.io/<repo>/`.
+- **Any other static host**: `pnpm build`, then copy `dist/index.html` to `dist/404.html` (the router handles the URL). Set `BASE_PATH` if the site is not at the domain root.
 
 The optional proxy is a small Node server (`apps/proxy`); run it next to the site and set `PROXY_ALLOWED_ORIGINS` to the site's origin.
 

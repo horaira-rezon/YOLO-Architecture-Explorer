@@ -107,3 +107,6 @@ One SVG (`apps/web/public/favicon.svg`) is both the favicon and the header logo:
 
 ## D34 — Portable response schema + plain-JSON fallback for Gemini
 A real Gemini call returned 400 INVALID_ARGUMENT. The schema sent as `responseJsonSchema` contained keywords from Zod's JSON Schema export that structured-output validators reject, notably `maximum: 9007199254740991` on integers, plus `minLength`/`maxItems`/`additionalProperties`. The schema sent to providers now keeps only `type`, `properties`, `required`, `items`, `enum`, `description`; full validation still happens locally with Zod. If a model still answers 400 to a response schema, the Gemini client retries once in plain JSON mode with the schema in the system prompt, and keeps that mode for the session.
+
+## D35 — GitHub Pages as a second address
+Some networks cannot reach the Vercel server range that `*.vercel.app` currently resolves to (64.29.17.x / 216.198.79.x), while GitHub Pages is reachable. The app therefore also deploys to GitHub Pages from a workflow. Because Pages serves it under `/<repo>/`, the base path is configurable (`BASE_PATH` → Vite `base`, router `basename`, favicon via `%BASE_URL%`); `404.html` is a copy of `index.html` so deep links open the app.

@@ -20,7 +20,7 @@ export function AppShell() {
       </a>
       <header className="flex h-12 shrink-0 items-center gap-4 border-b border-border bg-surface px-4">
         <Link to="/" className="flex items-center gap-2 font-semibold">
-          <img src="/favicon.svg" alt="" className="h-6 w-6" />
+          <img src={`${import.meta.env.BASE_URL}favicon.svg`} alt="" className="h-6 w-6" />
           YOLO Atlas
         </Link>
         <div className="ml-auto hidden sm:block" data-tour="level"><ReadingLevelSwitch compact /></div>
