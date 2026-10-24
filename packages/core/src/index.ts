@@ -13,3 +13,5 @@ export * from "./describe";
 export * from "./content/schema";
 export * from "./explain/position";
 export * from "./blocks/flatten";
+export * from "./content/inner";
+export * from "./diff";

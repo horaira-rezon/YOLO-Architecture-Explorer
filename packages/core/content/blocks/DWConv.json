@@ -1,0 +1,28 @@
+{
+  "id": "DWConv",
+  "name": "DWConv (depthwise Conv block)",
+  "whatIsIt": {
+    "eli5": "A cheap pattern finder that looks at each layer of notes on its own.",
+    "simple": "A Conv block (conv + batch norm + SiLU) whose convolution is depthwise: each channel is filtered separately (groups = gcd of input and output channels).",
+    "engineer": "Conv(c1, c2, k, s, g=gcd(c1, c2)) → BN → SiLU."
+  },
+  "whyExists": {
+    "eli5": "Much cheaper than a normal pattern finder.",
+    "simple": "Cuts cost a lot; YOLO11/12/26 use it in the head's class branch, followed by a 1×1 Conv to mix channels.",
+    "engineer": "≈1/c2 of a dense conv's MACs; spatial filtering without channel mixing."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Each layer of notes gets its own small window."
+    ],
+    "simple": [
+      "k×k depthwise conv.",
+      "BN and SiLU.",
+      "Usually followed by a 1×1 Conv."
+    ],
+    "engineer": [
+      "groups = gcd(c1, c2); equals c1 when c1 == c2."
+    ]
+  },
+  "pytorch": "class DWConv(Conv):\n    def __init__(self, c1, c2, k=1, s=1, d=1, act=True):\n        super().__init__(c1, c2, k, s, g=math.gcd(c1, c2), d=d, act=act)"
+}

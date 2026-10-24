@@ -1,0 +1,39 @@
+{
+  "id": "C2fCIB",
+  "name": "C2fCIB",
+  "whatIsIt": {
+    "eli5": "Like C2f, but the helpers inside are the cheap CIB helpers.",
+    "simple": "A C2f block whose inner units are CIBs instead of Bottlenecks.",
+    "engineer": "C2f with ModuleList(CIB(c, c, shortcut, e=1.0, lk) × n)."
+  },
+  "whyExists": {
+    "eli5": "It keeps the team design but spends fewer learned numbers.",
+    "simple": "YOLOv10 uses it in deep stages where normal blocks have more capacity than needed.",
+    "engineer": "Rank-guided block allocation (paper §3.2): replace C2f with C2fCIB in redundant stages."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split the notes.",
+      "Pass half through cheap helpers.",
+      "Join and summarize."
+    ],
+    "simple": [
+      "Same as C2f, with CIB units.",
+      "lk=True uses a 7×7 depthwise kernel for a wider view."
+    ],
+    "engineer": [
+      "In the official yolov10n.yaml the last neck block sets lk=True (YAML args [1024, True, True])."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv10n uses it at the end of the neck.",
+    "simple": "YOLOv10n layer 22: 256 channels at 20×20, shortcut and large kernel on, 282,624 parameters.",
+    "engineer": "v10n #22 C2fCIB(…, shortcut=True, lk=True): 282,624 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    }
+  ]
+}

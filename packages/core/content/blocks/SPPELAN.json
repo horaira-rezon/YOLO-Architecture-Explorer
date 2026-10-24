@@ -1,0 +1,40 @@
+{
+  "id": "SPPELAN",
+  "name": "SPPELAN",
+  "whatIsIt": {
+    "eli5": "Looks at bigger and bigger areas and joins what it found, like SPPF.",
+    "simple": "YOLOv9's version of SPPF: a 1×1 Conv, three 5×5 max-pools in a row, join all four maps, 1×1 Conv.",
+    "engineer": "cv1 Conv1×1(c3) → 3 × MaxPool(5, 1, 2) chained → cat (4·c3) → cv5 Conv1×1(c2)."
+  },
+  "whyExists": {
+    "eli5": "Each spot gets a summary of a big area for free.",
+    "simple": "Adds multi-scale context at the end of the backbone with almost no learned weights.",
+    "engineer": "SPP/ELAN hybrid; inner width c3 is a free argument."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Squeeze the notes.",
+      "Keep the strongest in bigger and bigger squares.",
+      "Join and summarize."
+    ],
+    "simple": [
+      "1×1 Conv to c3 channels.",
+      "Max-pool three times (windows grow 5, 9, 13).",
+      "Join; 1×1 Conv."
+    ],
+    "engineer": [
+      "Equivalent to SPPF with a configurable hidden width."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv9t uses it at the end of the backbone.",
+    "simple": "YOLOv9t layer 9: 128 channels at 20×20, c3 = 64, 41,344 parameters.",
+    "engineer": "v9t #9 SPPELAN(128, 128, 64): 41,344 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    }
+  ]
+}

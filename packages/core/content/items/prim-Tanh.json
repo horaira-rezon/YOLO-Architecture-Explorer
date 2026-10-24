@@ -1,0 +1,25 @@
+{
+  "id": "prim-Tanh",
+  "name": "Tanh",
+  "whatIsIt": {
+    "eli5": "Squashes a number between −1 and 1.",
+    "simple": "Maps values to the range −1 to 1.",
+    "engineer": "tanh(x)."
+  },
+  "whyExists": {
+    "eli5": "Keeps a scale from exploding.",
+    "simple": "Bounds the scale term in the flow's coupling layers.",
+    "engineer": "Stabilises affine coupling."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Squash."
+    ],
+    "simple": [
+      "Apply tanh to each value."
+    ],
+    "engineer": [
+      "Elementwise."
+    ]
+  }
+}

@@ -155,19 +155,23 @@ export function computeArchitecture(arch: Architecture): ComputeResult {
           n = 1;
         }
         if (def.clearsLegacy) legacy = false;
-        if (def.id === "C3k2" && scale && ["m", "l", "x"].includes(scale)) {
+        const v13 = arch.config.codebase === "yolov13";
+        if (v13 && (def.id === "C3k2" || def.id === "DSC3k2") && scale && "lx".includes(scale)) {
+          args[3] = true; // the YOLOv13 fork only switches l/x
+        } else if (!v13 && def.id === "C3k2" && scale && ["m", "l", "x"].includes(scale)) {
           // python: args[3:4] = [True]
           if (args.length > 3) args[3] = true;
           else args.push(true);
         }
-        if (def.id === "A2C2f" && scale && ["l", "x"].includes(scale)) args.push(true, 1.2);
+        if (def.id === "A2C2f" && scale && ["l", "x"].includes(scale)) args.push(true, v13 ? 1.5 : 1.2);
         break;
       }
       case "concat":
         c2 = c1s.reduce((a, b) => a + b, 0);
         break;
       case "head": {
-        args = [...args, arch.config.regMax ?? 16, arch.config.end2end ?? false];
+        // the YOLOv13 fork's Detect predates the reg_max / end2end arguments
+        if (arch.config.codebase !== "yolov13") args = [...args, arch.config.regMax ?? 16, arch.config.end2end ?? false];
         if (/^Segment/.test(def.id) && typeof args[2] === "number") args[2] = makeDivisible(Math.min(args[2], maxChannels) * width, 8);
         c2 = ch[ch.length - 1] ?? 0; // parse_model leaves c2 unchanged for heads
         break;
@@ -187,6 +191,15 @@ export function computeArchitecture(arch: Architecture): ComputeResult {
       case "cbfuse":
         c2 = c1s[c1s.length - 1] ?? 0;
         break;
+      case "custom": {
+        if (!def.resolve) throw new Error(`${def.id} has no resolve rule`);
+        if (def.clearsLegacy) legacy = false;
+        const r = def.resolve({ c1s, args, n, scale, width, maxChannels });
+        args = r.args;
+        c2 = r.c2;
+        n = r.n;
+        break;
+      }
     }
     if (def.selectInputs && inShapes.every((s) => s != null)) {
       const tuples = fromIdx.map((j) => {
@@ -205,7 +218,7 @@ export function computeArchitecture(arch: Architecture): ComputeResult {
     }
 
     // ---- build the module(s) and measure
-    const ctx: BuildCtx = { nc: arch.config.nc, regMax: arch.config.regMax ?? 16, end2end: !!arch.config.end2end, legacy, scale, kptShape: arch.config.kptShape };
+    const ctx: BuildCtx = { codebase: arch.config.codebase, nc: arch.config.nc, regMax: arch.config.regMax ?? 16, end2end: !!arch.config.end2end, legacy, scale, kptShape: arch.config.kptShape };
     try {
       const b = new Builder(inShapes as Shape[]);
       let outputs: Record<string, Shape> | undefined;

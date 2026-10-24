@@ -1,0 +1,33 @@
+{
+  "id": "loss-SemanticSeg",
+  "name": "Semantic segmentation loss (YOLO26 seg)",
+  "whatIsIt": {
+    "eli5": "While learning, the model also colours every pixel by kind, which helps it learn.",
+    "simple": "A training-only loss on the Proto26 side branch that predicts a class for every pixel.",
+    "engineer": "Auxiliary per-pixel loss on Proto26.semseg; branch dropped at inference."
+  },
+  "whyExists": {
+    "eli5": "Extra practice helps the main job.",
+    "simple": "Ultralytics says it improves convergence of YOLO26 segmentation models.",
+    "engineer": "Auxiliary dense supervision (YOLO26 docs)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Guess the kind of each pixel.",
+      "Compare with the label."
+    ],
+    "simple": [
+      "The semseg branch predicts nc maps.",
+      "Compared to a per-pixel label built from the instance masks."
+    ],
+    "engineer": [
+      "loss_names include 'sem_loss'."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

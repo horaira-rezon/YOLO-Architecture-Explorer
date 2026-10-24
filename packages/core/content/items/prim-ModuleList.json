@@ -1,0 +1,25 @@
+{
+  "id": "prim-ModuleList",
+  "name": "Module list",
+  "whatIsIt": {
+    "eli5": "A list of helpers kept together.",
+    "simple": "A container of sub-blocks (for example one per bottleneck, or one per detection level). It does no work itself.",
+    "engineer": "nn.ModuleList."
+  },
+  "whyExists": {
+    "eli5": "To group similar parts.",
+    "simple": "Organises repeated parts so they can be opened one by one.",
+    "engineer": "Container."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Hold the helpers."
+    ],
+    "simple": [
+      "Open it to see each part."
+    ],
+    "engineer": [
+      "No params of its own."
+    ]
+  }
+}

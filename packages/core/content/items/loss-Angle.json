@@ -1,0 +1,31 @@
+{
+  "id": "loss-Angle",
+  "name": "Angle loss (YOLO26 OBB)",
+  "whatIsIt": {
+    "eli5": "Grades how well the turn of each box matches.",
+    "simple": "A dedicated loss on the predicted box angle, added in YOLO26 OBB.",
+    "engineer": "Angle term with gain angle = 1.0 (cfg/default.yaml)."
+  },
+  "whyExists": {
+    "eli5": "Angles wrap around, which confuses plain grading.",
+    "simple": "Ultralytics says it fixes boundary discontinuity problems of rotated boxes.",
+    "engineer": "Handles periodicity of θ (YOLO26 docs)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Compare the turn with the true turn."
+    ],
+    "simple": [
+      "An extra loss term on the angle output."
+    ],
+    "engineer": [
+      "loss_names include 'angle_loss'."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

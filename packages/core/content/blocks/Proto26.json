@@ -1,0 +1,35 @@
+{
+  "id": "Proto26",
+  "name": "Proto26 (multi-scale prototypes)",
+  "whatIsIt": {
+    "eli5": "Makes shape pictures using notes from all map sizes.",
+    "simple": "Adds the P4 and P5 maps (resized) into P3, then makes the mask prototypes. Has a training-only branch for per-pixel classes.",
+    "engineer": "feat_refine[i] Conv1×1(ch[i+1]→ch0), interpolate ×2^(i+1), sum → feat_fuse Conv3×3 → Proto; semseg (train only)."
+  },
+  "whyExists": {
+    "eli5": "Big-picture notes help tell where one thing ends.",
+    "simple": "Deeper maps carry more meaning; mixing them in helps mask quality.",
+    "engineer": "Multi-scale fusion for prototype generation."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Bring all map sizes to one size.",
+      "Add them.",
+      "Make shape pictures."
+    ],
+    "simple": [
+      "1×1 Convs match channels.",
+      "Nearest-neighbour resize and add.",
+      "3×3 Conv, then Proto."
+    ],
+    "engineer": [
+      "Returns (protos, semantic) in training, protos at inference."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

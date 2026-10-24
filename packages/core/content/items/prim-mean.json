@@ -1,0 +1,25 @@
+{
+  "id": "prim-mean",
+  "name": "Mean / max over positions",
+  "whatIsIt": {
+    "eli5": "Summarizes all spots into one value per layer of notes.",
+    "simple": "Averages (and takes the maximum) over all positions to get a context vector.",
+    "engineer": "mean / max reduction along tokens; not counted by thop."
+  },
+  "whyExists": {
+    "eli5": "To give a big-picture summary.",
+    "simple": "Provides global context to adapt the hyperedges.",
+    "engineer": "Global pooling for context."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at all spots and summarize."
+    ],
+    "simple": [
+      "Mean and max over all pixels, joined."
+    ],
+    "engineer": [
+      "Output 2·D."
+    ]
+  }
+}

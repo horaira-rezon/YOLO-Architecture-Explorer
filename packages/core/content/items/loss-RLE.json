@@ -1,0 +1,33 @@
+{
+  "id": "loss-RLE",
+  "name": "RLE keypoint loss (YOLO26 pose)",
+  "whatIsIt": {
+    "eli5": "Grades the points while letting the model say how sure it is.",
+    "simple": "Residual Log-Likelihood Estimation: the keypoint error is scored by a learned probability (RealNVP flow) scaled by the predicted uncertainty.",
+    "engineer": "−log p(residual/σ) with a RealNVP density; gain rle = 1.0."
+  },
+  "whyExists": {
+    "eli5": "Unsure points should count less.",
+    "simple": "Ultralytics says RLE gives more accurate keypoint localisation.",
+    "engineer": "Likelihood-based regression with learned error distribution."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Measure the point error.",
+      "Ask how likely that error is."
+    ],
+    "simple": [
+      "Error divided by predicted sigma.",
+      "Flow gives its log-likelihood; minimise the negative."
+    ],
+    "engineer": [
+      "Uses cv4_sigma outputs and flow_model (training only)."
+    ]
+  },
+  "references": [
+    {
+      "label": "RLE paper",
+      "url": "https://arxiv.org/abs/2107.11291"
+    }
+  ]
+}

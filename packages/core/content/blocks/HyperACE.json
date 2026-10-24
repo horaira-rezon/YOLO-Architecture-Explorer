@@ -1,0 +1,54 @@
+{
+  "id": "HyperACE",
+  "name": "HyperACE (hypergraph adaptive correlation enhancement)",
+  "whatIsIt": {
+    "eli5": "YOLOv13's 'group finder'. It looks at three map sizes together and finds groups of pixels that belong together, even far apart, then shares what each group knows.",
+    "simple": "Takes P3, P4 and P5, brings them to P4 size and joins them. Then a CSP-style block runs: two branches use a hypergraph (learned groups of pixels called hyperedges) to pass information between all pixels in a group, and a third branch uses depthwise-separable blocks for local detail.",
+    "engineer": "FuseModule(P3↓, P4, P5↑) → cv1 (1×1, 3c) → chunk(3); branch1/branch2 = C3AH (AdaHGComputation) on chunk 1; DSC3k chain on chunk 3; cat[y0, h1, y2, m…, h2] → cv2. Learnable hyperedge prototypes + context; message passing via two bmm's (linear in N)."
+  },
+  "whyExists": {
+    "eli5": "Pairs of spots are not enough; whole groups (like all leaves of one weed) should talk at once.",
+    "simple": "The paper argues that convolutions see only nearby pixels and self-attention only models pairs, while hypergraphs capture high-order relations among many pixels across scales, at linear cost.",
+    "engineer": "High-order, cross-scale correlation modelling with linear-complexity hypergraph message passing (paper §3.2)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Bring the three map sizes to one size and stack them.",
+      "Learn a few groups; each pixel decides how much it belongs to each group.",
+      "Each group collects notes from its pixels, then gives them back.",
+      "Mix with local helpers and summarize."
+    ],
+    "simple": [
+      "Fuse: P3 is average-pooled down, P5 upsampled, both joined with P4; 1×1 Conv.",
+      "Split into three parts.",
+      "Two hypergraph branches (C3AH) on the middle part: build hyperedges from the content, compute each pixel's soft membership, gather to hyperedges, scatter back.",
+      "A chain of DS-C3k blocks on the third part.",
+      "Join everything and mix with a 1×1 Conv."
+    ],
+    "engineer": [
+      "Hyperedges: 8 in the YAML; parse_model halves them for n (4) and ×1.5 for x (12).",
+      "AdaHyperedgeGen: prototypes = base + Linear(mean‖max context); logits = (XW)·protoᵀ/√d averaged over heads; softmax over N.",
+      "HGConv: He = GELU(Lin(Aᵀ X)); X' = GELU(Lin(A·He)) + X."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLOv13n it works on the 40×40 size.",
+    "simple": "YOLOv13n layer 9: inputs from layers 4, 6, 8; output 128 channels at 40×40; 4 hyperedges; 273,536 parameters.",
+    "engineer": "13n #9 HyperACE: 273,536 params, 0.64 GFLOPs (+ hypergraph bmm's)."
+  },
+  "typicalPositions": {
+    "eli5": "Between the backbone and the mixing part.",
+    "simple": "Once, right after the backbone, reading P3, P4 and P5.",
+    "engineer": "Neck entry; its output feeds all FullPAD tunnels."
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    },
+    {
+      "label": "iMoonLab/yolov13 code",
+      "url": "https://github.com/iMoonLab/yolov13"
+    }
+  ]
+}

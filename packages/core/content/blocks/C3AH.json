@@ -1,0 +1,35 @@
+{
+  "id": "C3AH",
+  "name": "C3AH (CSP hypergraph block)",
+  "whatIsIt": {
+    "eli5": "Half the notes go through the group finder, half skip; then they are joined.",
+    "simple": "A CSP block whose processing branch is a hypergraph computation (AdaHGComputation).",
+    "engineer": "cv1 → AdaHGComputation; cv2 skip; cat → cv3. Heads = c_/16."
+  },
+  "whyExists": {
+    "eli5": "Cheaper than sending everything through the group finder.",
+    "simple": "The skip branch keeps the cost down and preserves local detail.",
+    "engineer": "CSP wrapper around hypergraph message passing."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "One part finds groups and shares notes.",
+      "Join."
+    ],
+    "simple": [
+      "Two 1×1 branches.",
+      "Hypergraph step on one.",
+      "Join; 1×1 Conv."
+    ],
+    "engineer": [
+      "Requires c_ % 16 == 0."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

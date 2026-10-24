@@ -1,5 +1,5 @@
 import {
-  BlockContentSchema, GlossarySchema, getBlock,
+  BlockContentSchema, GlossarySchema, getBlock, innerContentCandidates,
   type Architecture, type BlockContent, type GlossaryTerm, type Leveled,
 } from "@yolo-atlas/core";
 import glossaryJson from "@yolo-atlas/core/content/glossary.json";
@@ -40,6 +40,10 @@ export function resolveItem(arch: Architecture, id: string): ItemRef | null {
     const dual = /one-to-one/.test(arch.training.assigner);
     return { kind: "item", contentId: dual ? "assigner-dual" : "assigner-TAL", title: arch.training.assigner };
   }
+  if (id.startsWith("train:extra:")) {
+    const x = id.slice(12);
+    return { kind: "item", contentId: `extra-${x}`, title: CONTENT.get(`extra-${x}`)?.name ?? x };
+  }
   if (id.startsWith("train:loss:")) {
     const loss = arch.training.losses.find((l) => `train:loss:${l.id}` === id);
     return loss ? { kind: "item", contentId: `loss-${loss.kind}`, title: `${loss.kind} loss` } : null;
@@ -50,13 +54,8 @@ export function resolveItem(arch: Architecture, id: string): ItemRef | null {
   return { kind: "layer", contentId: def?.id ?? null, title: def?.displayName ?? node.module, nodeId: node.id };
 }
 
+
 /** Content id for an operation or sub-block seen inside a block (L2/L3). */
 export function innerContentId(type: string): string | null {
-  const prim: Record<string, string> = {
-    "flatten": "view", "reshape·permute": "view", "flatten·reshape": "view", "view·transpose·softmax": "view", "view": "view",
-  };
-  const p = prim[type] ?? type;
-  if (CONTENT.has(`prim-${p}`)) return `prim-${p}`;
-  if (CONTENT.has(type)) return type;
-  return null;
+  return innerContentCandidates(type).find((id) => CONTENT.has(id)) ?? null;
 }

@@ -12,6 +12,11 @@ import { BlockContentSchema, GlossarySchema, LEVELS, LeveledSchema, type BlockCo
 import { getBlock } from "../src/blocks/registry";
 import { parseUltralyticsYaml } from "../src/compiler/yaml";
 import type { ModelData } from "../src/data";
+import { compileYaml } from "../src/compiler/compile";
+import { computeArchitecture } from "../src/engine/compute";
+import type { IRGraph } from "../src/blocks/builder";
+import { innerContentCandidates } from "../src/content/inner";
+import type { Task } from "../src/schema";
 
 const ROOT = join(import.meta.dirname, "..");
 const C = join(ROOT, "content");
@@ -71,12 +76,29 @@ for (const dir of ["blocks", "items"]) {
 // ---- every block used by a shipped model needs content
 const pending = new Set<string>(existsSync(join(C, "pending.json")) ? (read(join(C, "pending.json")) as string[]) : []);
 const used = new Set<string>();
+const innerTypes = new Set<string>();
+const trainingIds = new Set<string>(["assigner-TAL", "assigner-dual", "input", "post-conf", "post-nms", "post-e2e", "post-softmax"]);
+const collect = (g: IRGraph) => {
+  for (const n of g.nodes) {
+    innerTypes.add(n.type);
+    if (n.children) collect(n.children);
+  }
+};
 for (const f of readdirSync(join(ROOT, "data", "models"))) {
   const data = read(join(ROOT, "data", "models", f)) as ModelData;
-  for (const t of Object.values(data.tasks)) for (const v of Object.values(t?.variants ?? {})) {
+  for (const [task, t] of Object.entries(data.tasks)) for (const [scale, v] of Object.entries(t?.variants ?? {})) {
     const m = parseUltralyticsYaml(v.yamlText);
     for (const row of [...m.backbone, ...m.head]) used.add(getBlock(row.module)?.id ?? row.module);
+    const arch = compileYaml(v.yamlText, { version: f.replace(".json", ""), task: task as Task, scale: /^scales:/m.test(v.yamlText) ? scale : null, inputSize: v.inputSize, meta: { source: v.source, confidence: "verified", retrievedAt: v.retrievedAt, notes: [] } });
+    for (const c of Object.values(computeArchitecture(arch).nodes)) if (c.ir) collect(c.ir);
+    for (const l of arch.training.losses) trainingIds.add(`loss-${l.kind}`);
+    for (const x of arch.training.extras) trainingIds.add(`extra-${x}`);
   }
+}
+for (const id of [...trainingIds].sort()) if (!content.has(id)) errors.push(`missing content/items/${id}.json (training or post-processing item)`);
+// every sub-block and operation shown when zooming in needs an explanation too
+for (const t of [...innerTypes].sort()) {
+  if (!innerContentCandidates(t).some((id) => content.has(id))) errors.push(`no content for inner type "${t}" (add content/items/prim-${t}.json or content/blocks/${t}.json)`);
 }
 for (const id of [...used].sort()) {
   if (content.has(id)) {

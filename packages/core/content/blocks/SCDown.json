@@ -1,0 +1,43 @@
+{
+  "id": "SCDown",
+  "name": "SCDown (spatial-channel decoupled downsampling)",
+  "whatIsIt": {
+    "eli5": "A cheaper way to make the picture smaller: first change the kinds of notes, then shrink the picture.",
+    "simple": "YOLOv10's downsampling block: a 1×1 Conv changes the number of channels, then a depthwise 3×3 Conv with stride 2 halves the size.",
+    "engineer": "SCDown: Conv(c1, c2, 1) → Conv(c2, c2, k, s, g=c2, act=False)."
+  },
+  "whyExists": {
+    "eli5": "Doing two simple jobs one after another is cheaper than one big job.",
+    "simple": "A normal 3×3 stride-2 Conv does both jobs (more channels, smaller map) at once, which is costly. Splitting them saves a lot of parameters and compute.",
+    "engineer": "Decoupling channel mixing (pointwise) from spatial reduction (depthwise) reduces cost from O(9·c1·c2) to O(c1·c2 + 9·c2) per position (paper §3.2)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Change the kinds of notes.",
+      "Shrink each kind on its own."
+    ],
+    "simple": [
+      "1×1 Conv: c1 → c2 channels.",
+      "Depthwise k×k Conv, stride 2: each channel is shrunk on its own."
+    ],
+    "engineer": [
+      "No activation on the depthwise conv."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLOv10n, a 128-note map is made half as big with far fewer learned numbers than a normal step.",
+    "simple": "YOLOv10n layer 5: 64 → 128 channels, 80×80 → 40×40, 9,856 parameters. YOLOv8n's equivalent Conv (layer 5) has 73,984.",
+    "engineer": "v10n #5 SCDown(64, 128, 3, 2): 9,856 params vs 73,984 for Conv(64, 128, 3, 2)."
+  },
+  "typicalPositions": {
+    "eli5": "Where the picture gets smaller in the later part of the backbone and neck.",
+    "simple": "Replaces the stride-2 Convs at P4, P5 and the last PAN step in YOLOv10.",
+    "engineer": "Stride-2 transitions at deeper stages."
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    }
+  ]
+}

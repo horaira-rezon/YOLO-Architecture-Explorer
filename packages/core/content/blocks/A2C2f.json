@@ -1,0 +1,58 @@
+{
+  "id": "A2C2f",
+  "name": "A2C2f (R-ELAN with area attention)",
+  "whatIsIt": {
+    "eli5": "YOLO12's main team block. Its helpers let spots look at each other, but only inside a few big strips, which keeps it fast.",
+    "simple": "YOLO12's block (R-ELAN). A 1×1 Conv, then a chain of units; each unit is two attention blocks (area attention + MLP) or, in some layers, a C3k. All outputs are joined and mixed. Large models add a scaled shortcut around the whole block.",
+    "engineer": "cv1 (1×1, c_=c2·e) → n units [Seq(ABlock, ABlock) if a2 else C3k] chained → cat[(1+n)·c_] → cv2 (1×1); if a2 and residual (l/x): y = x + γ·cv2(…) with γ init 0.01."
+  },
+  "whyExists": {
+    "eli5": "Looking at the whole picture is useful, and strips make it cheap enough to use on bigger maps.",
+    "simple": "The YOLO12 paper builds the detector around attention. Area attention splits the map into a few regions so attention is affordable at P4; R-ELAN's scaled residual keeps large attention models stable while training.",
+    "engineer": "Attention-centric design; area attention reduces cost by ~l; block-level residual with layer scaling (R-ELAN) addresses optimisation instability of large models (paper §3)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Rewrite the notes.",
+      "Each helper lets spots in the same strip look at each other.",
+      "Keep every helper's work, stack and summarize."
+    ],
+    "simple": [
+      "cv1 (1×1 Conv) to the hidden width.",
+      "Each unit: two ABlocks (area attention, then a small MLP, each with a shortcut).",
+      "Every unit's output is kept; join all (1 + n pieces).",
+      "cv2 (1×1 Conv) to the output width.",
+      "For l/x: add the input back, scaled by γ (starts at 0.01)."
+    ],
+    "engineer": [
+      "Heads = c_/32; area = 4 at P4, 1 at P5 in yolo12.yaml (area 1 = global attention).",
+      "MLP ratio 2.0 by default; parse_model passes (residual=True, mlp_ratio=1.2) for l/x.",
+      "a2=False rows (neck in yolo12.yaml) use C3k units instead of attention."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLO12n layer 6, the 40×40 picture is cut into 4 strips.",
+    "simple": "YOLO12n layer 6: 128 channels at 40×40, area = 4, 180,864 parameters. Layer 8 (20×20, area = 1): 689,408 parameters.",
+    "engineer": "12n #6 A2C2f(…, a2=True, area=4): 180,864 params; #8 area=1: 689,408."
+  },
+  "typicalPositions": {
+    "eli5": "In the later part of the backbone and in the mixing part.",
+    "simple": "YOLO12 backbone at P4 and P5 (attention on) and the neck (attention off, C3k units).",
+    "engineer": "yolo12.yaml layers 6, 8 (a2=True) and neck fusion nodes (a2=False)."
+  },
+  "tradeoffs": {
+    "eli5": "Looking around costs more than looking nearby.",
+    "simple": "Attention cost grows with the square of the positions per area; Ultralytics notes YOLO12 can be slower on CPUs and use more memory.",
+    "engineer": "O((N/l)²·d·l) per head; memory heavy without FlashAttention."
+  },
+  "references": [
+    {
+      "label": "YOLO12 paper",
+      "url": "https://arxiv.org/abs/2502.12524"
+    },
+    {
+      "label": "Ultralytics YOLO12 docs",
+      "url": "https://docs.ultralytics.com/models/yolo12/"
+    }
+  ]
+}

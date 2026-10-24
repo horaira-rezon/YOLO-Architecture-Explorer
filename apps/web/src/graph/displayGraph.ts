@@ -83,6 +83,10 @@ export function buildDisplayGraph(arch: Architecture, comp: ComputeResult): Disp
       nodes.push({ id: "train:assigner", kind: "train", stage: "loss", title: "Assigner", subtitle: t.assigner, index: null, shape: null, level: null, stride: null, error: false, trainingOnly: true });
       edges.push({ id: `${last.id}->train:assigner`, source: last.id, target: "train:assigner", label: "training", skip: true, kind: "train" });
     }
+    const EXTRA_TITLE: Record<string, string> = { ProgLoss: "Progressive Loss", MuSGD: "MuSGD optimizer", PGI: "PGI (paper only)" };
+    for (const x of t.extras) {
+      nodes.push({ id: `train:extra:${x}`, kind: "train", stage: "loss", title: EXTRA_TITLE[x] ?? x, subtitle: "training only", index: null, shape: null, level: null, stride: null, error: false, trainingOnly: true });
+    }
     for (const l of t.losses) {
       nodes.push({ id: `train:loss:${l.id}`, kind: "train", stage: "loss", title: `${l.kind} loss`, subtitle: l.weight != null ? `weight ${l.weight}` : "", index: null, shape: null, level: null, stride: null, error: false, trainingOnly: true });
       edges.push({ id: `${t.assigner !== "none" ? "train:assigner" : last.id}->train:loss:${l.id}`, source: t.assigner !== "none" ? "train:assigner" : last.id, target: `train:loss:${l.id}`, label: "", skip: false, kind: "train" });

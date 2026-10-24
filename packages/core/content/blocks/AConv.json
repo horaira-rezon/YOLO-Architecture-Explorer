@@ -1,0 +1,38 @@
+{
+  "id": "AConv",
+  "name": "AConv",
+  "whatIsIt": {
+    "eli5": "Blurs a tiny bit, then makes the picture smaller.",
+    "simple": "YOLOv9's simple downsampling: 2×2 average pooling (stride 1), then a 3×3 stride-2 Conv.",
+    "engineer": "avg_pool2d(2, 1) → Conv(c1, c2, 3, 2, 1)."
+  },
+  "whyExists": {
+    "eli5": "A small blur before shrinking loses less.",
+    "simple": "Used in the small YOLOv9 models (t, s) instead of ADown.",
+    "engineer": "Anti-aliased strided conv."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Blur.",
+      "Shrink."
+    ],
+    "simple": [
+      "2×2 average pool.",
+      "3×3 Conv with stride 2."
+    ],
+    "engineer": [
+      "Output side = ⌊(H−1−1)/2⌋+1."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv9t uses it to go from 160 to 80.",
+    "simple": "YOLOv9t layer 3: → 64 channels at 80×80, 18,560 parameters.",
+    "engineer": "v9t #3 AConv(32, 64): 18,560 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    }
+  ]
+}

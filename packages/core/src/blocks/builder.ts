@@ -155,6 +155,15 @@ export class Builder {
     return this.push({ name, type: "avg_pool2d", kind: "prim", inputs: [x.id], out, params: 0, ops: 0, attrs: { k, s, p } });
   }
 
+  /** `nn.AvgPool2d` module (counted by thop: one add per input in a window + one divide per output). */
+  avgPoolModule(name: string, x: Ref, k: number, s = k): Ref {
+    const [c, h, w] = x.shape as [number, number, number];
+    const oh = convOut(h, k, s, 0), ow = convOut(w, k, s, 0);
+    const win = (size: number, o: number) => Array.from({ length: o }, (_, i) => Math.min(i * s + k, size) - i * s).reduce((a, v) => a + v, 0);
+    const out = [c, oh, ow];
+    return this.push({ name, type: "AvgPool2d", kind: "prim", inputs: [x.id], out, params: 0, ops: c * win(h, oh) * win(w, ow) + numel(out), attrs: { k, s } });
+  }
+
   adaptiveAvgPool(name: string, x: Ref): Ref {
     const out = [x.shape[0]!, 1, 1];
     return this.push({ name, type: "AdaptiveAvgPool2d", kind: "prim", inputs: [x.id], out, params: 0, ops: numel(x.shape) + numel(out) });

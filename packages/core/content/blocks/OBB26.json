@@ -1,0 +1,38 @@
+{
+  "id": "OBB26",
+  "name": "OBB26 head (YOLO26)",
+  "whatIsIt": {
+    "eli5": "YOLO26's turned-box head.",
+    "simple": "Like the OBB head with one-to-many and one-to-one copies and no DFL. It outputs the raw angle (no sigmoid mapping); YOLO26 adds a dedicated angle loss.",
+    "engineer": "OBB with Detect.forward_head + raw angle (no (σ−0.25)·π transform); reg_max = 1, end2end."
+  },
+  "whyExists": {
+    "eli5": "Better angle learning, simpler final answers.",
+    "simple": "Ultralytics says the angle loss and improved decoding fix problems at the angle boundaries.",
+    "engineer": "Angle loss + decoding to address boundary discontinuity (YOLO26 docs)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find boxes.",
+      "Guess how much each box is turned."
+    ],
+    "simple": [
+      "Box, class and angle branches (both copies).",
+      "Angle is used directly; the loss handles the wrap-around."
+    ],
+    "engineer": [
+      "ne = 1 angle channel per anchor."
+    ]
+  },
+  "example": {
+    "eli5": "YOLO26n-obb's head is small.",
+    "simple": "YOLO26n-obb head: 452,990 parameters of 2.72 M.",
+    "engineer": "26n-obb head 452,990 params."
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

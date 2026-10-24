@@ -1,0 +1,25 @@
+{
+  "id": "Identity",
+  "name": "Identity (no-op)",
+  "whatIsIt": {
+    "eli5": "Passes the picture on unchanged.",
+    "simple": "A placeholder layer that does nothing. YOLOv9-E's config starts with one so that layer 0 can be referenced by later layers.",
+    "engineer": "nn.Identity()."
+  },
+  "whyExists": {
+    "eli5": "It gives the input a number other layers can point to.",
+    "simple": "Later CBLinear/CBFuse rows need to reference the input image as a layer index.",
+    "engineer": "Index anchor for the dual-backbone graph."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Do nothing."
+    ],
+    "simple": [
+      "Output = input."
+    ],
+    "engineer": [
+      "y = x."
+    ]
+  }
+}

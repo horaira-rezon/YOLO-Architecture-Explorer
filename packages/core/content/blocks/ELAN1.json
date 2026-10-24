@@ -1,0 +1,35 @@
+{
+  "id": "ELAN1",
+  "name": "ELAN1",
+  "whatIsIt": {
+    "eli5": "A simple team that keeps every helper's work.",
+    "simple": "A light ELAN block in small YOLOv9 models: split, two 3×3 Convs in a row, join all four pieces.",
+    "engineer": "cv1 (1×1) → chunk(2) → cv2 Conv3×3 → cv3 Conv3×3 → cat[4] → cv4."
+  },
+  "whyExists": {
+    "eli5": "Cheap, but still keeps detail from each step.",
+    "simple": "A cheaper GELAN variant for the first stage of YOLOv9t/s.",
+    "engineer": "ELAN without inner CSP blocks."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "Two helpers in a row.",
+      "Join all."
+    ],
+    "simple": [
+      "Split after cv1.",
+      "Two 3×3 Convs on one half.",
+      "Join the 4 parts; cv4 (1×1)."
+    ],
+    "engineer": [
+      "YAML args: [c2, c3, c4]."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    }
+  ]
+}

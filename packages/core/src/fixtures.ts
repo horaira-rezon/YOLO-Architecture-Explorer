@@ -50,6 +50,7 @@ export function architectureFromFixture(fx: Fixture): Architecture {
     task: fx.task as Task,
     scale: scale && fx.yamlText.includes("scales:") ? scale : null,
     inputSize: fx.inputSize,
+    codebase: fx.source.repo.includes("iMoonLab/yolov13") ? "yolov13" : "ultralytics",
     meta: {
       source: { repo: fx.source.repo, file: fx.source.file, package: fx.source.package, packageVersion: fx.source.packageVersion, commit: fx.source.commit ?? null },
       confidence: "verified",

@@ -1,0 +1,29 @@
+{
+  "id": "RepBottleneck",
+  "name": "RepBottleneck",
+  "whatIsIt": {
+    "eli5": "A Bottleneck whose first helper has two windows that are merged later.",
+    "simple": "A Bottleneck whose first Conv is a RepConv (3×3 and 1×1 in parallel during training).",
+    "engineer": "Bottleneck with cv1 = RepConv(c1, c_, 3)."
+  },
+  "whyExists": {
+    "eli5": "Better learning, same speed afterwards.",
+    "simple": "The extra branch helps training; it is merged away for deployment.",
+    "engineer": "Re-parameterisable residual unit."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Two windows, added.",
+      "Then a normal helper.",
+      "Add back the start."
+    ],
+    "simple": [
+      "RepConv: 3×3 Conv+BN plus 1×1 Conv+BN, added, then SiLU.",
+      "3×3 Conv.",
+      "Residual add."
+    ],
+    "engineer": [
+      "Fusion: pad 1×1 to 3×3 and sum kernels/biases."
+    ]
+  }
+}

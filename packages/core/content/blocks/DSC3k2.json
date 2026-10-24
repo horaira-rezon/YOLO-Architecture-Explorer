@@ -1,0 +1,40 @@
+{
+  "id": "DSC3k2",
+  "name": "DS-C3k2",
+  "whatIsIt": {
+    "eli5": "YOLOv13's main team block, like YOLO11's C3k2 but with cheap pattern finders.",
+    "simple": "A C3k2 (C2f-style) block whose inner units are DS-Bottlenecks or DS-C3k blocks built from depthwise-separable convolutions with large (7×7) kernels.",
+    "engineer": "C2f with ModuleList[DSC3k(c, c, 2, e=1.0, k1=3, k2=7) if dsc3k else DSBottleneck(c, c, e=1.0, k1=3, k2=7)]."
+  },
+  "whyExists": {
+    "eli5": "Same team plan, fewer learned numbers.",
+    "simple": "The paper replaces standard blocks with depthwise-separable ones to cut parameters and FLOPs while keeping the receptive field large.",
+    "engineer": "Lightweight feature extraction (paper §3.4)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "Cheap helpers in a line.",
+      "Join and summarize."
+    ],
+    "simple": [
+      "cv1 (1×1) and split.",
+      "n DS-Bottleneck or DS-C3k units.",
+      "Join and cv2 (1×1)."
+    ],
+    "engineer": [
+      "dsc3k forced True for l/x by the fork's parse_model."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv13n layer 2 is very small.",
+    "simple": "YOLOv13n layer 2: 64 channels at 160×160, 5,792 parameters (YOLO11n's C3k2 at the same place: 6,640).",
+    "engineer": "13n #2 DSC3k2: 5,792 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

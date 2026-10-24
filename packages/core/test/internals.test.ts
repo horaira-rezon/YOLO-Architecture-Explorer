@@ -4,8 +4,7 @@ import { describe, expect, it } from "vitest";
 import { FixtureSchema, architectureFromFixture, blockGraph, computeArchitecture, flattenIR, parameterLeaves } from "../src";
 
 const DIR = join(__dirname, "..", "fixtures");
-const PENDING = /^(13\/|26\/(segment|pose|obb)-)/;
-const files = readdirSync(DIR).flatMap((v) => readdirSync(join(DIR, v)).map((f) => join(v, f))).filter((f) => !PENDING.test(f));
+const files = readdirSync(DIR).flatMap((v) => readdirSync(join(DIR, v)).map((f) => join(v, f)));
 
 interface Tree { name: string; type: string; ownParams?: number; children?: Tree[] }
 

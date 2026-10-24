@@ -1,0 +1,33 @@
+{
+  "id": "DSC3k",
+  "name": "DS-C3k",
+  "whatIsIt": {
+    "eli5": "A small team of cheap helpers.",
+    "simple": "A C3 block with DS-Bottlenecks.",
+    "engineer": "C3 with DSBottleneck units."
+  },
+  "whyExists": {
+    "eli5": "Cheap but deep.",
+    "simple": "Lightweight version of C3k.",
+    "engineer": "Depthwise-separable C3k."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split.",
+      "Helpers.",
+      "Join."
+    ],
+    "simple": [
+      "Two 1×1 branches, DS-Bottlenecks on one, join, 1×1."
+    ],
+    "engineer": [
+      "Used inside DSC3k2 (dsc3k=True) and HyperACE."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

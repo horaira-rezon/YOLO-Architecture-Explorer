@@ -1,0 +1,60 @@
+{
+  "id": "C2PSA",
+  "name": "C2PSA (CSP block with position-sensitive attention)",
+  "whatIsIt": {
+    "eli5": "A step where every spot of the small picture looks at all the other spots to understand the whole scene.",
+    "simple": "A block at the end of the YOLO11/YOLO26 backbone. It splits the map in two halves; one half goes through PSABlocks (self-attention plus a small feed-forward part), then both halves are joined.",
+    "engineer": "cv1 (1×1) → split (c, c) → n × PSABlock(c, attn_ratio=0.5, heads=c/64) on the second half → concat → cv2 (1×1). Requires c1 == c2."
+  },
+  "whyExists": {
+    "eli5": "Small patterns are not enough to tell a weed from a crop; sometimes the whole scene helps.",
+    "simple": "Convolutions only look at nearby pixels. Attention lets each cell use information from anywhere in the map. At stride 32 the map is small (20×20), so attention is affordable there.",
+    "engineer": "Global context via MHSA where N = H·W is small (400 at 640 input); the CSP split halves the attention width and cost."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Cut the notes into two piles.",
+      "One pile: every spot checks every other spot and borrows useful notes.",
+      "Join the piles and summarize."
+    ],
+    "simple": [
+      "cv1 makes 2c channels and splits them in half.",
+      "Each PSABlock: attention (every position mixes information from all positions), then a small 2-layer feed-forward network; both with shortcuts.",
+      "The untouched half and the attended half are joined and mixed by cv2."
+    ],
+    "engineer": [
+      "Attention: qkv 1×1 conv, key_dim = head_dim·0.5, softmax(qᵀk·scale), v·attn, plus a 3×3 depthwise positional conv on v, then proj.",
+      "FFN: Conv(c, 2c) → Conv(2c, c, act=False).",
+      "Cost O(N²) in positions, so only used at P5."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLO11n it works on a 20×20 picture with 256 layers of notes.",
+    "simple": "YOLO11n layer 10: 256 → 256 channels at 20×20 (400 positions), one PSABlock with 2 heads, 249,728 parameters.",
+    "engineer": "11n #10 C2PSA(256, 256, n=1): c = 128, heads = 2, 249,728 params."
+  },
+  "typicalPositions": {
+    "eli5": "At the very end of the backbone.",
+    "simple": "Right after SPPF at the end of the backbone (YOLO11, YOLO26).",
+    "engineer": "Backbone tail at P5/32."
+  },
+  "tradeoffs": {
+    "eli5": "Looking everywhere costs a lot on big pictures.",
+    "simple": "Attention cost grows with the square of the number of positions, so it would be very expensive on the larger P3 map.",
+    "engineer": "O((HW)²·d) matmuls; prefer area/window attention at higher resolution."
+  },
+  "math": [
+    "\\mathrm{Attn}(Q,K,V)=\\mathrm{softmax}\\!\\left(\\frac{QK^\\top}{\\sqrt{d_k}}\\right)V"
+  ],
+  "pytorch": "class C2PSA(nn.Module):\n    def __init__(self, c1, c2, n=1, e=0.5):\n        super().__init__()\n        self.c = int(c1 * e)\n        self.cv1 = Conv(c1, 2 * self.c, 1, 1)\n        self.cv2 = Conv(2 * self.c, c1, 1)\n        self.m = nn.Sequential(*(PSABlock(self.c, attn_ratio=0.5, num_heads=self.c // 64) for _ in range(n)))\n\n    def forward(self, x):\n        a, b = self.cv1(x).split((self.c, self.c), dim=1)\n        return self.cv2(torch.cat((a, self.m(b)), 1))",
+  "references": [
+    {
+      "label": "Ultralytics block.py",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/nn/modules/block.py"
+    },
+    {
+      "label": "Attention Is All You Need",
+      "url": "https://arxiv.org/abs/1706.03762"
+    }
+  ]
+}

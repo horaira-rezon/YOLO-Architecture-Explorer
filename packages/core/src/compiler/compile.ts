@@ -9,6 +9,7 @@ export interface CompileOptions {
   inputSize?: number;
   meta: Architecture["meta"];
   id?: string;
+  codebase?: "ultralytics" | "yolov13";
 }
 
 /** Turn YAML `from` (relative/absolute indices) into node ids. Layer 0 with -1 reads the image. */
@@ -21,7 +22,11 @@ export function resolveFrom(from: number | number[], index: number): string[] {
   });
 }
 
-export function defaultTraining(model: Pick<YamlModel, "regMax" | "end2end">, hasDualHead: boolean, task: Task): Training {
+/**
+ * Training-side items for the diagram's training lane. Loss names and gains follow ultralytics/utils/loss.py and
+ * cfg/default.yaml (8.4.x); version-specific items follow the official docs/papers.
+ */
+export function defaultTraining(model: Pick<YamlModel, "regMax" | "end2end">, hasDualHead: boolean, task: Task, version = ""): Training {
   const regMax = model.regMax ?? 16;
   if (task === "classify") return { losses: [{ id: "cls", kind: "CrossEntropy" }], assigner: "none", extras: [] };
   const losses: Training["losses"] = [
@@ -29,11 +34,21 @@ export function defaultTraining(model: Pick<YamlModel, "regMax" | "end2end">, ha
     { id: "box", kind: "CIoU", weight: 7.5 },
   ];
   if (regMax > 1) losses.push({ id: "dfl", kind: "DFL", weight: 1.5 });
+  else losses.push({ id: "l1", kind: "L1", weight: 1.5, note: "replaces DFL when reg_max = 1" });
   if (task === "segment") losses.push({ id: "mask", kind: "MaskBCE" });
   if (task === "pose") losses.push({ id: "pose", kind: "KeypointOKS" }, { id: "kobj", kind: "KeypointVisibilityBCE" });
   if (task === "obb") losses.splice(1, 1, { id: "box", kind: "ProbIoU", weight: 7.5 });
   const e2e = hasDualHead || !!model.end2end;
-  return { losses, assigner: e2e ? "TAL (one-to-many) + one-to-one" : "TAL", extras: [] };
+  const extras: string[] = [];
+  if (version === "26") {
+    if (task === "segment") losses.push({ id: "sem", kind: "SemanticSeg" });
+    if (task === "pose") losses.push({ id: "rle", kind: "RLE", weight: 1.0 });
+    if (task === "obb") losses.push({ id: "angle", kind: "Angle", weight: 1.0 });
+    extras.push("ProgLoss", "MuSGD");
+    return { losses, assigner: "TAL with STAL (one-to-many) + one-to-one", extras };
+  }
+  if (version === "v9") extras.push("PGI");
+  return { losses, assigner: e2e ? "TAL (one-to-many) + one-to-one" : "TAL", extras };
 }
 
 export function defaultPostprocess(endToEnd: boolean, task: Task): Postprocess {
@@ -54,6 +69,9 @@ function rowToNode(row: YamlLayer, index: number, section: "backbone" | "head"):
     comment: row.comment,
   };
 }
+
+/** Modules that only exist in the YOLOv13 fork; a YAML using them follows that fork's parse_model rules. */
+const YOLOV13_ONLY = new Set(["HyperACE", "FullPAD_Tunnel", "DSC3k2", "DSConv", "DownsampleConv"]);
 
 export function compileModel(model: YamlModel, opts: CompileOptions): Architecture {
   const rows: [YamlLayer, "backbone" | "head"][] = [
@@ -83,10 +101,11 @@ export function compileModel(model: YamlModel, opts: CompileOptions): Architectu
       end2end: model.end2end,
       kptShape: model.kptShape,
       activation: model.activation,
+      codebase: opts.codebase ?? (nodes.some((n) => YOLOV13_ONLY.has(n.module)) ? "yolov13" : "ultralytics"),
       extra: model.extra,
     },
     nodes,
-    training: defaultTraining(model, hasDual, opts.task),
+    training: defaultTraining(model, hasDual, opts.task, opts.version),
     postprocess: defaultPostprocess(endToEnd, opts.task),
     meta: opts.meta,
     nextId: nodes.length,

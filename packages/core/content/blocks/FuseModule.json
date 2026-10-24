@@ -1,0 +1,35 @@
+{
+  "id": "FuseModule",
+  "name": "FuseModule (HyperACE input fusion)",
+  "whatIsIt": {
+    "eli5": "Brings three map sizes to the middle size and stacks them.",
+    "simple": "Average-pools P3 down by 2, upsamples P5 by 2, joins them with P4 and mixes with a 1×1 Conv.",
+    "engineer": "cat[AvgPool2d(2)(P3), P4, Upsample(2)(P5)] → Conv1×1(→c_in)."
+  },
+  "whyExists": {
+    "eli5": "The group finder needs all sizes together.",
+    "simple": "HyperACE treats pixels from all three scales as vertices of one hypergraph.",
+    "engineer": "Cross-scale alignment."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Shrink the big one.",
+      "Grow the small one.",
+      "Stack all three."
+    ],
+    "simple": [
+      "2×2 average pool on P3.",
+      "×2 nearest upsample on P5.",
+      "Concat with P4; 1×1 Conv."
+    ],
+    "engineer": [
+      "channel_adjust=False (l/x) when the three widths are equal: 3·c_in input."
+    ]
+  },
+  "references": [
+    {
+      "label": "iMoonLab/yolov13 code",
+      "url": "https://github.com/iMoonLab/yolov13"
+    }
+  ]
+}

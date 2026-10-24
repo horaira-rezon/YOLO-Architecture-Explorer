@@ -1,0 +1,39 @@
+{
+  "id": "AdaHGConv",
+  "name": "AdaHGConv (adaptive hypergraph convolution)",
+  "whatIsIt": {
+    "eli5": "Pixels send notes to their groups; groups send combined notes back.",
+    "simple": "One round of hypergraph message passing: pixels → hyperedges → pixels, with a residual shortcut.",
+    "engineer": "A = AdaHyperedgeGen(X) (N×E); He = GELU(Lin(AᵀX)); X' = GELU(Lin(A·He)) + X."
+  },
+  "whyExists": {
+    "eli5": "So far-apart pixels in the same group can share knowledge.",
+    "simple": "Two matrix products give every pixel information from all pixels in its groups, at a cost linear in the number of pixels.",
+    "engineer": "O(N·E·d) instead of O(N²·d)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Each group gathers notes from its pixels.",
+      "Each pixel gets back notes from its groups.",
+      "Add to the old notes."
+    ],
+    "simple": [
+      "Membership A from the generator.",
+      "Hyperedge features = Aᵀ × pixels, then Linear + GELU.",
+      "New pixel features = A × hyperedge features, then Linear + GELU.",
+      "Add the input."
+    ],
+    "engineer": [
+      "E = hyperedge count (4–12 per scale)."
+    ]
+  },
+  "math": [
+    "H_e = \\mathrm{GELU}(W_e A^\\top X),\\quad X' = \\mathrm{GELU}(W_v A H_e) + X"
+  ],
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

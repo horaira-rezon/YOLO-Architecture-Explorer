@@ -1,0 +1,43 @@
+{
+  "id": "Segment26",
+  "name": "Segment26 head (YOLO26)",
+  "whatIsIt": {
+    "eli5": "YOLO26's shape-colouring head. It finds boxes like the detect head and also builds shape pictures from all map sizes.",
+    "simple": "Like the Segment head, but the prototype maker (Proto26) uses all three neck maps, not just P3, and there is an extra semantic-segmentation branch used only while training. Like all YOLO26 heads it has one-to-many and one-to-one copies and no DFL.",
+    "engineer": "Segment with Proto26(ch, npr, nm, nc): feat_refine 1×1 convs + nearest upsampling add P4/P5 into P3, feat_fuse 3×3, then Proto; semseg branch (training only). reg_max = 1, end2end = True."
+  },
+  "whyExists": {
+    "eli5": "Using all sizes helps draw cleaner shapes.",
+    "simple": "Ultralytics describes an upgraded proto module that uses multi-scale information for better masks, and a semantic segmentation loss that helps training converge.",
+    "engineer": "Multi-scale prototype features + auxiliary semantic loss (YOLO26 docs)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find boxes as usual.",
+      "Mix all map sizes into one detailed map.",
+      "Make shape pictures from it.",
+      "Mix shape pictures per object."
+    ],
+    "simple": [
+      "Box, class and mask-coefficient branches (cv2, cv3, cv4) for both copies.",
+      "Proto26: P4 and P5 are projected to P3's width, enlarged and added to P3.",
+      "3×3 Conv, then the usual Proto steps (Conv, ×2 transposed conv, Conv, Conv) → 32 prototypes at stride 4.",
+      "Training only: a small branch predicts a class for every pixel (semantic loss)."
+    ],
+    "engineer": [
+      "semseg = Conv3×3 → Conv3×3 → Conv2d(npr, nc) on the fused P3 map; dropped at fuse/export.",
+      "Outputs (eval): boxes [4, A], scores [nc, A], mask_coefficient [32, A], proto [32, H/4, W/4]."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLO26n-seg the head has about 0.86 million learned numbers.",
+    "simple": "YOLO26n-seg head: 863,656 parameters of 3.13 M total.",
+    "engineer": "26n-seg head: 863,656 params; total 3,126,280."
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

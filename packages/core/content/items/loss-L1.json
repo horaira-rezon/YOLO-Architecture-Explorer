@@ -1,0 +1,32 @@
+{
+  "id": "loss-L1",
+  "name": "Box distance loss (L1)",
+  "whatIsIt": {
+    "eli5": "Grades how far off each box side is, by simple distance.",
+    "simple": "With DFL removed (YOLO26), the box branch predicts the four side distances directly and an L1 loss compares them with the true distances. Weight 1.5 (the same 'dfl' gain).",
+    "engineer": "L1 on the 4 regressed distances; used instead of DFL when reg_max = 1."
+  },
+  "whyExists": {
+    "eli5": "Without the 16 votes, a direct distance check is needed.",
+    "simple": "Keeps a direct distance signal next to the CIoU overlap loss.",
+    "engineer": "Complements IoU-based loss with a coordinate-level target."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Measure each side's error.",
+      "Add them up."
+    ],
+    "simple": [
+      "|predicted − true| for each side, summed."
+    ],
+    "engineer": [
+      "Ultralytics loss_names: 'l1_loss' when not use_dfl."
+    ]
+  },
+  "references": [
+    {
+      "label": "Ultralytics loss.py",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/utils/loss.py"
+    }
+  ]
+}

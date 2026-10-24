@@ -1,0 +1,35 @@
+{
+  "id": "AdaHGComputation",
+  "name": "AdaHGComputation",
+  "whatIsIt": {
+    "eli5": "Turns the map into a list of pixels, lets the groups work, and turns it back into a map.",
+    "simple": "Flattens the map into tokens (one per pixel), runs adaptive hypergraph convolution, reshapes back.",
+    "engineer": "tokens = flatten(x)ᵀ (N×C) → AdaHGConv → reshape C×H×W."
+  },
+  "whyExists": {
+    "eli5": "The group finder works on a list of pixels.",
+    "simple": "Hypergraph operations act on sets of vertices (pixels).",
+    "engineer": "Token view for hypergraph ops."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Make a list.",
+      "Find groups and share.",
+      "Make a map again."
+    ],
+    "simple": [
+      "Flatten to N tokens.",
+      "Hypergraph conv.",
+      "Reshape back."
+    ],
+    "engineer": [
+      "N = H·W."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

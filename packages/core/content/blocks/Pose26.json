@@ -1,0 +1,45 @@
+{
+  "id": "Pose26",
+  "name": "Pose26 head (YOLO26, RLE)",
+  "whatIsIt": {
+    "eli5": "YOLO26's body-point head. It also learns how sure it is about each point while training.",
+    "simple": "Like the Pose head, with one-to-many and one-to-one copies and no DFL. The keypoint branch first makes shared features, then one 1×1 Conv gives the points and (only in training) another gives an uncertainty for each point. A tiny flow network (RealNVP) is used by the RLE loss in training.",
+    "engineer": "cv4 = Conv3×3 → Conv3×3 (c4 = max(ch0/4, K·(D+2))); cv4_kpts Conv2d(c4, K·D); cv4_sigma Conv2d(c4, 2K) (training); flow_model RealNVP (training, RLE)."
+  },
+  "whyExists": {
+    "eli5": "Knowing how sure it is helps the model learn points better.",
+    "simple": "Residual Log-Likelihood Estimation models the error of each keypoint as a learned distribution, which Ultralytics says improves keypoint accuracy.",
+    "engineer": "RLE (Li et al., 2021) with a normalising flow over residuals; sigma/flow are training-only."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Find boxes as usual.",
+      "Make point notes.",
+      "Guess each point; while learning, also guess how sure."
+    ],
+    "simple": [
+      "Box and class branches as usual (both copies).",
+      "cv4 makes per-level keypoint features.",
+      "cv4_kpts predicts x, y, visibility for each keypoint.",
+      "Training only: cv4_sigma predicts an uncertainty per keypoint; RealNVP turns it into a likelihood for the loss."
+    ],
+    "engineer": [
+      "Inference outputs: boxes, scores, kpts [K·D, A]; kpts_sigma only when training."
+    ]
+  },
+  "example": {
+    "eli5": "For people: 17 points × 3 numbers = 51 numbers per guess.",
+    "simple": "YOLO26n-pose head: 1,484,930 parameters (includes training-only parts).",
+    "engineer": "26n-pose head: 1,484,930 params; total 3,747,554."
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    },
+    {
+      "label": "RLE paper",
+      "url": "https://arxiv.org/abs/2107.11291"
+    }
+  ]
+}

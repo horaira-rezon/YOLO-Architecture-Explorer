@@ -42,3 +42,18 @@ test("zoom levels, inside view, keyboard, search and walkthrough", async ({ page
   await page.getByTestId("walk-next").click();
   await expect(page.getByTestId("walkthrough")).toContainText("16 channels at 320×320");
 });
+
+test("version picker, data source and compare mode", async ({ page }) => {
+  await page.goto("/versions/detect");
+  await expect(page.getByText("announced, not released")).toBeVisible();
+  await page.getByTestId("version-13").click();
+  await expect(page.getByTestId("node-n9")).toBeVisible(); // HyperACE
+  await page.getByTestId("provenance").click();
+  await expect(page.getByTestId("provenance-popover")).toContainText("iMoonLab/yolov13");
+  await page.keyboard.press("Escape");
+  await page.goto("/compare/detect?a=v8&b=11");
+  await expect(page.getByTestId("compare-summary")).toContainText("New: C3k2");
+  await expect(page.getByTestId("compare-summary")).toContainText("New: C2PSA");
+  await page.goto("/versions/pose");
+  await expect(page.getByText("YOLOv10 is an object-detection model")).toBeVisible();
+});

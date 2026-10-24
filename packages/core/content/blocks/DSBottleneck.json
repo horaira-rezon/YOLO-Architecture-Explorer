@@ -1,0 +1,35 @@
+{
+  "id": "DSBottleneck",
+  "name": "DS-Bottleneck",
+  "whatIsIt": {
+    "eli5": "Two cheap pattern finders in a row, plus a shortcut.",
+    "simple": "A Bottleneck built from two DSConvs (3×3 then 5×5 or 7×7 kernels), with a residual add.",
+    "engineer": "DSConv(k1) → DSConv(k2, d2), residual if c1 == c2."
+  },
+  "whyExists": {
+    "eli5": "Big windows for little cost.",
+    "simple": "Depthwise-separable convs make large kernels affordable.",
+    "engineer": "Large receptive field at low cost."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look.",
+      "Look wider.",
+      "Add back the start."
+    ],
+    "simple": [
+      "DSConv 3×3.",
+      "DSConv 7×7 (in DS-C3k2).",
+      "Residual add."
+    ],
+    "engineer": [
+      "k1 = 3, k2 = 7 in DSC3k2 by default."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

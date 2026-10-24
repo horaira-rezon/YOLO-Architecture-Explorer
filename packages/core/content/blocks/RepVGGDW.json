@@ -1,0 +1,28 @@
+{
+  "id": "RepVGGDW",
+  "name": "RepVGGDW (large-kernel depthwise, re-parameterisable)",
+  "whatIsIt": {
+    "eli5": "Two looking windows, one big and one small, that are merged into one after learning.",
+    "simple": "A 7×7 and a 3×3 depthwise convolution run in parallel and are added; after training they are merged into a single 7×7 kernel.",
+    "engineer": "act(BN(DW7×7(x)) + BN(DW3×3(x))); fused to one DW7×7 with bias."
+  },
+  "whyExists": {
+    "eli5": "The big window sees far; the small one helps learning.",
+    "simple": "A large kernel gives a wide view cheaply; the extra 3×3 branch helps training and costs nothing after merging.",
+    "engineer": "Structural re-parameterisation of large-kernel DW convs."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look with a big window and a small window.",
+      "Add the results."
+    ],
+    "simple": [
+      "7×7 depthwise conv + BN.",
+      "3×3 depthwise conv + BN.",
+      "Add, then SiLU."
+    ],
+    "engineer": [
+      "Fusion pads the 3×3 kernel to 7×7 and adds kernels and biases."
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "prim-AvgPool2d",
+  "name": "AvgPool2d",
+  "whatIsIt": {
+    "eli5": "Averages each 2×2 square, making the picture half as big.",
+    "simple": "Average pooling as a module: each output is the mean of a k×k window (k = 2, stride 2 here).",
+    "engineer": "nn.AvgPool2d(2); thop counts one add per input and one divide per output."
+  },
+  "whyExists": {
+    "eli5": "A smooth way to shrink.",
+    "simple": "Downsamples without learned weights, keeping an average instead of the maximum.",
+    "engineer": "Parameter-free smooth downsampling."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Average each little square."
+    ],
+    "simple": [
+      "Mean of each 2×2 window."
+    ],
+    "engineer": [
+      "Output H/2 × W/2."
+    ]
+  }
+}

@@ -56,3 +56,15 @@ L2/L3 (block parts, primitive operations) open as a separate canvas for the chos
 
 ## D17 — Playwright runs its own Vite server on port 5174
 So E2E runs never collide with a dev server the user has open on 5173.
+
+## D18 — "Codebase" for parse_model rules (YOLOv13)
+The YOLOv13 fork's `parse_model` differs from mainline Ultralytics 8.4: A2C2f gets `mlp_ratio = 1.5` (mainline 1.2) for l/x, C3k2/DSC3k2 switch only for l/x, Detect has no reg_max/end2end args, and HyperACE/DownsampleConv/FullPAD_Tunnel have their own rules. `config.codebase` ("ultralytics" | "yolov13") selects the rules; it is inferred from fork-only modules when a YAML is imported. All four YOLOv13 fixtures match exactly.
+
+## D19 — Training lane is version-specific and sourced from code
+Loss names/gains come from `ultralytics/utils/loss.py` + `cfg/default.yaml` (8.4.x): BCE 0.5, CIoU 7.5, DFL 1.5 — or L1 1.5 when reg_max = 1 (YOLO26). YOLO26 adds RLE (pose), angle (OBB) and semantic (seg) losses, STAL in the assigner, Progressive Loss (o2m weight 0.8 → 0.1, `E2ELoss.decay`) and MuSGD. YOLOv9's PGI is shown as "paper only": the Ultralytics configs have no auxiliary branch.
+
+## D20 — YOLO26 post-processing default
+The YAML sets `end2end: True`, so the diagram shows the NMS-free one-to-one path. The catalogue note quotes the docs: both heads are trained and the one-to-many + NMS path is also available.
+
+## D21 — Content QA covers everything a learner can click
+Besides blocks in shipped YAMLs, QA builds every shipped model and requires content for every sub-block and operation that appears at L2/L3, and for every loss, assigner and training extra.

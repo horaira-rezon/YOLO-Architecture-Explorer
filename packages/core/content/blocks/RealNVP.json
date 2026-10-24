@@ -1,0 +1,27 @@
+{
+  "id": "RealNVP",
+  "name": "RealNVP (normalising flow, training only)",
+  "whatIsIt": {
+    "eli5": "A tiny helper used only while learning, to judge how likely each point mistake is.",
+    "simple": "A small normalising-flow network (6 coupling layers of tiny MLPs) that the RLE keypoint loss uses to measure how likely an error is.",
+    "engineer": "6 affine coupling layers on 2-D residuals; s-nets (Linear 2→64→64→2, Tanh), t-nets (same, no Tanh); log_prob for the RLE loss."
+  },
+  "whyExists": {
+    "eli5": "It makes the point grading smarter.",
+    "simple": "Lets the loss learn the real shape of keypoint errors instead of assuming a fixed one.",
+    "engineer": "Learned residual density for RLE."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at the point mistake.",
+      "Say how likely such a mistake is."
+    ],
+    "simple": [
+      "Transforms the 2-D error through 6 small layers.",
+      "Computes its log-likelihood under a normal distribution."
+    ],
+    "engineer": [
+      "Not executed at inference; its 53,784 params are counted in model.info()."
+    ]
+  }
+}

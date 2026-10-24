@@ -11,6 +11,7 @@ export function VersionPickerPage() {
       <p className="text-sm text-muted"><Link to="/" className="underline">Tasks</Link> › {t?.label}</p>
       <h1 className="mt-1 text-2xl font-semibold">Pick a YOLO version</h1>
       <p className="mt-1 text-muted">Newer is not always better for your case. Each card says what the version changed.</p>
+      <Link to={`/compare/${task}`} className="mt-3 inline-block rounded border border-border px-3 py-1.5 text-sm hover:bg-surface-2" data-testid="compare-link">Compare two versions</Link>
       <ol className="relative mt-8 space-y-4 border-l-2 border-border pl-6" aria-label="YOLO versions over time">
         {VERSIONS.map((v) => {
           const sup = v.tasks[task as Task];

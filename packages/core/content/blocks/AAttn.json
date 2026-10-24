@@ -1,0 +1,41 @@
+{
+  "id": "AAttn",
+  "name": "AAttn (area attention)",
+  "whatIsIt": {
+    "eli5": "The map is cut into a few strips; inside each strip, every spot looks at every other spot.",
+    "simple": "Self-attention where the positions are first split into `area` equal groups (strips), and attention runs only inside each group. A 7×7 depthwise conv adds position information.",
+    "engineer": "qkv = Conv1×1(dim→3·dim); reshape to (B·area, N/area, ·); softmax(qᵀk/√d)·v per head; + PE (DW7×7 on v); proj Conv1×1."
+  },
+  "whyExists": {
+    "eli5": "Looking everywhere is costly; strips keep most of the benefit for much less work.",
+    "simple": "Splitting into l areas cuts the attention cost by about l times while each area is still large, so the field of view stays big.",
+    "engineer": "Cost O(N²d/l) vs O(N²d); simple reshape, no window shifting (paper §3.2)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Cut the map into strips.",
+      "Inside each strip, spots compare with each other.",
+      "Each spot gathers notes from good matches."
+    ],
+    "simple": [
+      "1×1 Conv makes queries, keys and values.",
+      "Positions are grouped into `area` strips.",
+      "Attention scores and mixing happen inside each strip.",
+      "A 7×7 depthwise conv on the values adds a sense of position (no positional encoding needed).",
+      "1×1 Conv projects back."
+    ],
+    "engineer": [
+      "Heads = dim/32 in A2C2f.",
+      "YOLOv13's fork uses an older AAttn: separate qk and v convs and a 5×5 positional conv."
+    ]
+  },
+  "math": [
+    "\\mathrm{Attn}_a = \\mathrm{softmax}\\!\\left(\\frac{Q_a K_a^\\top}{\\sqrt{d}}\\right)V_a,\\quad a = 1..l"
+  ],
+  "references": [
+    {
+      "label": "YOLO12 paper",
+      "url": "https://arxiv.org/abs/2502.12524"
+    }
+  ]
+}

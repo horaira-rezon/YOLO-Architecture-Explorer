@@ -1,0 +1,25 @@
+{
+  "id": "prim-GELU",
+  "name": "GELU",
+  "whatIsIt": {
+    "eli5": "A smooth switch, like SiLU.",
+    "simple": "A smooth activation used in transformer-style layers.",
+    "engineer": "GELU(x) = x·Φ(x)."
+  },
+  "whyExists": {
+    "eli5": "Lets layers learn curvy shapes.",
+    "simple": "Standard nonlinearity in attention MLPs.",
+    "engineer": "Smooth gating."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Quiet small signals smoothly."
+    ],
+    "simple": [
+      "Multiply x by the chance a normal value is below x."
+    ],
+    "engineer": [
+      "Elementwise; not counted by thop."
+    ]
+  }
+}

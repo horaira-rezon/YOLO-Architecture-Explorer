@@ -1,0 +1,34 @@
+{
+  "id": "ABlock",
+  "name": "ABlock (area-attention block)",
+  "whatIsIt": {
+    "eli5": "Spots look at others in the same strip, then think a little on their own.",
+    "simple": "Area attention followed by a small MLP (two 1×1 Convs), each with a shortcut.",
+    "engineer": "x = x + AAttn(x); x = x + MLP(x), MLP = Conv(dim, dim·r) → Conv(dim·r, dim, act=False)."
+  },
+  "whyExists": {
+    "eli5": "Looking around plus thinking alone is the standard recipe.",
+    "simple": "The transformer pattern adapted to YOLO12's area attention.",
+    "engineer": "Transformer block with convolutional MLP."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look around inside the strip.",
+      "Add it.",
+      "Think and add again."
+    ],
+    "simple": [
+      "Area attention with shortcut.",
+      "MLP with shortcut."
+    ],
+    "engineer": [
+      "No LayerNorm; BN inside the Conv projections."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLO12 paper",
+      "url": "https://arxiv.org/abs/2502.12524"
+    }
+  ]
+}

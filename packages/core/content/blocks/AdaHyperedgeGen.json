@@ -1,0 +1,36 @@
+{
+  "id": "AdaHyperedgeGen",
+  "name": "AdaHyperedgeGen (adaptive hyperedge generator)",
+  "whatIsIt": {
+    "eli5": "Decides which groups exist for this picture and how much each pixel belongs to each group.",
+    "simple": "Builds hyperedge prototypes from learned base vectors plus offsets computed from the whole image (mean and max), then scores every pixel against every prototype (multi-head) and softmaxes over pixels.",
+    "engineer": "protos = P_base + Lin([mean(X)‖max(X)]); logits = mean_h((X W_h)(protos_h)ᵀ/√d_h); A = softmax_N(dropout(logits))."
+  },
+  "whyExists": {
+    "eli5": "Different pictures need different groups.",
+    "simple": "Hyperedges adapt to the content instead of being fixed.",
+    "engineer": "Content-adaptive hyperedge construction (paper §3.2)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at the whole picture.",
+      "Adjust a few group ideas.",
+      "Score each pixel against each group."
+    ],
+    "simple": [
+      "Average and max over all pixels → context.",
+      "Context → offsets added to learned prototypes.",
+      "Project pixels; compare with prototypes per head; average heads.",
+      "Softmax gives memberships."
+    ],
+    "engineer": [
+      "Dropout 0.1 on logits (identity at inference)."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "id": "extra-MuSGD",
+  "name": "MuSGD optimizer (YOLO26)",
+  "whatIsIt": {
+    "eli5": "The rule for nudging the model's numbers, borrowing a trick from big language models.",
+    "simple": "An optimizer that combines SGD with Muon. Ultralytics' 'auto' optimizer picks MuSGD for long trainings (more than 10,000 iterations) and AdamW for short ones.",
+    "engineer": "Hybrid SGD + Muon (orthogonalised momentum updates); trainer 'auto' → MuSGD(lr 0.01, momentum 0.9) if iterations > 10k."
+  },
+  "whyExists": {
+    "eli5": "Steadier learning.",
+    "simple": "Ultralytics says it stabilises training and converges faster.",
+    "engineer": "LLM-inspired optimiser for CV (YOLO26 docs)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at which way to nudge.",
+      "Nudge in a balanced way."
+    ],
+    "simple": [
+      "Muon-style updates for weight matrices, SGD for the rest."
+    ],
+    "engineer": [
+      "ultralytics/optim MuSGD; selection logic in engine/trainer.py."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLO26 docs",
+      "url": "https://docs.ultralytics.com/models/yolo26/"
+    }
+  ]
+}

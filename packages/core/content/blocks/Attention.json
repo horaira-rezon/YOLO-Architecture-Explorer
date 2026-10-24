@@ -1,0 +1,35 @@
+{
+  "id": "Attention",
+  "name": "Attention (multi-head self-attention)",
+  "whatIsIt": {
+    "eli5": "Each spot asks every other spot 'are you useful to me?' and collects notes from the useful ones.",
+    "simple": "Multi-head self-attention on a feature map: each position makes a query, a key and a value; the query–key similarity decides how much of each value to take.",
+    "engineer": "qkv = Conv1×1(dim → dim + 2·nh·key_dim); attn = softmax(qᵀk·key_dim^−½); out = v·attnᵀ + PE(v) (3×3 depthwise); proj Conv1×1."
+  },
+  "whyExists": {
+    "eli5": "Some clues are far away in the picture.",
+    "simple": "It gives every position a view of the whole map, not just its neighbours.",
+    "engineer": "Global receptive field in one layer."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Each spot writes a question and a label.",
+      "Questions are matched with labels everywhere.",
+      "Each spot gathers notes from good matches."
+    ],
+    "simple": [
+      "A 1×1 Conv makes queries, keys and values (split into heads).",
+      "Scores = queries × keys for every pair of positions.",
+      "Softmax turns scores into weights.",
+      "Weights × values = mixed features; a 3×3 depthwise conv on the values adds position information.",
+      "A final 1×1 Conv mixes the heads."
+    ],
+    "engineer": [
+      "key_dim = (dim/heads)·attn_ratio; scores are N×N per head.",
+      "Counted by thop via functional matmul ops."
+    ]
+  },
+  "math": [
+    "\\mathrm{softmax}\\!\\left(\\frac{q^\\top k}{\\sqrt{d_k}}\\right)"
+  ]
+}

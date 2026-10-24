@@ -1,0 +1,46 @@
+{
+  "id": "RepNCSPELAN4",
+  "name": "RepNCSPELAN4 (GELAN block)",
+  "whatIsIt": {
+    "eli5": "A team that keeps every helper's work: notes go through two helper groups one after the other, and all piles are joined at the end.",
+    "simple": "YOLOv9's main block (the GELAN idea). It splits the input, sends one part through two stages (each: a RepCSP block then a 3×3 Conv), and joins the two original halves with both stage outputs.",
+    "engineer": "cv1 (1×1, c3) → chunk(2) → cv2 = Seq(RepCSP(c3/2→c4, n), Conv3×3) → cv3 = Seq(RepCSP(c4, n), Conv3×3) → cat[c3/2, c3/2, c4, c4] → cv4 (1×1, c2)."
+  },
+  "whyExists": {
+    "eli5": "Saving every step's work helps learning and keeps details.",
+    "simple": "Generalized ELAN: aggregating outputs from several depths gives a rich mix of features and good gradient paths, and any block can be plugged in (here RepCSP).",
+    "engineer": "GELAN (paper §4.2): ELAN-style aggregation generalised to arbitrary computational blocks for parameter efficiency."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Rewrite and split the notes.",
+      "Pass one pile through two helper groups.",
+      "Join everything and summarize."
+    ],
+    "simple": [
+      "cv1 (1×1) to c3 channels, split in half.",
+      "Stage 1: RepCSP + 3×3 Conv → c4 channels.",
+      "Stage 2: RepCSP + 3×3 Conv → c4 channels.",
+      "Join both halves and both stage outputs; cv4 (1×1)."
+    ],
+    "engineer": [
+      "RepCSP = C3 with RepBottlenecks (RepConv 3×3 + 1×1 branches, fused at export).",
+      "YAML args: [c2, c3, c4, n]."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv9t layer 4 works on an 80×80 picture.",
+    "simple": "YOLOv9t layer 4: 64 channels at 80×80, c3 = 64, c4 = 32, n = 1 (3 × depth), 65,216 parameters.",
+    "engineer": "v9t #4 RepNCSPELAN4(64, 64, 64, 32, 1): 65,216 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    },
+    {
+      "label": "Ultralytics YOLOv9 docs",
+      "url": "https://docs.ultralytics.com/models/yolov9/"
+    }
+  ]
+}

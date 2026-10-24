@@ -1,0 +1,32 @@
+{
+  "id": "extra-ProgLoss",
+  "name": "Progressive Loss (YOLO26)",
+  "whatIsIt": {
+    "eli5": "A learning plan: at first the many-helpers copy counts most, and slowly the one-answer copy takes over.",
+    "simple": "During training the total loss mixes the one-to-many and one-to-one heads; the one-to-many weight starts at 0.8 and falls linearly to 0.1 by the last epoch.",
+    "engineer": "L = w·L_o2m + (1−w)·L_o2o, w: 0.8 → 0.1 linearly over epochs (E2ELoss.decay)."
+  },
+  "whyExists": {
+    "eli5": "Learn easily first, then focus on the final answers.",
+    "simple": "Ultralytics: shifts training emphasis toward the head used at inference.",
+    "engineer": "Curriculum from dense to sparse supervision."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Start with lots of help.",
+      "Slowly switch to the final-answer copy."
+    ],
+    "simple": [
+      "Each epoch, lower the one-to-many weight a little."
+    ],
+    "engineer": [
+      "Implemented in ultralytics/utils/loss.py E2ELoss (update/decay)."
+    ]
+  },
+  "references": [
+    {
+      "label": "Ultralytics loss.py",
+      "url": "https://github.com/ultralytics/ultralytics/blob/main/ultralytics/utils/loss.py"
+    }
+  ]
+}

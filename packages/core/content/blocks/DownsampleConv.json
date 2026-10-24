@@ -1,0 +1,33 @@
+{
+  "id": "DownsampleConv",
+  "name": "DownsampleConv",
+  "whatIsIt": {
+    "eli5": "Makes the map half as big by averaging, then (in small models) doubles the kinds of notes.",
+    "simple": "2×2 average pooling, then a 1×1 Conv that doubles the channels (n/s) or nothing (l/x).",
+    "engineer": "AvgPool2d(2) → Conv1×1(c→2c) | Identity."
+  },
+  "whyExists": {
+    "eli5": "To send the group finder's notes to the smallest map size.",
+    "simple": "Produces the P5-sized copy of the HyperACE output for the FullPAD tunnel at P5.",
+    "engineer": "Cheap stride-2 projection."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Average each 2×2 square.",
+      "Change the notes."
+    ],
+    "simple": [
+      "Average pool 2×2.",
+      "1×1 Conv to twice the channels (small models)."
+    ],
+    "engineer": [
+      "parse_model: c2 = 2·c1 (n/s) or c1 (l/x)."
+    ]
+  },
+  "references": [
+    {
+      "label": "iMoonLab/yolov13 code",
+      "url": "https://github.com/iMoonLab/yolov13"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "id": "RepConv",
+  "name": "RepConv",
+  "whatIsIt": {
+    "eli5": "Two looking windows (3 wide and 1 wide) whose results are added; after learning they become one window.",
+    "simple": "A 3×3 Conv+BN and a 1×1 Conv+BN run in parallel and are added, then SiLU. After training they are merged into one 3×3 Conv.",
+    "engineer": "act(BN(W3∗x) + BN(W1∗x) [+ BN(x)]); fused into a single 3×3 conv with bias."
+  },
+  "whyExists": {
+    "eli5": "Learning is easier with two windows; using the model is faster with one.",
+    "simple": "Multi-branch training improves optimisation; single-branch inference is fast.",
+    "engineer": "RepVGG-style structural re-parameterisation."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look with two windows.",
+      "Add the results."
+    ],
+    "simple": [
+      "3×3 branch and 1×1 branch (no activation each).",
+      "Add, then SiLU."
+    ],
+    "engineer": [
+      "Optional identity-BN branch when c1 == c2 and stride 1."
+    ]
+  },
+  "references": [
+    {
+      "label": "RepVGG paper",
+      "url": "https://arxiv.org/abs/2101.03697"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "id": "CBFuse",
+  "name": "CBFuse (YOLOv9-E)",
+  "whatIsIt": {
+    "eli5": "Takes pieces from several places, makes them the same size, and adds them together.",
+    "simple": "Picks one piece from each CBLinear input, resizes them (nearest) to the size of the last input, and adds everything.",
+    "engineer": "sum(stack([interpolate(x_i[idx_i], size=target)] + [x_last]))."
+  },
+  "whyExists": {
+    "eli5": "It feeds the first backbone's knowledge into the second backbone.",
+    "simple": "It injects features from the first backbone into each stage of the second backbone of YOLOv9-E.",
+    "engineer": "Composite-backbone fusion by addition; no parameters."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Take a piece from each place.",
+      "Make them the same size.",
+      "Add them up."
+    ],
+    "simple": [
+      "Select piece idx[i] from input i.",
+      "Resize to the last input's size.",
+      "Add all."
+    ],
+    "engineer": [
+      "YAML args: [[idx…]]."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    }
+  ]
+}

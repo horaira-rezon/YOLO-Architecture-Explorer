@@ -1,0 +1,30 @@
+{
+  "id": "PSABlock",
+  "name": "PSABlock (attention + feed-forward)",
+  "whatIsIt": {
+    "eli5": "Every spot looks at all the others, then thinks a little on its own.",
+    "simple": "An attention layer followed by a small feed-forward network, each with a residual shortcut.",
+    "engineer": "x = x + Attention(x); x = x + FFN(x) with FFN = Conv(c, 2c) → Conv(2c, c, act=False)."
+  },
+  "whyExists": {
+    "eli5": "Looking around gives context; thinking alone sharpens it.",
+    "simple": "The transformer-style pair of attention (mixing positions) and feed-forward (mixing channels).",
+    "engineer": "Standard pre-residual transformer block in convolutional form."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at all the other spots.",
+      "Add what was learned.",
+      "Think a bit more and add that too."
+    ],
+    "simple": [
+      "Attention mixes information across positions.",
+      "Add the input back.",
+      "Feed-forward: widen to 2× channels and back.",
+      "Add again."
+    ],
+    "engineer": [
+      "No normalisation layers beyond the BN in each Conv."
+    ]
+  }
+}

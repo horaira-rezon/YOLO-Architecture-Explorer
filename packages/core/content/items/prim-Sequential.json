@@ -1,0 +1,25 @@
+{
+  "id": "prim-Sequential",
+  "name": "Sequence",
+  "whatIsIt": {
+    "eli5": "Helpers lined up one after another.",
+    "simple": "A container whose parts run one after another.",
+    "engineer": "nn.Sequential."
+  },
+  "whyExists": {
+    "eli5": "To group steps that always run in order.",
+    "simple": "Keeps a short pipeline together.",
+    "engineer": "Container."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Do the steps in order."
+    ],
+    "simple": [
+      "Each part feeds the next."
+    ],
+    "engineer": [
+      "No params of its own."
+    ]
+  }
+}

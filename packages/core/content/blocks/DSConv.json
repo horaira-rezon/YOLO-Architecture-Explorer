@@ -1,0 +1,39 @@
+{
+  "id": "DSConv",
+  "name": "DSConv (depthwise separable convolution)",
+  "whatIsIt": {
+    "eli5": "A cheap pattern finder: first each layer of notes is looked at alone, then the layers are mixed.",
+    "simple": "A depthwise k×k conv (each channel filtered on its own) followed by a pointwise 1×1 conv (mixing channels), then BN and SiLU.",
+    "engineer": "Conv2d(c, c, k, s, groups=c) → Conv2d(c, c2, 1) → BN → SiLU (no BN between)."
+  },
+  "whyExists": {
+    "eli5": "Much cheaper than a normal pattern finder.",
+    "simple": "YOLOv13 replaces large-kernel convs with depthwise-separable blocks to save parameters and compute.",
+    "engineer": "Cost ≈ c·k² + c·c2 vs c·c2·k² per position."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look at each layer alone.",
+      "Mix the layers."
+    ],
+    "simple": [
+      "Depthwise k×k conv (stride s).",
+      "1×1 conv to c2 channels.",
+      "BN + SiLU."
+    ],
+    "engineer": [
+      "Padding d·(k−1)/2."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv13n uses it to shrink 80 to 40.",
+    "simple": "YOLOv13n layer 5: 128 channels, 80×80 → 40×40, 17,792 parameters (YOLOv8n's stride-2 Conv at layer 5 has 73,984).",
+    "engineer": "13n #5 DSConv(128, 128, 3, 2): 17,792 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

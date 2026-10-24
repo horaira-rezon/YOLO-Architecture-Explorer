@@ -471,3 +471,217 @@ export function CBFuse(b: Builder, name: string, xs: Ref[]): Ref {
     return m.elementwise("sum", "stack·sum", [...resized, target], target.shape);
   });
 }
+
+// ------------------------------------------------------------------ YOLO26 task heads
+
+/** `Proto26`: fuses all head levels into the P3 map, then the usual Proto. A semantic-seg branch trains only. */
+export function Proto26(b: Builder, name: string, xs: Ref[], c_ = 256, c2 = 32, nc = 80): Ref {
+  return b.group(name, "Proto26", xs, (m, ins) => {
+    const ch0 = ins[0]!.shape[0]!;
+    const refined = m.groupN("feat_refine", "ModuleList", ins.slice(1), (q, rs) => rs.map((r, i) => Conv(q, String(i), r!, ch0, 1)));
+    let feat = ins[0]!;
+    refined.forEach((r, i) => {
+      const up = m.upsample(`interpolate${i}`, r, 2 ** (i + 1), "nearest", true);
+      feat = m.add(`add${i}`, feat, up);
+    });
+    const fused = Conv(m, "feat_fuse", feat, c_, 3);
+    const y = Conv(m, "cv1", fused, c_, 3);
+    const u = m.convTranspose2d("upsample", y, c_, 2, 2, true);
+    const p = Conv(m, "cv3", Conv(m, "cv2", u, c_, 3), c2);
+    m.group("semseg", "Sequential", [feat], (q, [f]) => q.conv2d("2", Conv(q, "1", Conv(q, "0", f!, c_, 3), c_, 3), { c2: nc, k: 1, bias: true }), { inactive: true });
+    return p;
+  });
+}
+
+/** `RealNVP`: a tiny normalising flow (6 coupling layers) used only by the RLE keypoint loss in training. */
+export function RealNVP(b: Builder, name: string, x: Ref): Ref {
+  return b.group(name, "RealNVP", [x], (m, [i]) => {
+    const point = m.reshape("point", i!, [2], "view");
+    const mlp = (q: Builder, nm: string, tanh: boolean) =>
+      q.group(nm, "Sequential", [point], (s, [p]) => {
+        let y = s.act("1", s.linear("0", p!, 64), "SiLU");
+        y = s.act("3", s.linear("2", y, 64), "SiLU");
+        y = s.linear("4", y, 2);
+        return tanh ? s.act("5", y, "Tanh") : y;
+      });
+    m.group("s", "ModuleList", [point], (q) => Array.from({ length: 6 }, (_, k) => mlp(q, String(k), true)));
+    m.group("t", "ModuleList", [point], (q) => Array.from({ length: 6 }, (_, k) => mlp(q, String(k), false)));
+    return point;
+  }, { inactive: true });
+}
+
+// ------------------------------------------------------------------ YOLOv13 (iMoonLab/yolov13, an Ultralytics fork)
+
+/** `DSConv`: depthwise k×k conv + pointwise 1×1 conv + BN + SiLU (depthwise-separable). */
+export function DSConv(b: Builder, name: string, x: Ref, c2: number, k = 3, s = 1, p: number | null = null, d = 1): Ref {
+  return b.group(name, "DSConv", [x], (m, [i]) => {
+    const c1 = i!.shape[0]!;
+    const dw = m.conv2d("dw", i!, { c2: c1, k, s, p: p ?? Math.floor((d * (k - 1)) / 2), d, g: c1 });
+    const pw = m.conv2d("pw", dw, { c2, k: 1 });
+    return m.act("act", m.bn("bn", pw), "SiLU");
+  }, { attrs: { c2, k, s } });
+}
+
+export function DSBottleneck(b: Builder, name: string, x: Ref, c2: number, shortcut = true, e = 0.5, k1 = 3, k2 = 5, d2 = 1): Ref {
+  return b.group(name, "DSBottleneck", [x], (m, [i]) => {
+    const c_ = Math.trunc(c2 * e);
+    const y = DSConv(m, "cv2", DSConv(m, "cv1", i!, c_, k1, 1, null, 1), c2, k2, 1, null, d2);
+    return shortcut && i!.shape[0] === c2 ? m.add("add", i!, y) : y;
+  });
+}
+
+export function DSC3k(b: Builder, name: string, x: Ref, c2: number, n = 1, shortcut = true, g = 1, e = 0.5, k1 = 3, k2 = 5, d2 = 1): Ref {
+  return C3(b, name, x, c2, n, shortcut, g, e, "DSC3k", (q, nm, xi, c_) => DSBottleneck(q, nm, xi, c_, shortcut, 1.0, k1, k2, d2));
+}
+
+export function DSC3k2(b: Builder, name: string, x: Ref, c2: number, n = 1, dsc3k = false, e = 0.5, g = 1, shortcut = true, k1 = 3, k2 = 7, d2 = 1): Ref {
+  return C2f(b, name, x, c2, n, shortcut, g, e, "DSC3k2", (q, nm, xi, c) =>
+    dsc3k ? DSC3k(q, nm, xi, c, 2, shortcut, g, 1.0, k1, k2, d2) : DSBottleneck(q, nm, xi, c, shortcut, 1.0, k1, k2, d2));
+}
+
+/** YOLOv13's `AAttn` (older area attention: separate q·k and v convs, 5×5 positional conv on v). */
+export function AAttn13(b: Builder, name: string, x: Ref, dim: number, numHeads: number, area = 1): Ref {
+  return b.group(name, "AAttn", [x], (m, [i]) => {
+    const [, H, W] = i!.shape as [number, number, number];
+    const headDim = Math.floor(dim / numHeads);
+    const all = headDim * numHeads;
+    const N = (H * W) / (area > 1 ? area : 1);
+    const qk = Conv(m, "qk", i!, all * 2, 1, 1, null, 1, 1, false);
+    const v = Conv(m, "v", i!, all, 1, 1, null, 1, 1, false);
+    const pp = Conv(m, "pe", v, dim, 5, 1, 2, dim, 1, false);
+    const t = m.reshape("to_areas", qk, [area, numHeads, headDim * 2, N], "flatten·reshape");
+    const [q, k] = m.split("split", t, [headDim, headDim], 2) as [Ref, Ref];
+    const vt = m.reshape("v_areas", v, [area, numHeads, headDim, N], "flatten·reshape");
+    const qkm = m.matmul("q·k", q, k, [area, numHeads, N, N], headDim);
+    const at = m.softmax("softmax", qkm, -1);
+    const av = m.matmul("v·attn", vt, at, [area, numHeads, headDim, N], N);
+    const xo = m.reshape("to_image", av, [all, H, W], "reshape·permute");
+    return Conv(m, "proj", m.add("add_pe", xo, pp), dim, 1, 1, null, 1, 1, false);
+  }, { attrs: { numHeads, area } });
+}
+
+function ABlock13(b: Builder, name: string, x: Ref, dim: number, numHeads: number, mlpRatio = 1.2, area = 1): Ref {
+  return b.group(name, "ABlock", [x], (m, [i]) => {
+    const y1 = m.add("add_attn", i!, AAttn13(m, "attn", i!, dim, numHeads, area));
+    const hidden = Math.trunc(dim * mlpRatio);
+    const f = m.group("mlp", "Sequential", [y1], (q, [xi]) => Conv(q, "1", Conv(q, "0", xi!, hidden, 1), dim, 1, 1, null, 1, 1, false));
+    return m.add("add_mlp", y1, f);
+  });
+}
+
+export function A2C2f13(b: Builder, name: string, x: Ref, c2: number, n = 1, a2 = true, area = 1, residual = false, mlpRatio = 2.0, e = 0.5, g = 1, shortcut = true): Ref {
+  return b.group(name, "A2C2f", [x], (m, [i]) => {
+    const c_ = Math.trunc(c2 * e);
+    if (a2 && c_ % 32 !== 0) throw new Error(`A2C2f hidden width ${c_} must be a multiple of 32`);
+    const y0 = Conv(m, "cv1", i!, c_, 1, 1);
+    const outs = m.groupN("m", "ModuleList", [y0], (q, [xi]) => {
+      let y = xi!;
+      const res: Ref[] = [];
+      for (let j = 0; j < n; j++) {
+        y = a2
+          ? q.group(String(j), "Sequential", [y], (s, [si]) => ABlock13(s, "1", ABlock13(s, "0", si!, c_, Math.floor(c_ / 32), mlpRatio, area), c_, Math.floor(c_ / 32), mlpRatio, area))
+          : C3k(q, String(j), y, c_, 2, shortcut, g);
+        res.push(y);
+      }
+      return res;
+    });
+    const y = Conv(m, "cv2", m.concat("cat", [y0, ...outs]), c2, 1);
+    if (a2 && residual) {
+      m.param("gamma", c2);
+      return m.add("residual", i!, m.elementwise("scale", "mul", [y]));
+    }
+    return y;
+  }, { attrs: { n, a2, area, residual } });
+}
+
+/** Learns hyperedges (groups of pixels) from the tokens and gives each pixel a soft membership in each group. */
+function AdaHyperedgeGen(b: Builder, name: string, x: Ref, D: number, nh: number, heads: number): Ref {
+  return b.group(name, "AdaHyperedgeGen", [x], (m, [X]) => {
+    const N = X!.shape[0]!;
+    const hd = Math.floor(D / heads);
+    m.param("prototype_base", nh * D);
+    const ctx = m.reshape("mean·max", X!, [2 * D], "mean+max");
+    const offsets = m.linear("context_net", ctx, nh * D);
+    const protos = m.elementwise("prototypes", "add", [offsets], [nh, D]);
+    const proj = m.linear("pre_head_proj", X!, D);
+    const heads3 = m.reshape("heads", proj, [heads, N, hd], "view·transpose");
+    const logits = m.matmul("x·prototypes", heads3, protos, [heads, N, nh], hd);
+    const mean = m.reshape("mean_heads", logits, [N, nh], "mean");
+    const drop = m.dropout("dropout", mean, 0.1);
+    return m.softmax("softmax", drop, 0);
+  }, { attrs: { hyperedges: nh, heads } });
+}
+
+/** One round of hypergraph message passing: pixels → hyperedges → pixels, with a residual. */
+function AdaHGConv(b: Builder, name: string, x: Ref, D: number, nh: number, heads: number): Ref {
+  return b.group(name, "AdaHGConv", [x], (m, [X]) => {
+    const N = X!.shape[0]!;
+    const A = AdaHyperedgeGen(m, "edge_generator", X!, D, nh, heads);
+    const He = m.matmul("Aᵀ·X", A, X!, [nh, D], N);
+    const He2 = m.group("edge_proj", "Sequential", [He], (q, [h]) => q.act("1", q.linear("0", h!, D), "GELU"));
+    const Xn = m.matmul("A·He", A, He2, [N, D], nh);
+    const Xp = m.group("node_proj", "Sequential", [Xn], (q, [h]) => q.act("1", q.linear("0", h!, D), "GELU"));
+    return m.add("residual", Xp, X!);
+  });
+}
+
+function C3AH(b: Builder, name: string, x: Ref, c2: number, e = 1.0, nh = 8): Ref {
+  return b.group(name, "C3AH", [x], (m, [i]) => {
+    const c_ = Math.trunc(c2 * e);
+    if (c_ % 16 !== 0) throw new Error(`C3AH width ${c_} must be a multiple of 16`);
+    const a = Conv(m, "cv1", i!, c_, 1, 1);
+    const bb = Conv(m, "cv2", i!, c_, 1, 1);
+    const [, H, W] = a.shape as [number, number, number];
+    const hg = m.group("m", "AdaHGComputation", [a], (q, [t]) => {
+      const tokens = q.reshape("tokens", t!, [H * W, c_], "flatten·transpose");
+      const y = AdaHGConv(q, "hgnn", tokens, c_, nh, Math.floor(c_ / 16));
+      return q.reshape("to_image", y, [c_, H, W], "transpose·view");
+    });
+    return Conv(m, "cv3", m.concat("cat", [hg, bb]), c2, 1);
+  });
+}
+
+function FuseModule(b: Builder, name: string, xs: Ref[], cIn: number, channelAdjust: boolean): Ref {
+  return b.group(name, "FuseModule", xs, (m, ins) => {
+    const ds = m.avgPoolModule("downsample", ins[0]!, 2);
+    const up = m.upsample("upsample", ins[2]!, 2);
+    return Conv(m, "conv_out", m.concat("cat", [ds, ins[1]!, up]), cIn, 1);
+  }, { attrs: { channelAdjust } });
+}
+
+/** `HyperACE`: fuse P3/P4/P5 at P4 size, then a CSP-style block whose two side branches are hypergraph blocks. */
+export function HyperACE(b: Builder, name: string, xs: Ref[], c2: number, n = 1, nh = 8, dsc3k = true, shortcut = false, e1 = 0.5, e2 = 1, channelAdjust = true): Ref {
+  return b.group(name, "HyperACE", xs, (m, ins) => {
+    const c1 = ins[1]!.shape[0]!;
+    const c = Math.trunc(c2 * e1);
+    const x = FuseModule(m, "fuse", ins, c1, channelAdjust);
+    const [y0, y1, y2] = m.split("chunk", Conv(m, "cv1", x, 3 * c, 1, 1), [c, c, c]) as [Ref, Ref, Ref];
+    const out1 = C3AH(m, "branch1", y1, c, e2, nh);
+    const out2 = C3AH(m, "branch2", y1, c, e2, nh);
+    const chain = n > 0 ? m.groupN("m", "ModuleList", [y2], (q, [xi]) => {
+      let y = xi!;
+      const res: Ref[] = [];
+      for (let j = 0; j < n; j++) {
+        y = dsc3k ? DSC3k(q, String(j), y, c, 2, shortcut, 1, 0.5, 3, 7) : DSBottleneck(q, String(j), y, c, shortcut);
+        res.push(y);
+      }
+      return res;
+    }) : [];
+    return Conv(m, "cv2", m.concat("cat", [y0, out1, y2, ...chain, out2]), c2, 1);
+  }, { attrs: { n, hyperedges: nh } });
+}
+
+export function DownsampleConv(b: Builder, name: string, x: Ref, channelAdjust = true): Ref {
+  return b.group(name, "DownsampleConv", [x], (m, [i]) => {
+    const d = m.avgPoolModule("downsample", i!, 2);
+    return channelAdjust ? Conv(m, "channel_adjust", d, i!.shape[0]! * 2, 1) : m.act("channel_adjust", d, "Identity");
+  });
+}
+
+/** `FullPAD_Tunnel`: out = x + gate · y, with one learned gate that starts at 0. */
+export function FullPADTunnel(b: Builder, name: string, xs: Ref[]): Ref {
+  return b.group(name, "FullPAD_Tunnel", xs, (m, [a, c]) => {
+    m.param("gate", 1);
+    return m.add("add", a!, m.elementwise("gate·y", "mul", [c!]));
+  });
+}

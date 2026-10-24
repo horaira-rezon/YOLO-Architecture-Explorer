@@ -29,6 +29,7 @@ export async function loadArchitecture(version: string, task: Task, scale?: stri
   const arch = compileYaml(v.yamlText, {
     version, task, scale: hasScales ? chosen : null, inputSize: v.inputSize,
     id: `${version}-${task}-${chosen}`,
+    codebase: v.source.repo.includes("iMoonLab/yolov13") ? "yolov13" : "ultralytics",
     meta: {
       source: { ...v.source },
       confidence: info?.confidence ?? "draft",

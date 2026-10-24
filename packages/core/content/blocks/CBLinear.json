@@ -1,0 +1,38 @@
+{
+  "id": "CBLinear",
+  "name": "CBLinear (YOLOv9-E)",
+  "whatIsIt": {
+    "eli5": "One step that makes several piles of notes at once and sends each pile somewhere different.",
+    "simple": "A single 1×1 Conv whose output is split into several pieces; each piece is sent to a different place in the second backbone of YOLOv9-E.",
+    "engineer": "Conv2d(c1, Σc2s, 1, bias=True) → split(c2s); tuple output."
+  },
+  "whyExists": {
+    "eli5": "It lets the first backbone help the second one at many places.",
+    "simple": "YOLOv9-E links two backbones (as in CBNet). CBLinear prepares features from the first backbone for each level of the second.",
+    "engineer": "Composite-backbone linking; part of the YOLOv9-E inference graph in the Ultralytics config."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Make many piles in one go.",
+      "Send each pile to its place."
+    ],
+    "simple": [
+      "1×1 Conv with bias to the total width.",
+      "Split into the listed widths."
+    ],
+    "engineer": [
+      "YAML args: [[c2s]]."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv9-E has five of these.",
+    "simple": "YOLOv9-E layer 14 makes pieces of 64, 128, 256, 512 and 1,024 channels: 2,033,600 parameters.",
+    "engineer": "v9e #14 CBLinear(c2s=[64,128,256,512,1024]): 2,033,600 params."
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import type { Builder, Ref, Shape } from "./builder";
 import type { YamlValue } from "../schema";
 import * as M from "./modules";
+import { makeDivisible } from "../util/math";
 
 /** How Ultralytics `parse_model` turns YAML args into constructor args and output channels. */
 export type ParseKind =
@@ -11,7 +12,8 @@ export type ParseKind =
   | "v10head" // v10Detect: args += [ch]
   | "passthrough" // c2 = ch[f] (Upsample, Identity…)
   | "cblinear" // c2 = args[0] (a list of output widths)
-  | "cbfuse"; // c2 = ch[f[-1]]
+  | "cbfuse" // c2 = ch[f[-1]]
+  | "custom"; // block-specific rule in `resolve`
 
 export type BlockCategory = "conv" | "csp" | "attention" | "pooling" | "resample" | "merge" | "head" | "downsample" | "extra";
 
@@ -28,7 +30,17 @@ export interface ArgSpec {
   options?: string[];
 }
 
+export interface ResolveInput {
+  c1s: number[];
+  args: YamlValue[];
+  n: number;
+  scale: string | null;
+  width: number;
+  maxChannels: number;
+}
+
 export interface BuildCtx {
+  codebase: "ultralytics" | "yolov13";
   nc: number;
   regMax: number;
   end2end: boolean;
@@ -55,6 +67,8 @@ export interface BlockDefinition {
   build(b: Builder, ins: Ref[], ctor: YamlValue[], ctx: BuildCtx): Ref | Ref[] | M.HeadResult;
   /** Pick which tensors of tuple-producing inputs this block reads (CBFuse). Default: each input's first output. */
   selectInputs?(inputs: Shape[][], ctor: YamlValue[]): Shape[];
+  /** For parse = "custom": constructor args, output channels and remaining repeats. */
+  resolve?(p: ResolveInput): { args: YamlValue[]; c2: number; n: number };
   isHead?: boolean;
   /** Version family that introduced the block (for the palette/legend). */
   introducedIn?: string;
@@ -137,7 +151,50 @@ const defs: BlockDefinition[] = [
   {
     id: "A2C2f", yamlName: "A2C2f", displayName: "A2C2f (area attention)", category: "attention", parse: "base", repeatModule: true, clearsLegacy: true, inputs: one, introducedIn: "12",
     args: [C2(), { name: "a2", label: "Use area attention", kind: "bool", default: true }, { name: "area", label: "Number of areas", kind: "int", default: 1, min: 1, max: 8 }],
-    build: (b, [x], a) => M.A2C2f(b, "a2c2f", x!, num(a[1], 0), num(a[2], 1), bool(a[3], true), num(a[4], 1), bool(a[5], false), num(a[6], 2.0), num(a[7], 0.5), num(a[8], 1), bool(a[9], true)),
+    build: (b, [x], a, ctx) => (ctx.codebase === "yolov13" ? M.A2C2f13 : M.A2C2f)(b, "a2c2f", x!, num(a[1], 0), num(a[2], 1), bool(a[3], true), num(a[4], 1), bool(a[5], false), num(a[6], 2.0), num(a[7], 0.5), num(a[8], 1), bool(a[9], true)),
+  },
+  // ------------------------------------------------------------ YOLOv13
+  {
+    id: "DSC3k2", yamlName: "DSC3k2", displayName: "DS-C3k2", category: "csp", parse: "base", repeatModule: true, clearsLegacy: true, inputs: one, introducedIn: "13",
+    args: [C2(), { name: "dsc3k", label: "Use DS-C3k inner blocks", kind: "bool", default: false }, { name: "e", label: "Hidden width ratio", kind: "float", default: 0.5, min: 0.125, max: 1, step: 0.125 }],
+    build: (b, [x], a) => M.DSC3k2(b, "dsc3k2", x!, num(a[1], 0), num(a[2], 1), bool(a[3], false), num(a[4], 0.5), num(a[5], 1), bool(a[6], true), num(a[7], 3), num(a[8], 7), num(a[9], 1)),
+  },
+  {
+    id: "DSConv", yamlName: "DSConv", displayName: "DSConv (depthwise separable)", category: "conv", parse: "base", inputs: one, introducedIn: "13",
+    args: [C2(), { name: "k", label: "Kernel size", kind: "int", default: 3, min: 1, max: 9 }, { name: "s", label: "Stride", kind: "int", default: 1, min: 1, max: 4 }],
+    build: (b, [x], a) => M.DSConv(b, "dsconv", x!, num(a[1], 0), num(a[2], 3), num(a[3], 1), nOrNull(a[4]), num(a[5], 1)),
+  },
+  {
+    id: "HyperACE", yamlName: "HyperACE", displayName: "HyperACE (hypergraph correlation)", category: "attention", parse: "custom", clearsLegacy: true, inputs: { min: 3, max: 3 }, introducedIn: "13",
+    args: [C2(), { name: "num_hyperedges", label: "Hyperedges", kind: "int", default: 8, min: 2, max: 32 }, { name: "dsc3k", label: "DS-C3k inner blocks", kind: "bool", default: true },
+      { name: "shortcut", label: "Shortcut", kind: "bool", default: true }, { name: "e1", label: "Hidden width ratio", kind: "float", default: 0.5 }, { name: "e2", label: "Hypergraph width ratio", kind: "float", default: 1 }, { name: "context", label: "Context", kind: "enum", default: "both", options: ["mean", "max", "both"] }],
+    resolve: ({ c1s, args, n, scale, width, maxChannels }) => {
+      // YOLOv13 parse_model: c1 = ch[f[1]]; hyperedges halved for n and ×1.5 for x; no channel adjust for l/x
+      const c2 = makeDivisible(Math.min(num(args[0], 0), maxChannels) * width, 8);
+      let he = num(args[1], 8);
+      if (scale === "n") he = Math.trunc(he * 0.5);
+      else if (scale === "x") he = Math.trunc(he * 1.5);
+      const out: YamlValue[] = [c1s[1] ?? 0, c2, n, he, ...args.slice(2)];
+      if (scale === "l" || scale === "x") out.push(false);
+      return { args: out, c2, n: 1 };
+    },
+    build: (b, ins, a) => M.HyperACE(b, "hyperace", ins, num(a[1], 0), num(a[2], 1), num(a[3], 8), bool(a[4], true), bool(a[5], false), num(a[6], 0.5), num(a[7], 1), bool(a[9], true)),
+  },
+  {
+    id: "DownsampleConv", yamlName: "DownsampleConv", displayName: "DownsampleConv", category: "downsample", parse: "custom", inputs: one, introducedIn: "13",
+    args: [],
+    resolve: ({ c1s, scale }) => {
+      const c1 = c1s[0] ?? 0;
+      const lx = scale === "l" || scale === "x";
+      return { args: lx ? [c1, false] : [c1], c2: lx ? c1 : c1 * 2, n: 1 };
+    },
+    build: (b, [x], a) => M.DownsampleConv(b, "downsampleconv", x!, bool(a[1], true)),
+  },
+  {
+    id: "FullPAD_Tunnel", yamlName: "FullPAD_Tunnel", displayName: "FullPAD tunnel", category: "merge", parse: "custom", inputs: { min: 2, max: 2 }, introducedIn: "13",
+    args: [],
+    resolve: ({ c1s }) => ({ args: [], c2: c1s[0] ?? 0, n: 1 }),
+    build: (b, ins) => M.FullPADTunnel(b, "fullpad", ins),
   },
   // ------------------------------------------------------------ attention
   {
@@ -239,6 +296,49 @@ const defs: BlockDefinition[] = [
         if (prefix) return {};
         const proto = M.Proto(q, "proto", xs[0]!, npr, nm);
         return { mask_coefficients: M.flatCat(q, "mask_coef", masks), prototypes: proto };
+      });
+    },
+  },
+  {
+    id: "Segment26", yamlName: "Segment26", displayName: "Segment26 head", category: "head", parse: "head", inputs: { min: 1, max: 6 }, isHead: true, introducedIn: "26",
+    args: [{ name: "nc", label: "Number of classes", kind: "nc", default: "nc" }, { name: "nm", label: "Mask prototypes", kind: "int", default: 32 }, { name: "npr", label: "Prototype channels", kind: "int", default: 256 }],
+    build: (b, ins, a, ctx) => {
+      const nm = num(a[1], 32), npr = num(a[2], 256), nc = num(a[0], ctx.nc);
+      const c4 = Math.max(Math.floor(ins[0]!.shape[0]! / 4), nm);
+      return M.detectCore(b, ins, { nc, regMax: num(a[3], 16), end2end: bool(a[4], false), legacy: ctx.legacy }, (q, prefix, xs) => {
+        const masks = M.extraBranch(q, `${prefix}cv4`, xs, c4, nm);
+        if (prefix) return {};
+        const proto = M.Proto26(q, "proto", xs, npr, nm, nc);
+        return { mask_coefficients: M.flatCat(q, "mask_coef", masks), prototypes: proto };
+      });
+    },
+  },
+  {
+    id: "Pose26", yamlName: "Pose26", displayName: "Pose26 head (RLE)", category: "head", parse: "head", inputs: { min: 1, max: 6 }, isHead: true, introducedIn: "26",
+    args: [{ name: "nc", label: "Number of classes", kind: "nc", default: "nc" }, { name: "kpt_shape", label: "Keypoints [count, dims]", kind: "kpt", default: "kpt_shape" }],
+    build: (b, ins, a, ctx) => {
+      const kpt = (Array.isArray(a[1]) ? a[1] : ctx.kptShape ?? [17, 3]) as [number, number];
+      const nk = kpt[0] * kpt[1], nkSigma = kpt[0] * 2;
+      const c4 = Math.max(Math.floor(ins[0]!.shape[0]! / 4), kpt[0] * (kpt[1] + 2));
+      return M.detectCore(b, ins, { nc: num(a[0], ctx.nc), regMax: num(a[2], 16), end2end: bool(a[3], false), legacy: ctx.legacy }, (q, prefix, xs) => {
+        const feats = M.extraBranch(q, `${prefix}cv4`, xs, c4, null);
+        if (!prefix) M.RealNVP(q, "flow_model", feats[0]!);
+        const k = q.groupN(`${prefix}cv4_kpts`, "ModuleList", feats, (s, fs) => fs.map((f, i) => s.conv2d(String(i), f!, { c2: nk, k: 1, bias: true })));
+        // per-keypoint uncertainty (sigma) feeds the RLE loss only
+        q.groupN(`${prefix}cv4_sigma`, "ModuleList", feats, (s, fs) => fs.map((f, i) => s.conv2d(String(i), f!, { c2: nkSigma, k: 1, bias: true })), { inactive: true });
+        return prefix ? {} : { keypoints: M.flatCat(q, "kpts", k) };
+      });
+    },
+  },
+  {
+    id: "OBB26", yamlName: "OBB26", displayName: "OBB26 head", category: "head", parse: "head", inputs: { min: 1, max: 6 }, isHead: true, introducedIn: "26",
+    args: [{ name: "nc", label: "Number of classes", kind: "nc", default: "nc" }, { name: "ne", label: "Angle outputs", kind: "int", default: 1 }],
+    build: (b, ins, a, ctx) => {
+      const ne = num(a[1], 1);
+      const c4 = Math.max(Math.floor(ins[0]!.shape[0]! / 4), ne);
+      return M.detectCore(b, ins, { nc: num(a[0], ctx.nc), regMax: num(a[2], 16), end2end: bool(a[3], false), legacy: ctx.legacy }, (q, prefix, xs) => {
+        const k = M.extraBranch(q, `${prefix}cv4`, xs, c4, ne);
+        return prefix ? {} : { angle: M.flatCat(q, "angle", k) };
       });
     },
   },

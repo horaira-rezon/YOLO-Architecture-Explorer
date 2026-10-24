@@ -1,0 +1,30 @@
+{
+  "id": "C3k",
+  "name": "C3k (CSP block with k×k bottlenecks)",
+  "whatIsIt": {
+    "eli5": "A small team: half the notes go through two helpers, the other half skip, then they are joined.",
+    "simple": "A C3-style CSP block: two 1×1 Convs split the work, a chain of Bottlenecks (k×k kernels, default 3×3) runs on one branch, and a final 1×1 Conv joins both branches.",
+    "engineer": "C3 with Bottleneck(c_, c_, shortcut, g, k=(k, k), e=1.0) units; used inside C3k2 and A2C2f (a2=False)."
+  },
+  "whyExists": {
+    "eli5": "Two helpers in a row see a bigger area than one.",
+    "simple": "It gives each unit of C3k2 more depth and a wider view, while the skip branch keeps it cheap.",
+    "engineer": "Deeper unit with larger receptive field; CSP split halves compute."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Copy the notes into two piles.",
+      "One pile goes through two helpers.",
+      "Join the piles and summarize."
+    ],
+    "simple": [
+      "cv1 and cv2 (1×1 Convs) make two branches of half width.",
+      "Branch 1 goes through n Bottlenecks.",
+      "Join the branches; cv3 (1×1) mixes them."
+    ],
+    "engineer": [
+      "c_ = int(c2·e), e = 0.5 by default; inside C3k2 it is called with e = 0.5 on width c."
+    ]
+  },
+  "pytorch": "class C3k(C3):\n    def __init__(self, c1, c2, n=1, shortcut=True, g=1, e=0.5, k=3):\n        super().__init__(c1, c2, n, shortcut, g, e)\n        c_ = int(c2 * e)\n        self.m = nn.Sequential(*(Bottleneck(c_, c_, shortcut, g, k=(k, k), e=1.0) for _ in range(n)))"
+}

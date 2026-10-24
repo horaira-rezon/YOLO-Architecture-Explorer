@@ -1,0 +1,45 @@
+{
+  "id": "PSA",
+  "name": "PSA (partial self-attention, YOLOv10)",
+  "whatIsIt": {
+    "eli5": "Half of the notes skip ahead; the other half lets every spot look at all the others.",
+    "simple": "YOLOv10's attention block. It splits the channels in half and runs self-attention and a feed-forward layer on only one half, which keeps it cheap.",
+    "engineer": "cv1 → split (c, c) → b = b + Attn(b); b = b + FFN(b) → concat(a, b) → cv2; heads = c/64, attn_ratio = 0.5."
+  },
+  "whyExists": {
+    "eli5": "Looking everywhere is useful but expensive, so only half of the notes do it.",
+    "simple": "The YOLOv10 paper adds global context at the lowest resolution while limiting the cost: attention on half the channels, only at stride 32.",
+    "engineer": "Partial self-attention (paper §3.3): global modelling with reduced compute; placed after SPPF at P5."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Cut the notes into two piles.",
+      "One pile looks around the whole picture.",
+      "Join and summarize."
+    ],
+    "simple": [
+      "cv1 (1×1) and split in half.",
+      "Attention + feed-forward with shortcuts on one half.",
+      "Join with the untouched half; cv2 (1×1)."
+    ],
+    "engineer": [
+      "Same internals as one PSABlock inside C2PSA; YOLO11's C2PSA generalises PSA to n stacked blocks."
+    ]
+  },
+  "example": {
+    "eli5": "In YOLOv10n it works on the 20×20 picture.",
+    "simple": "YOLOv10n layer 10: 256 channels at 20×20, 249,728 parameters (the same size as YOLO11n's C2PSA).",
+    "engineer": "v10n #10 PSA(256, 256): 249,728 params."
+  },
+  "typicalPositions": {
+    "eli5": "End of the backbone.",
+    "simple": "After SPPF at the end of the backbone.",
+    "engineer": "P5/32 backbone tail."
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    }
+  ]
+}

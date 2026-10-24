@@ -1,0 +1,35 @@
+{
+  "id": "CIB",
+  "name": "CIB (compact inverted block)",
+  "whatIsIt": {
+    "eli5": "A cheap helper made from little single-layer steps and mixing steps.",
+    "simple": "YOLOv10's compact block: depthwise 3×3 → pointwise 1×1 (expand) → depthwise (3×3, or 7×7 RepVGGDW) → pointwise 1×1 → depthwise 3×3, with a shortcut.",
+    "engineer": "cv1 = Seq(DW3×3(c1), PW(c1→2c_), DW3×3 or RepVGGDW(2c_), PW(2c_→c2), DW3×3(c2)); residual if c1 == c2."
+  },
+  "whyExists": {
+    "eli5": "Cheap steps mean more of them fit in a small budget.",
+    "simple": "Depthwise convolutions are very cheap, so deep stages can stay strong with fewer parameters (rank-guided design in the paper).",
+    "engineer": "Inverted-bottleneck structure with depthwise spatial mixing; used where intrinsic rank analysis shows redundancy."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Look around each layer of notes alone.",
+      "Mix the layers.",
+      "Repeat, then add back the start."
+    ],
+    "simple": [
+      "Five steps alternating depthwise (spatial) and pointwise (channel) convolutions.",
+      "Optional large 7×7 kernel in the middle (lk=True) for a wider view.",
+      "Add the input back."
+    ],
+    "engineer": [
+      "RepVGGDW = 7×7 DW + 3×3 DW in training, fused to one 7×7 at export."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    }
+  ]
+}

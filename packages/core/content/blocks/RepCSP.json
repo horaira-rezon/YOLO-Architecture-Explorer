@@ -1,0 +1,28 @@
+{
+  "id": "RepCSP",
+  "name": "RepCSP",
+  "whatIsIt": {
+    "eli5": "A team block whose helpers can be merged into simpler helpers after learning.",
+    "simple": "A C3 block whose bottlenecks are RepBottlenecks (training uses parallel 3×3 and 1×1 branches that are merged at export).",
+    "engineer": "C3 with RepBottleneck units (cv1 = RepConv)."
+  },
+  "whyExists": {
+    "eli5": "Extra branches help learning but cost nothing afterwards.",
+    "simple": "Re-parameterisation gives better training with no extra cost when deployed.",
+    "engineer": "Structural re-parameterisation inside CSP."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Split into two piles.",
+      "One pile goes through helpers.",
+      "Join."
+    ],
+    "simple": [
+      "Two 1×1 branches; one goes through n RepBottlenecks.",
+      "Join; 1×1 Conv."
+    ],
+    "engineer": [
+      "RepBottleneck: RepConv(3×3 ⊕ 1×1) → Conv3×3, residual."
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "id": "FullPAD_Tunnel",
+  "name": "FullPAD tunnel",
+  "whatIsIt": {
+    "eli5": "A gate that lets the group finder's knowledge flow into a spot of the network. It starts closed and learns how much to open.",
+    "simple": "Adds the HyperACE features into a point of the network: output = x + gate × y, where gate is one learned number that starts at 0.",
+    "engineer": "out = x[0] + g·x[1], g ∈ ℝ (init 0)."
+  },
+  "whyExists": {
+    "eli5": "So every part of the model can use the shared knowledge, but only as much as helps.",
+    "simple": "FullPAD distributes the HyperACE features through three kinds of tunnels: backbone→neck, inside the neck, and neck→head. Starting the gate at 0 means training begins from the plain network.",
+    "engineer": "Full-Pipeline Aggregation-and-Distribution (paper §3.3) with zero-initialised scalar gating."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Take the normal notes.",
+      "Add the shared notes, turned down by the gate."
+    ],
+    "simple": [
+      "Both inputs must have the same size.",
+      "Multiply the HyperACE features by the gate.",
+      "Add to the main features."
+    ],
+    "engineer": [
+      "One parameter per tunnel."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv13n has 7 of these gates, each with just one learned number.",
+    "simple": "YOLOv13n layers 12, 13, 14, 18, 23, 27, 31: one parameter each.",
+    "engineer": "7 tunnels × 1 param."
+  },
+  "references": [
+    {
+      "label": "YOLOv13 paper",
+      "url": "https://arxiv.org/abs/2506.17733"
+    }
+  ]
+}

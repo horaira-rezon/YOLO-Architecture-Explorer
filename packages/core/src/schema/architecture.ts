@@ -54,6 +54,8 @@ export const ArchConfigSchema = z.object({
   end2end: z.boolean().nullable().default(null),
   kptShape: z.tuple([z.number(), z.number()]).nullable().default(null),
   activation: z.string().nullable().default(null),
+  /** Which code base's parse_model rules apply (YOLOv13 ships its own Ultralytics fork). */
+  codebase: z.enum(["ultralytics", "yolov13"]).default("ultralytics"),
   /** Other top-level YAML keys we do not interpret but must preserve on export. */
   extra: z.record(z.string(), z.unknown()).default({}),
 });

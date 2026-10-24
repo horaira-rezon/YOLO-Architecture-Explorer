@@ -20,6 +20,7 @@ import { ZoomBar } from "../components/ZoomBar";
 import { CommandPalette } from "../components/CommandPalette";
 import { Walkthrough } from "../components/Walkthrough";
 import { useKeyboardNav } from "../lib/keyboard";
+import { Provenance } from "../components/Provenance";
 
 export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
   const { version = "v8", task = "detect", scale } = useParams();
@@ -106,9 +107,8 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           onChange={(e) => go(version, task, e.target.value)}>
           {scales.map((s) => <option key={s} value={s}>size {s}</option>)}
         </select>
-        {info?.confidence === "verified"
-          ? <span className="rounded-full bg-ok/15 px-2 py-0.5 text-xs font-medium text-ok">verified from official files</span>
-          : <span className="rounded-full bg-warn/15 px-2 py-0.5 text-xs font-medium text-warn">unverified</span>}
+        {arch && <Provenance arch={arch} info={info} />}
+        <Link to={`/compare/${task}?a=${version}`} className="rounded px-1.5 py-1 text-xs hover:bg-surface-2" data-testid="compare-from-explorer">Compare</Link>
         <ZoomBar />
         <div className="ml-auto flex items-center gap-1">
           {computed && (
@@ -138,6 +138,12 @@ export function ExplorerPage({ mode }: { mode: "explore" | "lab" }) {
           </button>
         </div>
       </div>
+      {info && (info.confidence === "draft" || info.id === "12") && (
+        <div role="note" className="border-b border-warn/40 bg-warn/10 px-3 py-1.5 text-xs text-warn" data-testid="version-banner">
+          {info.confidence === "draft" ? "This version could not be fully verified. Treat the diagram as a draft. " : ""}
+          {info.notes[0]}
+        </div>
+      )}
       {arch && computed && (zoomLevel !== 1 || inside || selectedId) && (
         <div className="border-b border-border bg-surface px-3 py-1"><Breadcrumbs /></div>
       )}

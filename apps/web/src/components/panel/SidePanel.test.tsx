@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { beforeAll, describe, expect, it } from "vitest";
 import { fireEvent, render, screen, within } from "@testing-library/react";
@@ -8,11 +8,14 @@ import { compileYaml, type ModelData } from "@yolo-atlas/core";
 import { useAtlas } from "../../store/atlas";
 import { SidePanel } from "./SidePanel";
 
-const data = JSON.parse(readFileSync(join(__dirname, "../../../../../packages/core/data/models/v8.json"), "utf8")) as ModelData;
+const DATA = join(__dirname, "../../../../../packages/core/data/models");
+const read = (v: string) => JSON.parse(readFileSync(join(DATA, `${v}.json`), "utf8")) as ModelData;
 
-function load(task: "detect" | "segment" | "pose" | "classify" | "obb") {
-  const v = data.tasks[task]!.variants.n!;
-  const arch = compileYaml(v.yamlText, { version: "v8", task, scale: "n", inputSize: v.inputSize, meta: { source: v.source, confidence: "verified", retrievedAt: v.retrievedAt, notes: [] } });
+type T = "detect" | "segment" | "pose" | "classify" | "obb";
+function load(task: T, version = "v8") {
+  const data = read(version);
+  const [scale, v] = Object.entries(data.tasks[task]!.variants)[0]!;
+  const arch = compileYaml(v.yamlText, { version, task, scale: /^scales:/m.test(v.yamlText) ? scale : null, inputSize: v.inputSize, meta: { source: v.source, confidence: "verified", retrievedAt: v.retrievedAt, notes: [] } });
   useAtlas.getState().setLoaded(arch, ["n"]);
   return arch;
 }
@@ -32,6 +35,18 @@ describe("click panel (YOLOv8n)", () => {
       const { unmount } = renderPanel();
       for (const s of ["what", "why", "how", "connections", "numbers", "code", "ask"]) expect(screen.getByTestId(`section-${s}`), `${n.id} ${s}`).toBeInTheDocument();
       expect(screen.queryByText(/no written explanation/i), `${n.id} ${n.module}`).toBeNull();
+      unmount();
+    }
+  });
+
+  const all = readdirSync(DATA).map((f) => f.replace(".json", "")).flatMap((v) => (Object.keys(read(v).tasks) as T[]).map((t) => [v, t] as const));
+  it.each(all)("%s %s: every layer and training item has content", (version, task) => {
+    const arch = load(task, version);
+    const ids = [...arch.nodes.map((n) => n.id), "input", "train:assigner", ...arch.training.losses.map((l) => `train:loss:${l.id}`), ...arch.training.extras.map((x) => `train:extra:${x}`)];
+    for (const id of ids) {
+      useAtlas.getState().select(id);
+      const { unmount } = renderPanel();
+      expect(screen.queryByText(/no written explanation/i), `${version} ${task} ${id}`).toBeNull();
       unmount();
     }
   });

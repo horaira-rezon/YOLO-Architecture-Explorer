@@ -1,0 +1,41 @@
+{
+  "id": "v10Detect",
+  "name": "v10Detect (dual one-to-many / one-to-one head)",
+  "whatIsIt": {
+    "eli5": "The final-answer part, built twice: one copy learns with many helpers per thing, the other learns to give one answer per thing.",
+    "simple": "YOLOv10's head. It has two identical sets of branches: one-to-many (trained like YOLOv8, many positives per object) and one-to-one (one positive per object). Only the one-to-one branch is used for final answers, so no NMS is needed. Its class branch is lighter (depthwise convs).",
+    "engineer": "Detect with end2end=True: cv2/cv3 (o2m) + deep copies one2one_cv2/one2one_cv3; class branch = Seq(DW3×3 Conv, PW Conv) × 2 → Conv2d(nc). Inference uses o2o outputs + top-k (max_det 300)."
+  },
+  "whyExists": {
+    "eli5": "Learning with many helpers is easy; answering with one is clean.",
+    "simple": "Consistent dual assignment gives rich training signal and NMS-free inference at the same time. The lighter class branch saves compute because classification needs less capacity than box regression (paper §3.3).",
+    "engineer": "Consistent dual assignments + lightweight classification head (paper §3.1, §3.3)."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Two copies look at the same notes.",
+      "The many-answers copy helps learning.",
+      "The one-answer copy gives the final list."
+    ],
+    "simple": [
+      "Both branch sets read P3, P4, P5.",
+      "Training: losses on both, with the same matching rule (top-10 vs top-1).",
+      "Inference: take the one-to-one predictions, keep the best up to 300."
+    ],
+    "engineer": [
+      "reg_max = 16 (DFL kept in YOLOv10).",
+      "o2o branch receives detached features in training (x.detach())."
+    ]
+  },
+  "example": {
+    "eli5": "YOLOv10n's head holds about a third of the model's learned numbers.",
+    "simple": "YOLOv10n layer 23: 929,808 parameters (both copies) of 2.78 M total.",
+    "engineer": "v10n #23 v10Detect: 929,808 params; 2,775,520 total."
+  },
+  "references": [
+    {
+      "label": "YOLOv10 paper",
+      "url": "https://arxiv.org/abs/2405.14458"
+    }
+  ]
+}

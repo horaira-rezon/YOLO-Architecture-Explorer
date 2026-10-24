@@ -1,0 +1,33 @@
+{
+  "id": "extra-PGI",
+  "name": "PGI — Programmable Gradient Information (paper only)",
+  "whatIsIt": {
+    "eli5": "Extra helpers used only while learning, so deep layers don't forget.",
+    "simple": "In the YOLOv9 paper, an auxiliary reversible branch gives extra supervision during training and is removed for inference. The Ultralytics YOLOv9 configs shown here do not include this auxiliary branch.",
+    "engineer": "Auxiliary reversible branch + multi-level auxiliary information (paper §4.1); training-only; absent from Ultralytics cfg/models/v9."
+  },
+  "whyExists": {
+    "eli5": "Deep networks can lose details on the way.",
+    "simple": "It counters the information bottleneck so gradients stay reliable.",
+    "engineer": "Mitigates information bottleneck in deep nets."
+  },
+  "howItWorks": {
+    "eli5": [
+      "Add a helper branch while learning.",
+      "Remove it when finished."
+    ],
+    "simple": [
+      "Extra branch and loss during training only.",
+      "Inference graph unchanged."
+    ],
+    "engineer": [
+      "Not part of the shown graph; listed for completeness."
+    ]
+  },
+  "references": [
+    {
+      "label": "YOLOv9 paper",
+      "url": "https://arxiv.org/abs/2402.13616"
+    }
+  ]
+}
